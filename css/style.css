@@ -74,3 +74,19 @@ footer{padding:var(--s4) var(--s3);border-block-start:1px solid var(--line);marg
 .pal>div{inline-size:min(620px,100%);background:#0d0f17;border:1px solid var(--line);border-radius:22px;padding:1rem;box-shadow:0 40px 100px -20px #000}.pal ul{list-style:none;margin:.8rem 0 0;padding:0}
 .pal a{display:flex;justify-content:space-between;gap:1rem;padding:.7rem .9rem;border-radius:12px;text-decoration:none}.pal a.on,.pal a:hover{background:#36e2c81a;color:var(--aurora)}.pal small{color:var(--mut)}
 #sk{font-size:.8rem;color:var(--mut)}@media(max-width:900px){#sk{display:none}.wc{inline-size:100%;opacity:.3}.world .wrap>*{max-inline-size:100%}}
+body::before{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none;filter:blur(50px);background:radial-gradient(40% 30% at 20% 30%,color-mix(in srgb,var(--grade) 14%,transparent),transparent),radial-gradient(35% 30% at 80% 70%,#ff7a4518,transparent),radial-gradient(30% 30% at 60% 10%,#36e2c814,transparent);animation:dr 40s ease-in-out infinite alternate}
+@keyframes dr{to{transform:translate3d(4%,-3%,0) scale(1.08)}}@keyframes rv{from{opacity:0;transform:translateY(26px)}}
+.rv{opacity:0}.rv.in{opacity:1;animation:rv 1s var(--ease) var(--d,0s) backwards}
+.card{position:relative}.card::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),#ffffff16,transparent 45%);opacity:0;transition:opacity .4s}.card:hover::after{opacity:1}
+.t3d{aspect-ratio:1/.9}.t3d .cardart{position:absolute;inset:0}.t3d .tag{z-index:2}
+.cat-hero{position:relative;overflow:hidden}.cat-hero .wrap{position:relative;z-index:1}
+.tabs{display:flex;flex-wrap:wrap;gap:.5rem;margin-block:var(--s3)}
+.lab3d{position:relative;block-size:min(62vh,540px);border:1px solid var(--line);border-radius:28px;overflow:hidden;background:radial-gradient(ellipse at 50% 120%,#3d6bff30,transparent 70%),#ffffff04}
+.lab3d .wc,.t3d .wc{inline-size:100%;opacity:1}.t3d .wc{background:#0b0d14}
+@property --grade{syntax:'<color>';inherits:true;initial-value:#3D6BFF}body{--grade:#3D6BFF;transition:--grade 1.2s var(--ease)}
+.hero{background:url(../images/hero.webp) center/cover no-repeat}
+#pre{position:fixed;inset:0;z-index:100;background:var(--ob);display:grid;place-content:center;justify-items:center;gap:1.4rem;transition:opacity .8s var(--ease),visibility .8s}#pre.out{opacity:0;visibility:hidden}
+#pre path{stroke-dasharray:1;stroke-dashoffset:1;animation:dw 1.4s var(--ease) forwards}@keyframes dw{to{stroke-dashoffset:0}}
+#pre b{font:600 1.1rem Unbounded,sans-serif;letter-spacing:.35em;padding-inline-start:.35em}#pre i{display:block;inline-size:160px;block-size:2px;background:#ffffff1f;border-radius:9px;overflow:hidden}
+#pre u{display:block;block-size:100%;background:linear-gradient(90deg,var(--aurora),var(--cobalt));transform-origin:left;transform:scaleX(0);transition:transform .6s var(--ease)}
+@media(prefers-reduced-motion:reduce){#pre path{stroke-dashoffset:0}}
