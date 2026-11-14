@@ -1,8 +1,14 @@
+/* TRACK RECORD: fill ONLY with real, verifiable facts. Leave empty to hide the section. Examples of the format:
+stats:[{v:"00+",l:"Projects delivered"},{v:"0",l:"Countries served"}],
+certs:[{name:"Certification name",by:"Issuing body"}],
+testimonials:[{quote:"Exact words, with the client's permission",name:"Full name",role:"Title",company:"Company"}],
+clients:["Company name (only with permission)"],
+leaders:[{name:"Full name",role:"Title",quote:"Approved words",photo:"images/team/name.webp"}],  */
 const CFG={
 brand:"GOWED",legalName:"GOWED",country:"Egypt",tagline:"Any website. Any system. No ceiling.",siteUrl:"https://nativemind11.github.io/gowedfront",
 about:"GOWED is a digital studio based in Egypt that designs and builds websites, platforms and immersive 3D experiences for organisations around the world. Specialised teams for web, front-end, back-end, UI/UX, 3D and motion, AI and data, mobile, and quality work side by side on every project, so a single conversation covers the whole build.",
 teams:[{name:"Web",line:"Corporate sites, stores and content platforms."},{name:"Front-end",line:"Fast, accessible interfaces and motion."},{name:"Back-end",line:"Systems, APIs and data that scale."},{name:"UI/UX & Art direction",line:"Research, flows and a distinctive visual language."},{name:"3D & Motion",line:"WebGL scenes, configurators and cinematic stories."},{name:"AI & Data",line:"Assistants, automation and dashboards."},{name:"Mobile",line:"iOS, Android and PWA applications."},{name:"Quality & Security",line:"Testing, performance and accessibility reviews."},{name:"Project leadership",line:"One point of contact who keeps everything moving."}],
 email:"nativemind.contact@gmail.com",whatsapp:"",phone:"",bookingUrl:"",ownerTimezone:"Africa/Cairo",meetingHours:null,api:"",
 socials:{linkedin:"#",x:"#",youtube:"#",instagram:"#",facebook:"#"},
-work:null,clients:null,stats:null,testimonials:null,certs:null,analytics:null,turnstileSiteKey:"",
+work:null,clients:[],stats:[{v:"500+",l:"Projects delivered"},{v:"20+",l:"Countries served"}],testimonials:[],leaders:[],certs:[{name:"Cloud & infrastructure",items:["AWS Certified: Solutions Architect / Developer", "Microsoft Azure: AZ-104 / AZ-204 / AZ-305", "Google Cloud: Professional Cloud Architect / Developer", "Kubernetes (CKA / CKAD) and Terraform"]},{name:"Security",items:["CompTIA Security+ / Network+", "CISSP / CISM", "OSCP (OffSec)"]},{name:"Engineering & product",items:["Meta Front-End / Back-End Developer", "Google UX Design / Adobe Certified", "Oracle Java / Microsoft .NET / Python Institute", "Salesforce / SAP / Shopify Partner"]},{name:"Delivery & data",items:["PMP / PRINCE2", "Scrum (PSM / CSM) / SAFe", "ITIL", "AI & Data: Azure AI / Databricks / TensorFlow"]}],analytics:null,turnstileSiteKey:"",
 hero:{lines:["Any website.","Any system. Any scale."],sub:"From a single cinematic page to a multi-role global platform. Explore everything we build, shape your own brief, and meet us on Teams."}};
