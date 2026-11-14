@@ -1,0 +1,8 @@
+const CFG={
+brand:"GOWED",legalName:"GOWED",country:"Egypt",tagline:"Any website. Any system. No ceiling.",siteUrl:"",
+about:"GOWED is a digital studio based in Egypt that designs and builds websites, platforms and immersive 3D experiences for organisations around the world. Specialised teams for web, front-end, back-end, UI/UX, 3D and motion, AI and data, mobile, and quality work side by side on every project, so a single conversation covers the whole build.",
+teams:[{name:"Web",line:"Corporate sites, stores and content platforms."},{name:"Front-end",line:"Fast, accessible interfaces and motion."},{name:"Back-end",line:"Systems, APIs and data that scale."},{name:"UI/UX & Art direction",line:"Research, flows and a distinctive visual language."},{name:"3D & Motion",line:"WebGL scenes, configurators and cinematic stories."},{name:"AI & Data",line:"Assistants, automation and dashboards."},{name:"Mobile",line:"iOS, Android and PWA applications."},{name:"Quality & Security",line:"Testing, performance and accessibility reviews."},{name:"Project leadership",line:"One point of contact who keeps everything moving."}],
+email:"nativemind.contact@gmail.com",whatsapp:"",phone:"",bookingUrl:"",ownerTimezone:"Africa/Cairo",meetingHours:null,api:"",
+socials:{linkedin:"#",x:"#",youtube:"#",instagram:"#",facebook:"#"},
+work:null,clients:null,stats:null,testimonials:null,certs:null,analytics:null,turnstileSiteKey:"",
+hero:{lines:["Any website.","Any system. Any scale."],sub:"From a single cinematic page to a multi-role global platform. Explore everything we build, shape your own brief, and meet us on Teams."}};
