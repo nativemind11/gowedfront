@@ -100,3 +100,5 @@ h1{font-weight:500}.hero h1{font-size:clamp(2.4rem,5.2vw,4.8rem);max-inline-size
 .clients{display:flex;flex-wrap:wrap;gap:1.2rem 3rem;color:var(--mut);font:600 1.15rem 'Inter Tight';letter-spacing:.03em}
 .cl{list-style:none;padding:0;margin:.8rem 0 0;display:grid;gap:.55rem}.cl li{color:var(--mut);font-size:.93rem;padding-inline-start:1.1rem;position:relative;line-height:1.45}.cl li::before{content:"";position:absolute;inset-inline-start:0;top:.55em;inline-size:5px;block-size:5px;border-radius:50%;background:var(--aurora)}
 .av{inline-size:56px;block-size:56px;border-radius:50%;display:grid;place-items:center;background:#ffffff10;border:1px solid var(--line);font:600 1.2rem 'Inter Tight';margin-block-end:1rem;overflow:hidden}.av img{inline-size:100%;block-size:100%;object-fit:cover}
+
+.av svg{inline-size:100%;block-size:100%;display:block}
