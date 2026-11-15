@@ -102,3 +102,5 @@ h1{font-weight:500}.hero h1{font-size:clamp(2.4rem,5.2vw,4.8rem);max-inline-size
 .av{inline-size:56px;block-size:56px;border-radius:50%;display:grid;place-items:center;background:#ffffff10;border:1px solid var(--line);font:600 1.2rem 'Inter Tight';margin-block-end:1rem;overflow:hidden}.av img{inline-size:100%;block-size:100%;object-fit:cover}
 
 .av svg{inline-size:100%;block-size:100%;display:block}
+
+.hero .wrap{inline-size:100%;justify-self:stretch}
