@@ -1,4 +1,3 @@
-# CULMERA solutions
 User-agent: *
 Allow: /
-Sitemap: https://nativemind11.github.io/gowedfront/sitemap.xml
+Sitemap: https://culmera.example/sitemap.xml

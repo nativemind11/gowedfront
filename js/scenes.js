@@ -1,5 +1,7 @@
-/* CULMERA scenes. Three.js (r128, cdnjs) is loaded on demand, only when a 3D scene is actually shown. */
-window.withThree=function(cb){if(window.THREE)return cb();if(!window._t3){window._t3=[];const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';s.onload=()=>{window._t3.splice(0).forEach(f=>f())};s.onerror=()=>{window._t3=null};document.head.appendChild(s)}window._t3&&window._t3.push(cb)};
+/* CULMERA scenes. Three.js r128 is self-hosted (js/vendor) and loaded on demand, only when a 3D scene is actually shown.
+   Every scene registers a stop() so it can be disposed when the page changes (see sceneCleanup). */
+window._scenes=window._scenes||new Set();window.sceneCleanup=function(){[...window._scenes].forEach(f=>{try{f()}catch(e){}});window._scenes.clear()};
+window.withThree=function(cb){if(window.THREE)return cb();if(!window._t3){window._t3=[];const s=document.createElement('script');s.src='js/vendor/three.min.js';s.onload=()=>{window._t3.splice(0).forEach(f=>f())};s.onerror=()=>{window._t3=null};document.head.appendChild(s)}window._t3&&window._t3.push(cb)};
 window.heroScene=function(cv){
 const idle=window.requestIdleCallback||(f=>setTimeout(f,400));
 idle(()=>withThree(()=>{if(!cv.isConnected)return;init(cv)}),{timeout:1500});
@@ -13,8 +15,8 @@ const vane=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Ve
 const n=200,pa=new Float32Array(n*3);for(let i=0;i<n*3;i++)pa[i]=(Math.random()-.5)*14;const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(pa,3));const pts=new THREE.Points(pg,new THREE.PointsMaterial({size:.022,color:IVORY,transparent:true,opacity:.35}));s.add(pts);
 let mx=0,my=0,dpr=Math.min(devicePixelRatio||1,2),run=false,vis=true,slow=0,last=performance.now(),raf=0;
 const pm=e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5};addEventListener('pointermove',pm,{passive:true});
-const size=()=>{const w=cv.clientWidth||1,h=cv.clientHeight||1;r.setPixelRatio(dpr);r.setSize(w,h,false);c.aspect=w/h;c.updateProjectionMatrix();g.position.x=innerWidth>1000?3:0;g.scale.setScalar(innerWidth>1000?1:.8)};size();addEventListener('resize',size);
-const stop=()=>{run=false;cancelAnimationFrame(raf);io.disconnect();removeEventListener('resize',size);removeEventListener('pointermove',pm);document.removeEventListener('visibilitychange',vc);s.traverse(o=>{o.geometry&&o.geometry.dispose();o.material&&o.material.dispose()});r.dispose()};
+const size=()=>{const w=cv.clientWidth||1,h=cv.clientHeight||1;r.setPixelRatio(dpr);r.setSize(w,h,false);c.aspect=w/h;c.updateProjectionMatrix();g.position.x=innerWidth>1000?(document.documentElement.dir==='rtl'?-3:3):0;g.scale.setScalar(innerWidth>1000?1:.8)};size();addEventListener('resize',size);
+let dead=0;const stop=()=>{if(dead)return;dead=1;run=false;cancelAnimationFrame(raf);io.disconnect();removeEventListener('resize',size);removeEventListener('pointermove',pm);document.removeEventListener('visibilitychange',vc);window._scenes.delete(stop);s.traverse(o=>{o.geometry&&o.geometry.dispose();o.material&&o.material.dispose()});r.dispose();r.forceContextLoss&&r.forceContextLoss()};window._scenes.add(stop);
 const loop=t=>{if(!cv.isConnected){stop();return}if(!run)return;raf=requestAnimationFrame(loop);const dt=t-last;last=t;if(dt>40&&++slow>40&&dpr>1){dpr=1;size()}
 apex.rotation.y+=.0016;core.rotation.y-=.0009;core.rotation.x+=.0005;rs[0].rotation.z+=.0012;rs[1].rotation.z-=.0008;pts.rotation.y+=.0002;
 g.rotation.y+=(mx*.5-g.rotation.y)*.03;g.rotation.x+=(my*.3-g.rotation.x)*.03;c.position.x+=(mx*.6-c.position.x)*.03;c.position.z=9-(window.camP?camP.p:Math.min(scrollY/innerHeight,1))*3;r.render(s,c)};
@@ -43,7 +45,7 @@ const SC=[
 let dpr=Math.min(devicePixelRatio,mob?1.5:2),on=true,slow=0,mx=0,my=0;const last0=performance.now();let last=last0;
 const up=SC[i%8](),size=()=>{const w=cv.clientWidth||1,h=cv.clientHeight||1;r.setPixelRatio(dpr);r.setSize(w,h,false);c.aspect=w/h;c.updateProjectionMatrix()},pm=e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5};
 size();addEventListener('resize',size);if(!mob)addEventListener('pointermove',pm,{passive:true});
-const stop=()=>{on=false;removeEventListener('resize',size);removeEventListener('pointermove',pm);s.traverse(o=>{o.geometry&&o.geometry.dispose();o.material&&o.material.dispose()});r.dispose()};
+let dead=0;const stop=()=>{if(dead)return;dead=1;on=false;removeEventListener('resize',size);removeEventListener('pointermove',pm);window._scenes.delete(stop);s.traverse(o=>{o.geometry&&o.geometry.dispose();o.material&&o.material.dispose()});r.dispose();r.forceContextLoss&&r.forceContextLoss()};window._scenes.add(stop);
 (function loop(now){if(!on)return;if(!cv.isConnected){stop();return}if(!rm)requestAnimationFrame(loop);if(document.hidden)return;
 const dt=now-last;last=now;if(dt>40&&++slow>30&&dpr>1){dpr=1;size()}
 const t=(now-last0)/1000;up(t);g.rotation.y+=(mx*.8-g.rotation.y)*.05;g.rotation.x+=(my*.5-g.rotation.x)*.05;dust.rotation.y=t*.03;r.render(s,c)})(last0);
