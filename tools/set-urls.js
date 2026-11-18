@@ -10,6 +10,6 @@ if (!ok(site) || !ok(api)) { console.error('usage: node tools/set-urls.js <https
 const root = path.join(__dirname, '..'), s = site.replace(/\/$/, '');
 const edit = (f, fn) => { const p = path.join(root, f); fs.writeFileSync(p, fn(fs.readFileSync(p, 'utf8'))); };
 edit('js/config.js', t => t.replace(/siteUrl:"[^"]*"/, `siteUrl:"${s}"`).replace(/api:"[^"]*"/, `api:"${api}"`));
-edit('index.html', t => t.replace(/https:\/\/[^"]*\/images\/og\.jpg/g, s + '/images/og.jpg').replace(/(property="og:url" content=")[^"]*"/, `$1${s}/"`));
+edit('index.html', t => t.replace(/https:\/\/[^"]*\/images\/og(-logo)?\.jpg/g, s + '/images/og-logo.jpg').replace(/(property="og:url" content=")[^"]*"/, `$1${s}/"`));
 require('child_process').execFileSync(process.execPath, [path.join(__dirname, 'build-routes.js')], { stdio: 'inherit' });
 console.log('Done. Remember to add ' + s + ' to ALLOWED_ORIGIN in the API environment.');
