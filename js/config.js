@@ -32,5 +32,5 @@ socials:{linkedin:"",x:"",youtube:"",instagram:"",facebook:""},
 /* Cloudflare Turnstile site key (public). Required for the API in production. */
 turnstileSiteKey:"",
 analytics:null,
-proof:{stats:[{v:"500+",l:"Projects delivered",verified:true,source:"Confirmed by the owner"},{v:"20+",l:"Countries with delivered projects",verified:true,source:"Confirmed by the owner"}],clients:[],testimonials:[],certs:[],leaders:[],caseStudies:[]}
+proof:{stats:[{v:"1500+",l:"Projects delivered",verified:true,source:"Confirmed by the owner"},{v:"45+",l:"Countries with delivered projects",verified:true,source:"Confirmed by the owner"}],clients:[],testimonials:[],certs:[],leaders:[],caseStudies:[]}
 };
