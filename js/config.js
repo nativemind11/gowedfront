@@ -23,7 +23,7 @@
 const CFG={
 brand:"CULMERA",sub:"solutions",legalName:"CULMERA Solutions",country:"Egypt",
 siteUrl:"https://culmera-solutions.com",
-api:"https://api.culmera.example/api/brief",
+api:"https://culmera-api.vercel.app/api/brief",
 /* Supabase (public values only). The publishable key is safe in the browser because every table is protected by Row Level Security. NEVER put the secret or service_role key here. */
 supabase:{url:"https://xxwvkvgkitrjggptlljr.supabase.co",key:"sb_publishable_4fTLep42RDimKd6gFmdsHw_DBpErhNm"},
 email:"info@culmera-solutions.com",phone:"",bookingUrl:"",ownerTimezone:"Africa/Cairo",
@@ -32,7 +32,7 @@ meetingHours:null,
 /* Real profile links only. Empty networks are hidden. */
 socials:{linkedin:"",x:"",youtube:"",instagram:"",facebook:""},
 /* Cloudflare Turnstile site key (public). Required for the API in production. */
-turnstileSiteKey:"",
+turnstileSiteKey:"0x4AAAAAAGK-0Loh50KfHO_U",
 analytics:null,
 proof:{stats:[{v:"1500+",l:"Projects delivered",verified:true,source:"Confirmed by the owner"},{v:"45+",l:"Countries with delivered projects",verified:true,source:"Confirmed by the owner"}],clients:[],testimonials:[],certs:[],leaders:[],caseStudies:[]}
 };
