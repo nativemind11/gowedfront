@@ -117,7 +117,7 @@ with sync_playwright() as p:
     check('brief: review shows everything required is filled', 'Everything required is filled in' in pg.inner_text('#app'))
     pg.screenshot(path=SHOTS + '/brief-review.png', full_page=True)
     pg.click('[data-send]'); pg.wait_for_selector('.ref', timeout=5000)
-    check('brief: success state shows reference, next steps and contact method', pg.inner_text('.ref') == 'BR-ABCD23' and 'What happens next' in pg.inner_text('#app') and 'nativemind.contact@gmail.com' in pg.inner_text('#app'))
+    check('brief: success state shows reference, next steps and contact method', pg.inner_text('.ref') == 'BR-ABCD23' and 'What happens next' in pg.inner_text('#app') and 'info@culmera-solutions.com' in pg.inner_text('#app'))
     check('brief: does not claim a confirmation email when none was sent', 'We have not sent a confirmation email' in pg.inner_text('#app') and 'confirmation email was sent' not in pg.inner_text('#app'))
     payload = json.loads(sent['body'])
     check('brief: payload carries intent, items, slot, timezone', payload['project']['intent'] == 'sell' and payload['items'][0]['slug'] == 'online-store' and payload['timezone'] and payload['meet']['slots'][0]['d'])

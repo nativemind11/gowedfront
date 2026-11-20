@@ -22,9 +22,11 @@
                         verified:true, permission:"approved"}]                                                                  */
 const CFG={
 brand:"CULMERA",sub:"solutions",legalName:"CULMERA Solutions",country:"Egypt",
-siteUrl:"https://culmera.example",
+siteUrl:"https://culmera-solutions.com",
 api:"https://api.culmera.example/api/brief",
-email:"nativemind.contact@gmail.com",whatsapp:"",phone:"",bookingUrl:"",ownerTimezone:"Africa/Cairo",
+/* Supabase (public values only). The publishable key is safe in the browser because every table is protected by Row Level Security. NEVER put the secret or service_role key here. */
+supabase:{url:"https://xxwvkvgkitrjggptlljr.supabase.co",key:"sb_publishable_4fTLep42RDimKd6gFmdsHw_DBpErhNm"},
+email:"info@culmera-solutions.com",phone:"",bookingUrl:"",ownerTimezone:"Africa/Cairo",
 /* Studio hours shown and checked in the brief. Example: {days:[0,1,2,3,4],from:"10:00",to:"18:00"} (0 = Sunday). Must match the API's MEETING_* settings. */
 meetingHours:null,
 /* Real profile links only. Empty networks are hidden. */

@@ -41,7 +41,7 @@ for (const f of text.filter(f => /\.(html|css|js)$/.test(f))) {
   for (const m of t.matchAll(/url\((\.\.\/[^)]+)\)/g)) ok(fs.existsSync(path.join(path.dirname(f), m[1])), `${path.relative(root, f)} references missing ${m[1]}`);
 }
 // 7. only expected external hosts
-const allowed = /^(challenges\.cloudflare\.com|www\.w3\.org|schema\.org|www\.sitemaps\.org|culmera\.example|api\.culmera\.example|wa\.me)$/;
+const allowed = /^(challenges\.cloudflare\.com|www\.w3\.org|schema\.org|www\.sitemaps\.org|culmera\.example|api\.culmera\.example|culmera-solutions\.com|[a-z0-9]+\.supabase\.co)$/;
 for (const f of text.filter(f => /\.(html|js|css)$/.test(f) && !f.includes('catalog.js'))) for (const m of fs.readFileSync(f, 'utf8').matchAll(/https?:\/\/([a-z0-9][a-z0-9.-]*)/gi)) if (!allowed.test(m[1]) && !(CFG.siteUrl + CFG.api).includes(m[1])) fails.push(`unexpected external host ${m[1]} in ${path.relative(root, f)}`);
 ok(!/fonts\.googleapis|fonts\.gstatic/.test(fs.readFileSync(path.join(root, 'index.html'), 'utf8')), 'Google Fonts still requested');
 // 8. every image used is a real file with fallback-friendly attributes

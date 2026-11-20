@@ -27,3 +27,10 @@
 - `node tools/set-urls.js <site> <api>` sets the final addresses everywhere (config, meta tags, sitemap, robots).
 - `node tools/build-routes.js` regenerates `routes.json`, `sitemap.xml`, `robots.txt`.
 - `node tools/validate.js [backend-dir]` runs the static checks (no old URLs, no unverified claims, slug and option parity with the API).
+
+## Phase 0 cleanup (platform build)
+- Deleted `images/people` (AI portraits).
+- No WhatsApp number or button: `whatsapp` removed from config; brief phone label is now "Phone (optional)". Catalogue entries that mention WhatsApp describe services we build for clients and stay.
+- Contact email is `info@culmera-solutions.com` everywhere (config); the old Gmail address is gone.
+- Site address set to https://culmera-solutions.com (config, canonical/Open Graph, sitemap, robots) and a `CNAME` file added for GitHub Pages. The API address is still a placeholder until the Vercel project exists.
+- `supabase.url` and `supabase.key` (publishable key only) added to config for the upcoming portal.
