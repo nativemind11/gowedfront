@@ -296,3 +296,7 @@ input[dir=ltr]{text-align:start}[dir=rtl] input[dir=ltr]{text-align:right}
 .aform{display:grid;gap:1.1rem;max-inline-size:34rem}.aform label{display:grid;gap:.4rem}.aform .two{display:grid;gap:1.1rem;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr))}
 .aform .help{font-size:.85rem;color:var(--steel);margin-block-start:-.6rem}.aform .chk{display:flex;gap:.7rem;align-items:flex-start}.aform .chk input{margin-block-start:.3rem}
 .acct{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}.acct>div{border:1px solid var(--line2);padding:1.4rem}.acct h2{font-size:1.1rem;margin-block-end:.8rem}
+
+/* autosaving brief: the hidden attribute must win over .btn */
+.btn[hidden],#svretry[hidden]{display:none}
+#svrow{min-block-size:2.4rem;display:flex;gap:.8rem;align-items:center;flex-wrap:wrap}

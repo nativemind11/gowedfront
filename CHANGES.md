@@ -45,3 +45,13 @@
 - Header gets Sign in / Your account. Auth pages are noindex (except sign-up and sign-in in the sitemap).
 - `tools/auth-test.py`: 32 browser checks against a mocked Supabase.
 - English only for now; translations come in the languages phase.
+
+## Phase 3, step 2: autosaving brief for signed-in clients
+- Signed-in clients get a 3-step brief (Outcome, Project, Review). Name, email, company and country come from the account, and the meeting is booked in the next step (3.3), so those two steps are not asked again.
+- Every change is saved automatically (about 1.2 s after you stop typing) to `client_briefs` with the user's own token; Row Level Security decides what is allowed. The first change creates one draft; opening the page never creates an empty row. Failed saves are shown honestly ("Not saved yet"), retried a few times, and can be retried with "Save now". A save that the database rejects (the team has moved the brief on) switches to a read-only view instead of looping.
+- Answers are stored as `{v:1, project, refine, items}` using slugs and option values, which are identical in every language. Every value is whitelisted and trimmed both when saving and when loading, so stored data can never inject HTML or unknown types.
+- Submit = status draft -> submitted (the only change a client may make). After submitting, answers can still be edited and are saved; once the team changes the status the brief is read-only and shows its status.
+- This device and the server are reconciled: first time on a device the local catalogue picks are merged with the server draft; after that the server copy wins unless this device has unsaved changes.
+- Visitors keep the existing public form (`/api/brief`) and see an invitation to create an account. Sign-out now also clears the local brief draft and reloads, so nothing stays on a shared computer.
+- New privacy block "Accounts". New strings live in `L.pb` (English only until the languages phase).
+- Tests: `tools/brief-test.py` (43 browser checks against a mock), `tools/auth-test.py` still 32/32. Back end: 23 RLS isolation tests (one new test for the exact query shapes).

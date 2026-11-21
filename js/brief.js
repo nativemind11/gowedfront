@@ -3,7 +3,7 @@ const T0=Date.now(),G=()=>window.GW,C=()=>G().C,$=s=>document.querySelector(s),e
 const STEPS=BL.steps;
 const LANGS="Arabic,English,French,Spanish,German,Italian,Portuguese,Russian,Turkish,Chinese (Simplified),Chinese (Traditional),Japanese,Korean,Hindi,Urdu,Bengali,Persian,Hebrew,Dutch,Swedish,Norwegian,Danish,Finnish,Polish,Czech,Slovak,Hungarian,Romanian,Bulgarian,Greek,Ukrainian,Serbian,Croatian,Slovenian,Lithuanian,Latvian,Estonian,Indonesian,Malay,Thai,Vietnamese,Filipino,Swahili,Amharic,Hausa,Yoruba,Zulu,Afrikaans,Tamil,Telugu,Marathi,Gujarati,Punjabi,Nepali,Sinhala,Kurdish,Pashto,Azerbaijani,Kazakh,Uzbek,Armenian,Georgian,Catalan,Icelandic,Irish,Albanian,Macedonian,Maltese".split(',');
 const B=()=>G().B,ico=(n,w)=>G().ico(n,w);
-let step=1,sent=null,OPEN={},banner=!!(()=>{try{const b=B();return Object.keys(b.items||{}).length||b.you||b.project}catch(e){return 0}})(),busy=false,errs=[],ferr={};
+let acct=null,step=1,sent=null,OPEN={},banner=!!(()=>{try{const b=B();return Object.keys(b.items||{}).length||b.you||b.project}catch(e){return 0}})(),busy=false,errs=[],ferr={};
 const ens=()=>{const b=B();b.project=b.project||{};b.you=b.you||{};b.refine=b.refine||{};b.meet=b.meet||{dur:45};b.meet.slots=b.meet.slots||[{},{},{}];b.meet.dur=b.meet.dur||45};
 const get=p=>p.split('.').reduce((o,k)=>o==null?o:o[k],B()),val=p=>get(p)??'';
 const setP=(p,v)=>{const k=p.split('.'),l=k.pop();let o=B();for(const x of k){if(o[x]==null||typeof o[x]!=='object')o[x]={};o=o[x]}o[l]=v;G().save()};
@@ -53,8 +53,8 @@ function p5(){ens();const h=C().meetingHours,sl=i=>{const s=B().meet.slots[i]||{
 return `<p>${BL.tz}: <strong dir="ltr">${esc(tz())}</strong>. ${BL.studioTz}: <strong dir="ltr">${esc(C().ownerTimezone)}</strong>.${h?` ${BL.hours}: <span dir="ltr">${esc(h.from)}–${esc(h.to)}</span>.`:''}</p>${sel('meet.dur',BL.dur,O.duration)}${sl(0)}<details class="more" data-t="_slots" ${OPEN._slots?'open':''}><summary>${BL.backupMore}</summary>${sl(1)}${sl(2)}</details>${inp('meet.lang',BL.callLang,'text','',80)}${C().bookingUrl?`<a class="btn" href="${esc(C().bookingUrl)}" rel="noopener">${L.cta.book}</a>`:''}<p>${BL.teams}</p>`}
 /* ---------- checks, validation ---------- */
 const hasStart=()=>!!(B().project.intent||Object.keys(B().items).length);
-const checks=()=>{ens();const b=B(),y=b.you,p=b.project,c=BL.checks;return [[c[0],hasStart(),1],...(unsure()?[]:[[c[1],!!(p.goal||'').trim(),2]]),[c[2],!!(y.name||'').trim(),3],[c[3],EM.test(y.email||''),3],[c[4],!!(y.company||'').trim(),3],[c[5],!!(y.country||'').trim(),3],[c[6],!!y.consent,3],[c[7],slots().length>0&&!slotErr(slots()[0]),4]]};
-const need=n=>{ens();const b=B(),y=b.you,p=b.project,e={};
+const checks=()=>{const r=checks0();return acct?r.filter(x=>x[2]<=2):r};const checks0=()=>{ens();const b=B(),y=b.you,p=b.project,c=BL.checks;return [[c[0],hasStart(),1],...(unsure()?[]:[[c[1],!!(p.goal||'').trim(),2]]),[c[2],!!(y.name||'').trim(),3],[c[3],EM.test(y.email||''),3],[c[4],!!(y.company||'').trim(),3],[c[5],!!(y.country||'').trim(),3],[c[6],!!y.consent,3],[c[7],slots().length>0&&!slotErr(slots()[0]),4]]};
+const need=n=>{ens();const b=B(),y=b.you,p=b.project,e={};if(acct&&(n===3||n===4))return e;
 if(n===1){if(!hasStart())e._types=BL.pickNone;else if(p.intent&&p.intent!=='unsure'&&!Object.keys(b.items).length)e._types=BL.pickNone}
 if(n===2&&!unsure()&&!(p.goal||'').trim())e['project.goal']=BL.goalMiss;
 if(n===3){if(!(y.name||'').trim()||y.name.trim().length<2)e['you.name']='Please enter your full name.';if(!EM.test(y.email||''))e['you.email']='Please enter a valid work email.';if(!(y.company||'').trim())e['you.company']='Please enter your company.';if(!(y.country||'').trim()||y.country.trim().length<2)e['you.country']='Please enter your country.';if((y.phone||'').trim()&&!PH.test(y.phone.trim()))e['you.phone']=BL.phoneBad;if(!y.consent)e['you.consent']='Please accept the privacy policy to continue.'}
@@ -69,14 +69,14 @@ function side(){const k=Object.keys(B().items);return `<h3>${BL.mine}</h3>${k.le
 function sumText(ref){ens();const b=B(),y=b.you,p=b.project,gl=(BL.goals.find(g=>g[0]===p.intent)||[])[1]||'',o=[`CULMERA project brief${ref?' '+ref:''}`,'',`Name: ${y.name||''}`,`Email: ${y.email||''}`,`Company: ${y.company||''}${y.role?' ('+y.role+')':''}`,`Country: ${y.country||''}`,...(y.phone?[`Phone: ${y.phone}`]:[]),'',...(gl?[`Starting point: ${gl}`]:[]),`Goal: ${p.goal||''}`,`Launch preference: ${p.launch||''}`,`Budget preference: ${p.budget||''} ${p.currency||''} (a preference, not a commitment)`,'','Types:'];
 if(!Object.keys(b.items).length)o.push('- None chosen yet: discovery conversation recommended');
 for(const [s,i] of Object.entries(b.items)){o.push(`- ${G().S[s]?.name||s}`);const m=Object.entries(i.mods||{});if(m.length)o.push('  Modules: '+m.map(([k,v])=>k+(v===1?' (must)':' (nice)')).join(', '));if(i.threeD)o.push('  3D & motion: '+i.threeD);if(i.text)o.push('  Notes: '+i.text)}
-o.push('','Meeting ('+dur()+' min, visitor timezone '+tz()+'):');slots().forEach(s=>o.push(`- ${s.d} ${s.f}-${s.t}`));o.push('Call language: '+(b.meet.lang||''));return o.join('\n')}
-const rev=()=>{const c=checks(),ok=c.every(x=>x[1]);return `<p>${ok?BL.ok:BL.missing}</p><ul class="m">${c.map(x=>`<li>${x[1]?'✓':'○'} ${esc(x[0])}${x[1]?'':` <button type="button" class="btn" data-step="${x[2]}">${BL.fix}</button>`}</li>`).join('')}</ul><details class="more" data-t="_sum"><summary>${BL.seeFull}</summary><pre class="card cb" dir="auto" style="white-space:pre-wrap">${esc(sumText(''))}</pre><p>${[1,2,3,4].map(i=>`<button type="button" class="btn" data-step="${i}">${BL.edit} ${esc(STEPS[i-1])}</button>`).join(' ')}</p></details>${C().turnstileSiteKey?`<p class="note">${BL.tsHint}</p><div id="ts"></div>`:''}<p class="err" id="err" role="alert">${errs.map(esc).join(' · ')}</p><button type="button" class="btn p big" data-send>${BL.send}</button>`};
+if(!acct){o.push('','Meeting ('+dur()+' min, visitor timezone '+tz()+'):');slots().forEach(s=>o.push(`- ${s.d} ${s.f}-${s.t}`));o.push('Call language: '+(b.meet.lang||''))}return o.join('\n')}
+const rev=()=>{const c=checks(),ok=c.every(x=>x[1]);return `<p>${ok?BL.ok:BL.missing}</p><ul class="m">${c.map(x=>`<li>${x[1]?'✓':'○'} ${esc(x[0])}${x[1]?'':` <button type="button" class="btn" data-step="${x[2]}">${BL.fix}</button>`}</li>`).join('')}</ul><details class="more" data-t="_sum"><summary>${BL.seeFull}</summary><pre class="card cb" dir="auto" style="white-space:pre-wrap">${esc(sumText(''))}</pre><p>${[1,2,3,4].filter(i=>seq().includes(i)).map(i=>`<button type="button" class="btn" data-step="${i}">${BL.edit} ${esc(STEPS[i-1])}</button>`).join(' ')}</p></details>${sendArea()}`};
 /* ---------- result screens ---------- */
 function done(){const r=sent,ref=r.ref||'',em=C().email;const sub=encodeURIComponent(`Project brief ${ref||'(not saved online)'}: ${B().you.company||''}`),body=encodeURIComponent(sumText(ref).slice(0,1500)+'\n\nPlease attach the PDF.');
 const why=r.reason==='offline'?L.offline:r.reason==='config'?L.notConnected:BL.serverErr;
 const acts=`<p style="display:flex;gap:.8rem;flex-wrap:wrap;max-inline-size:none">${r.saved?'':`<button type="button" class="btn p" data-retry>${BL.retry}</button>`}<a class="btn ${r.saved?'p':''}" href="mailto:${esc(em)}?subject=${sub}&body=${body}">${BL.emailBrief}</a> <button type="button" class="btn" data-act="pdf">${BL.pdf}</button> <button type="button" class="btn" data-act="copy">${BL.copy}</button></p><p class="note" id="amsg" aria-live="polite">${r.saved?BL.pdfHint:BL.pdfHintFail}</p>`;
 return `<section class="wrap pad tight hdrline done" style="max-inline-size:960px"><h1 class="h1s" tabindex="-1" id="dh">${r.saved?BL.doneH:BL.failH}</h1>${r.saved?`<p class="lead-p">${BL.doneP}</p><p class="note" style="margin-block-end:.2rem">${BL.refNo}</p><div class="ref" dir="ltr" aria-label="${esc(BL.refNo)} ${esc(ref)}">${esc(ref)}</div><p>${r.client==='sent'?BL.confirmSent:BL.confirmNone}</p><h2 class="h2s">${BL.nextH}</h2><ol class="next">${BL.nextSteps.map(s=>`<li><b>${s[0]}</b>${s[1]}</li>`).join('')}</ol><h2 class="h2s">${BL.contactH}</h2><p>${BL.contactP.replace('{email}',`<a href="mailto:${esc(em)}">${esc(em)}</a>`)}</p>`:`<p class="err errsum" role="alert">${esc(why)} ${esc(L.notSaved)}</p>`}${acts}<button type="button" class="btn" data-reset>${BL.newBrief}</button></section>`}
-function lay(){ens();if(sent)return done();const P=[p1,p3,p4,p5,rev][step-1];return `<section class="wrap pad tight hdrline" id="bp"><h1 class="h1s">${BL.title}</h1>${banner?`<div class="card cb" role="status" style="margin-block-end:1.5rem"><p>${BL.resume}</p><button type="button" class="btn" data-resume>${BL.continue}</button> <button type="button" class="btn" data-reset>${BL.startOver}</button></div>`:''}<div class="bl"><nav class="st" aria-label="${esc(BL.title)}"><ol>${STEPS.map((s,i)=>`<li><button type="button" data-step="${i+1}" class="${step===i+1?'on':''} ${step>i+1?'ok':''}" ${step===i+1?'aria-current="step"':''}><i>${i+1}</i>${esc(s)}</button></li>`).join('')}</ol></nav><div><div class="bprog"><span>${esc(G().fill(BL.stepOf,{n:step,t:STEPS.length}))}</span><div class="meter" role="progressbar" aria-label="${esc(BL.title)}" aria-valuenow="${step}" aria-valuemin="1" aria-valuemax="${STEPS.length}"><i style="inline-size:${step/STEPS.length*100}%"></i></div></div><h2 id="bh" tabindex="-1">${esc(STEPS[step-1])}</h2><p class="why">${BL.why[step-1]}</p>${errBox()}${P()}<p class="row btnrow">${step>1?`<button type="button" class="btn" data-go="-1">${BL.back}</button>`:'<span></span>'}${step<5?`<button type="button" class="btn p" data-go="1">${BL.nextBtn}</button>`:''}</p></div><aside class="sum" id="sum" aria-label="${esc(BL.mine)}">${side()}</aside></div><datalist id="dl-lang">${LANGS.map(l=>`<option value="${l}">`).join('')}</datalist></section>`}
+function lay(){ens();if(sent)return sent.acct?doneAcct():done();const gate=gateView();if(gate)return gate;const P=[p1,p3,p4,p5,rev][step-1];return `<section class="wrap pad tight hdrline" id="bp"><h1 class="h1s">${BL.title}</h1>${top()}${banner&&!signed()?`<div class="card cb" role="status" style="margin-block-end:1.5rem"><p>${BL.resume}</p><button type="button" class="btn" data-resume>${BL.continue}</button> <button type="button" class="btn" data-reset>${BL.startOver}</button></div>`:''}<div class="bl"><nav class="st" aria-label="${esc(BL.title)}"><ol>${seq().map((n,k)=>`<li><button type="button" data-step="${n}" class="${step===n?'on':''} ${step>n?'ok':''}" ${step===n?'aria-current="step"':''}><i>${k+1}</i>${esc(STEPS[n-1])}</button></li>`).join('')}</ol></nav><div><div class="bprog"><span>${esc(G().fill(BL.stepOf,{n:pos()+1,t:seq().length}))}</span><div class="meter" role="progressbar" aria-label="${esc(BL.title)}" aria-valuenow="${pos()+1}" aria-valuemin="1" aria-valuemax="${seq().length}"><i style="inline-size:${(pos()+1)/seq().length*100}%"></i></div></div><h2 id="bh" tabindex="-1">${esc(STEPS[step-1])}</h2><p class="why">${acct&&step===5?L.pb.whyReview:BL.why[step-1]}</p>${errBox()}${P()}<p class="row btnrow">${pos()>0?`<button type="button" class="btn" data-go="-1">${BL.back}</button>`:'<span></span>'}${pos()<seq().length-1?`<button type="button" class="btn p" data-go="1">${BL.nextBtn}</button>`:''}</p></div><aside class="sum" id="sum" aria-label="${esc(BL.mine)}">${side()}</aside></div><datalist id="dl-lang">${LANGS.map(l=>`<option value="${l}">`).join('')}</datalist></section>`}
 const rr=(f=true)=>{const a=$('#app');a.innerHTML=lay();if(f){const h=$('#bh')||$('#dh');h&&h.focus({preventScroll:true})}G().upd();if(step===5&&!sent)tsRender('#ts')};
 /* ---------- Cloudflare Turnstile ---------- */
 let tsId=null;
@@ -102,6 +102,99 @@ busy=false;
 if(res.ok){const n=(res.j.notifications||{});sent={saved:true,ref:res.j.ref,client:n.client};rr();return}
 if(res.reason==='fixable'){errs=[res.error||BL.serverErr];tsReset();rr(false);const e=$('#err');e&&e.scrollIntoView({block:'center'});return}
 sent={saved:false,reason:res.reason};rr()}
+
+/* ---------- signed-in clients: autosaving brief (Phase 3, step 2) ----------
+   Working copy = the same draft object the public wizard uses (G().B). Saved to public.client_briefs through the user's own token,
+   so Row Level Security decides what is allowed. Answers are stored as slugs and option values, which are identical in every language. */
+const AU=()=>window.CulmeraAuth,PB=L.pb,enc=encodeURIComponent,signed=()=>!!(AU()&&AU().has());
+const SYNC='culmera.brief.sync',LOCALES=['en','ar','de','zh','fr','ru'],pickLoc=()=>LOCALES.includes(L.lang)?L.lang:'en';
+const lget=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lset=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+const hash=t=>{let h=5381;for(let i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return String(h)};
+let sv={st:'idle',at:null,t:null,pend:false,flight:false,tries:0};
+const seq=()=>acct?[1,2,5]:[1,2,3,4,5],pos=()=>Math.max(0,seq().indexOf(step));
+/* whitelist + trim: used both when saving and when loading, so stored data is always clean */
+const TS=(v,n)=>typeof v==='string'?v.trim().slice(0,n):'',IN=(v,a)=>typeof v==='string'&&a.includes(v),AIN=(v,a)=>Array.isArray(v)?[...new Set(v.filter(x=>IN(x,a)))]:[];
+function cleanItem(s,i){const t=G().S[s],mods=new Set([...t.core,...t.extra]),o={},m={};
+for(const [k,v] of Object.entries(i.mods||{}))if(mods.has(k)&&(v===1||v===2))m[k]=v;if(Object.keys(m).length)o.mods=m;
+const A=(k,a)=>{const x=AIN(i[k],a);if(x.length)o[k]=x},S=(k,n)=>{const x=TS(i[k],n);if(x)o[k]=x};
+A('users',O.users);if(IN(i.scale,O.scale))o.scale=i.scale;A('have',O.have);S('haveLinks',300);A('integ',O.integ);S('integOther',300);
+const lg=Array.isArray(i.langs)?[...new Set(i.langs.map(x=>TS(x,60)).filter(Boolean))].slice(0,70):[];if(lg.length)o.langs=lg;
+if(i.rtl)o.rtl=true;S('countries',300);if(IN(i.threeD,O.threeD))o.threeD=i.threeD;A('mood',O.mood);['r0','r1','r2'].forEach(k=>S(k,500));S('avoid',300);S('text',2000);return o}
+function clean(a){a=a&&typeof a==='object'?a:{};const p=a.project||{},r=a.refine||{},pr={},rf={};
+if(IN(p.intent,O.intents))pr.intent=p.intent;[['launch',O.launch],['budget',O.budget],['currency',O.currency]].forEach(([k,l])=>{if(IN(p[k],l))pr[k]=p[k]});
+[['goal',2000],['industry',160],['success',400],['systems',400]].forEach(([k,n])=>{const x=TS(p[k],n);if(x)pr[k]=x});const st=TS(String(p.stake??''),4);if(/^[1-9]\d{0,2}$/.test(st))pr.stake=st;
+if(IN(r.who,BL.who.map(x=>x[0])))rf.who=r.who;if(IN(r.scale,O.scale))rf.scale=r.scale;if(IN(r.login,BL.login.map(x=>x[0])))rf.login=r.login;
+const items={};for(const [s,i] of Object.entries(a.items||{}))if(G().S[s]&&i&&typeof i==='object')items[s]=cleanItem(s,i);return{project:pr,refine:rf,items}}
+const toAnswers=()=>{ens();const b=B();return{v:1,...clean({project:b.project,refine:b.refine,items:b.items})}};
+const apply=c=>{const b=B();b.project=c.project;b.refine=c.refine;b.items=c.items;G().rawSave()};
+const merge=(srv,loc)=>({project:{...loc.project,...srv.project},refine:{...loc.refine,...srv.refine},items:{...loc.items,...srv.items}});
+const mark=id=>lset(SYNC,JSON.stringify({id,h:hash(JSON.stringify(toAnswers()))}));
+const fillYou=()=>{if(!acct||!acct.me)return;const b=B();b.you={name:acct.me.name,email:acct.me.email,company:acct.me.company,country:acct.me.country,phone:acct.me.phone||'',consent:true}};
+/* ---------- status line and saving ---------- */
+const svText=()=>sv.st==='saving'?PB.saving:sv.st==='saved'&&sv.at?G().fill(PB.savedAt,{t:new Intl.DateTimeFormat(L.locale,{timeStyle:'short'}).format(sv.at)}):sv.st==='error'?(sv.big?PB.big:PB.notSaved):'';
+function setSv(st,x){sv.st=st;if(st!=='error')sv.big=false;Object.assign(sv,x||{});const e=$('#svst'),b=$('#svretry');if(e)e.textContent=svText();if(b)b.hidden=sv.st!=='error'||!!sv.big}
+function queueSave(){if(!acct||acct.role!=='client'||acct.locked)return;sv.pend=true;clearTimeout(sv.t);sv.t=setTimeout(flush,1200);setSv('saving')}
+async function flush(){if(!acct||acct.role!=='client'||acct.locked||sv.flight||!sv.pend)return;
+const ans=toAnswers(),js=JSON.stringify(ans);if(js.length>190000){sv.pend=false;setSv('error',{big:true});return}
+if(!acct.id&&!Object.keys(ans.items).length&&!Object.keys(ans.project).length&&!Object.keys(ans.refine).length){sv.pend=false;setSv('idle');return}
+sv.flight=true;sv.pend=false;const s=await AU().session();if(!s){sv.flight=false;sv.pend=true;setSv('error');return}
+const body={answers:ans,selected_types:Object.keys(ans.items),locale:pickLoc()},ka=document.hidden&&js.length<60000;
+const r=acct.id?await AU().restW('client_briefs?id=eq.'+enc(acct.id),s,{method:'PATCH',prefer:'return=representation',body,keepalive:ka}):await AU().restW('client_briefs',s,{method:'POST',prefer:'return=representation',body:{client_id:acct.uid,status:'draft',...body},keepalive:ka});
+sv.flight=false;
+if(r.ok&&Array.isArray(r.data)&&r.data[0]){const row=r.data[0];acct.id=row.id;acct.ref=row.ref;acct.status=row.status;lset(SYNC,JSON.stringify({id:row.id,h:hash(js)}));sv.tries=0;sv.zero=0;sv.at=new Date();setSv(sv.pend?'saving':'saved');if(sv.pend)sv.t=setTimeout(flush,300);return}
+if(r.ok){/* nothing updated: the team has moved this brief on, so the database no longer lets the client edit it */sv.zero=(sv.zero||0)+1;sv.pend=false;if(sv.zero>2){setSv('error');return}await initAcct();return}
+sv.pend=true;sv.tries++;setSv('error');if(sv.tries<=4)sv.t=setTimeout(flush,Math.min(30000,2000*2**sv.tries))}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&acct&&sv.pend){clearTimeout(sv.t);flush()}});
+addEventListener('online',()=>{if(acct&&sv.pend){sv.tries=0;flush()}});
+/* ---------- loading the account, the brief, and reconciling with this device ---------- */
+async function initAcct(){const s=await AU().session();if(!s){if(signed()){acct={err:true,uid:null};if($('#bp'))rr(false)}else{acct=null;if(/^#\/?brief/.test(location.hash))location.hash='#/signin'}return}
+const uid=s.user.id,rest=p=>AU().rest(p,s);
+const pr=await rest('profiles?select=full_name,role,status,email&id=eq.'+enc(uid));
+if(!pr.ok||!pr.data[0]){acct={err:true,uid};if($('#bp'))rr(false);return}
+const me=pr.data[0];if(me.status!=='active'){await AU().signOut();location.hash='#/signin';location.reload();return}
+if(me.role!=='client'){acct={uid,role:me.role,staff:true};if($('#bp'))rr(false);return}
+const [cl,br]=await Promise.all([rest('clients?select=company,country,phone&profile_id=eq.'+enc(uid)),rest('client_briefs?select=id,ref,status,answers,updated_at,submitted_at&order=updated_at.desc&limit=1')]);
+if(!br.ok){acct={err:true,uid};if($('#bp'))rr(false);return}
+const c=(cl.ok&&cl.data[0])||{},b0=br.data[0]||null;
+acct={uid,role:'client',me:{name:me.full_name||'',email:me.email||s.user.email||'',company:c.company||'',country:c.country||'',phone:c.phone||''},id:null,ref:null,status:null,locked:false,submittedAt:null};
+if(!G().rawSave){const raw=G().save;G().rawSave=raw;G().save=()=>{raw();queueSave()}}
+ens();fillYou();banner=false;
+const loc=toAnswers(),lh=hash(JSON.stringify(loc)),hasLoc=Object.keys(loc.items).length||loc.project.intent||loc.project.goal;
+let mk=null;try{mk=JSON.parse(lget(SYNC)||'null')}catch(e){}
+if(!b0){if(hasLoc)queueSave()}
+else{acct.id=b0.id;acct.ref=b0.ref;acct.status=b0.status;acct.submittedAt=b0.submitted_at;const srv=clean(b0.answers);
+if(!['draft','submitted'].includes(b0.status)){acct.locked=true;apply(srv);mark(b0.id)}
+else if(mk&&mk.id===b0.id){if(mk.h!==lh)queueSave();else{apply(srv);mark(b0.id)}}
+else if(!hasLoc){apply(srv);mark(b0.id)}
+else{apply(merge(srv,loc));queueSave()}}
+if($('#bp')&&location.hash.replace(/^#\/?/,'')==='brief')rr(false)}
+function startNew(){if(!acct||acct.role!=='client')return;acct.id=null;acct.ref=null;acct.status=null;acct.locked=false;acct.submittedAt=null;sent=null;step=1;ferr={};errs=[];OPEN={};
+const b=B();for(const k of Object.keys(b))delete b[k];b.items={};fillYou();G().rawSave();lset(SYNC,null);sv={st:'idle',at:null,t:null,pend:false,flight:false,tries:0};rr()}
+/* ---------- views ---------- */
+const shell=(h,p,x='')=>`<section class="wrap pad tight hdrline" id="bp" style="max-inline-size:760px"><h1 class="h1s">${esc(BL.title)}</h1><h2 class="h2s" id="bh" tabindex="-1">${esc(h)}</h2>${p?`<p>${p}</p>`:''}${x}</section>`;
+function gateView(){if(!signed())return '';
+if(!acct)return shell(PB.loading,'');
+if(acct.err)return shell(PB.loadErr,'',`<p><button type="button" class="btn p" data-acctretry>${esc(PB.tryAgain)}</button></p>`);
+if(acct.staff)return shell(PB.staffH,esc(G().fill(PB.staffP,{role:L.auth.roles[acct.role]||acct.role})),`<p><a class="btn" href="#/account">${esc(L.auth.account)}</a></p>`);
+if(acct.locked){const em=C().email;return `<section class="wrap pad tight hdrline" id="bp" style="max-inline-size:960px"><h1 class="h1s">${esc(BL.title)}</h1><h2 class="h2s" id="bh" tabindex="-1">${esc(PB.lockedH)}</h2><p>${esc(G().fill(PB.lockedP,{status:L.auth.st[acct.status]||acct.status,email:em}))}</p><div class="ref" dir="ltr">${esc(acct.ref||'')}</div><pre class="card cb" dir="auto" style="white-space:pre-wrap">${esc(sumText(acct.ref||''))}</pre><p><button type="button" class="btn p" data-newbrief>${esc(PB.another)}</button> <a class="btn" href="#/account">${esc(L.auth.account)}</a></p></section>`}
+return ''}
+function top(){if(!signed())return `<div class="card cb" role="note" style="margin-block-end:1.5rem"><h2 class="h2s" style="margin-block-start:0">${esc(PB.hintH)}</h2><p>${esc(PB.hintP)}</p><p><a class="btn p" href="#/signup">${esc(PB.hintUp)}</a> <a class="btn" href="#/signin">${esc(PB.hintIn)}</a></p></div>`;
+if(!acct||acct.role!=='client')return '';
+const d=acct.submittedAt?new Intl.DateTimeFormat(L.locale,{dateStyle:'medium'}).format(new Date(acct.submittedAt)):'';
+return `${acct.status==='submitted'?`<p class="note" role="status">${esc(G().fill(PB.subNote,{d}))}</p>`:''}<p class="note" id="svrow"><span id="svst" role="status" aria-live="polite">${esc(svText())}</span> <button type="button" class="btn" id="svretry" data-svretry ${sv.st==='error'&&!sv.big?'':'hidden'}>${esc(PB.saveNow)}</button></p>`}
+function sendArea(){if(acct&&acct.role==='client')return `<p class="err" id="err" role="alert">${errs.map(esc).join(' · ')}</p>${acct.status==='submitted'?`<p class="note" role="status">${esc(PB.subDone)}</p><p><a class="btn p" href="#/account">${esc(PB.viewAcct)}</a></p>`:`<button type="button" class="btn p big" data-send>${esc(PB.submit)}</button>`}`;
+return `${C().turnstileSiteKey?`<p class="note">${BL.tsHint}</p><div id="ts"></div>`:''}<p class="err" id="err" role="alert">${errs.map(esc).join(' · ')}</p><button type="button" class="btn p big" data-send>${BL.send}</button>`}
+const doneAcct=()=>{const r=sent;return `<section class="wrap pad tight hdrline done" style="max-inline-size:960px"><h1 class="h1s" tabindex="-1" id="dh">${esc(PB.doneH)}</h1><p class="lead-p">${esc(PB.doneP)}</p><p class="note" style="margin-block-end:.2rem">${BL.refNo}</p><div class="ref" dir="ltr" aria-label="${esc(BL.refNo)} ${esc(r.ref)}">${esc(r.ref)}</div><p>${esc(G().fill(PB.doneNext,{email:acct.me.email}))}</p><h2 class="h2s">${BL.nextH}</h2><ol class="next">${PB.nextSteps.map(x=>`<li><b>${esc(x[0])}</b>${esc(x[1])}</li>`).join('')}</ol><h2 class="h2s">${BL.contactH}</h2><p>${BL.contactP.replace('{email}',`<a href="mailto:${esc(C().email)}">${esc(C().email)}</a>`)}</p><p><a class="btn p" href="#/account">${esc(PB.viewAcct)}</a> <button type="button" class="btn" data-newbrief>${esc(PB.another)}</button></p></section>`};
+/* ---------- submit: the only status change a client may make is draft -> submitted ---------- */
+async function submitAcct(btn){errs=[];const c=checks().filter(x=>!x[1]);if(c.length){errs=c.map(x=>x[0]);rr(false);return}
+busy=true;btn.disabled=true;btn.textContent=PB.submitting;clearTimeout(sv.t);while(sv.flight)await new Promise(r=>setTimeout(r,100));
+const ans=toAnswers(),js=JSON.stringify(ans),fail=()=>{busy=false;errs=[PB.submitErr];rr(false);const e=$('#err');e&&e.scrollIntoView({block:'center'})};
+if(js.length>190000){busy=false;errs=[PB.big];rr(false);return}
+const s=await AU().session();if(!s)return fail();const body={answers:ans,selected_types:Object.keys(ans.items),locale:pickLoc()};
+if(!acct.id){const r=await AU().restW('client_briefs',s,{prefer:'return=representation',body:{client_id:acct.uid,status:'draft',...body}});if(!(r.ok&&Array.isArray(r.data)&&r.data[0]))return fail();acct.id=r.data[0].id;acct.ref=r.data[0].ref}
+const r=await AU().restW('client_briefs?id=eq.'+enc(acct.id),s,{method:'PATCH',prefer:'return=representation',body:{...body,status:'submitted'}});
+if(!(r.ok&&Array.isArray(r.data)&&r.data[0]))return fail();
+const row=r.data[0];acct.status=row.status;acct.submittedAt=row.submitted_at;acct.ref=row.ref;sv.pend=false;mark(row.id);busy=false;sent={saved:true,ref:row.ref,acct:true};rr()}
 /* ---------- legal and info pages ---------- */
 const html=(t,b)=>`<section class="wrap pad tight hdrline" style="max-inline-size:900px"><h1 class="h1s">${t}</h1>${b}</section>`;
 const legal=(o)=>{const intro=o.intro.replace('{legal}',C().legalName).replace('{country}',C().country);const mail=`<a href="mailto:${esc(C().email)}">${esc(C().email)}</a>`;
@@ -122,18 +215,19 @@ else{tsReset();const why=res.reason==='offline'?L.offline:res.reason==='config'?
 if(d.act==='pdf'){try{await pdf(sent&&sent.ref)}catch(er){$('#amsg').textContent=BL.pdfErr}return}
 if(d.act==='copy'){try{await navigator.clipboard.writeText(sumText(sent&&sent.ref));$('#amsg').textContent=BL.copied}catch(er){$('#amsg').textContent=BL.copyErr}return}
 if(!$('#bp')&&!sent)return;
+if(d.svretry!==undefined){sv.tries=0;sv.pend=true;flush();return}if(d.newbrief!==undefined){startNew();return}if(d.acctretry!==undefined){acct=null;initAcct();return}
 if(d.goal){const p=B().project;p.intent=d.goal;G().save();delete ferr._types;rr(false);return}
 if(d.ref){const [k,v]=d.ref.split('|'),r=B().refine;r[k]=r[k]===v?'':v;G().save();OPEN._ref=true;rr(false);return}
 if(d.pick){delete ferr._types;const b=B();if(b.items[d.pick])delete b.items[d.pick];else{b.items[d.pick]={};OPEN[d.pick]=true}OPEN._pick=true;G().save();rr(false);return}
 if(d.ms){const a=get(d.ms)||[];setP(d.ms,a.includes(d.v)?a.filter(v=>v!==d.v):[...a,d.v]);rr(false);return}
 if(d.mod){const [s,m]=d.mod.split('|'),it=B().items[s];it.mods=it.mods||{};const v=it.mods[m];if(!v)it.mods[m]=1;else if(v===1)it.mods[m]=2;else delete it.mods[m];G().save();rr(false);return}
 if(d.rmlang){const [s,l]=d.rmlang.split('|'),it=B().items[s];it.langs=(it.langs||[]).filter(v=>v!==l);G().save();rr(false);return}
-if(d.step){go(+d.step);return}if(d.go){go(step+ +d.go);return}
+if(d.step){go(+d.step);return}if(d.go){go(seq()[Math.min(seq().length-1,Math.max(0,pos()+ +d.go))]);return}
 if(d.pkg!==undefined){delete ferr._types;const p=pkgs()[+d.pkg];if(p){const all=p.t.every(x=>B().items[x]);p.t.forEach(x=>{if(all)delete B().items[x];else if(!B().items[x]){B().items[x]={};OPEN[x]=true}});G().save();rr(false);const m=$('#gmsg');m&&(m.textContent=(all?'Removed: ':'Added: ')+p.n)}return}
 if(d.resume!==undefined){banner=false;rr(false);return}
 if(d.retry!==undefined){sent=null;step=5;errs=[];rr();return}
-if(d.reset!==undefined){if(confirm(BL.confirmReset)){const b=B();for(const k of Object.keys(b))delete b[k];b.items={};G().save();sent=null;step=1;ferr={};banner=false;errs=[];OPEN={};rr();G().upd()}return}
-if(d.send!==undefined&&!busy){send(x)}});
+if(d.reset!==undefined){if(confirm(acct?L.pb.confirmClear:BL.confirmReset)){const b=B();for(const k of Object.keys(b))delete b[k];b.items={};if(acct)fillYou();G().save();sent=null;step=1;ferr={};banner=false;errs=[];OPEN={};rr();G().upd()}return}
+if(d.send!==undefined&&!busy){acct&&acct.role==='client'?submitAcct(x):send(x)}});
 const sync=e=>{const t=e.target;if(!$('#bp'))return;if(t.id==='bs'){const q=t.value.toLowerCase();setP('_q',q);document.querySelectorAll('[data-n]').forEach(b=>b.hidden=!!q&&!b.dataset.n.includes(q));return}
 if(t.dataset.lang&&e.type==='change'){const v=t.value.trim();if(v){const it=B().items[t.dataset.lang];it.langs=[...new Set([...(it.langs||[]),v])];G().save();rr(false)}return}
 if(!t.dataset.p)return;setP(t.dataset.p,t.type==='checkbox'?t.checked:t.value);if(ferr[t.dataset.p]&&(t.type==='checkbox'?t.checked:t.value.trim())){delete ferr[t.dataset.p];t.removeAttribute('aria-invalid');const f=t.closest('label');f&&f.querySelectorAll('.fe').forEach(x=>x.remove());if(!Object.keys(ferr).length){const q=$('.errsum');q&&q.remove()}}
@@ -142,6 +236,8 @@ if(t.dataset.cnt)document.getElementById(t.dataset.cnt).textContent=t.value.leng
 if(e.type==='change'&&(t.dataset.p.startsWith('meet.')||t.dataset.p==='project.currency')){rr(false)}else{const s=$('#sum');if(s)s.innerHTML=side()}};
 document.addEventListener('input',sync);document.addEventListener('change',sync);
 document.addEventListener('toggle',e=>{const d=e.target;if(d.dataset&&d.dataset.t)OPEN[d.dataset.t]=d.open},true);
-window.PAGES={brief:()=>{setTimeout(()=>{if(step===5&&!sent)tsRender('#ts')},0);return lay()},'how-we-work':howp,about,contact,privacy:priv,terms};
+window.PAGES={brief:()=>{setTimeout(()=>{if(step===5&&!sent&&!signed())tsRender('#ts')},0);
+if(signed()){const pk=AU().peek();if(acct&&(!pk||acct.uid!==pk.user.id))acct=null;if(sent&&sent.acct){sent=null;step=1}if(!acct||acct.err){acct=null;setTimeout(initAcct,0)}}else{acct=null;if(sent&&sent.acct)sent=null}
+return lay()},'how-we-work':howp,about,contact,privacy:priv,terms};
 window.PAGES.title={brief:BL.title,'how-we-work':L.nav.how,about:L.about.h,contact:LC.h,privacy:L.privacy.h,terms:L.terms.h};
 })();

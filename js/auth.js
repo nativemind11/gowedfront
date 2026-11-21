@@ -18,9 +18,9 @@ const b64u=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-')
 async function pkce(){const v=b64u(crypto.getRandomValues(new Uint8Array(32)));const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));st.set(PK,v);return{code_challenge:b64u(h),code_challenge_method:'s256'}}
 const back=m=>C().siteUrl.replace(/\/$/,'')+'/?auth='+m;
 /* ---------- HTTP ---------- */
-async function api(path,{method='GET',body,token}={}){const c=SB();if(!c.url||!c.key)return{ok:false,status:0,data:{},cfg:true};
-const ac=new AbortController(),t=setTimeout(()=>ac.abort(),15000),h={apikey:c.key,'Content-Type':'application/json'};if(token)h.Authorization='Bearer '+token;
-try{const r=await fetch(c.url+path,{method,signal:ac.signal,headers:h,body:body?JSON.stringify(body):undefined});let d={};try{d=await r.json()}catch(e){}return{ok:r.ok,status:r.status,data:d}}
+async function api(path,{method='GET',body,token,headers,keepalive}={}){const c=SB();if(!c.url||!c.key)return{ok:false,status:0,data:{},cfg:true};
+const ac=new AbortController(),t=setTimeout(()=>ac.abort(),15000),h={apikey:c.key,'Content-Type':'application/json'};if(token)h.Authorization='Bearer '+token;if(headers)Object.assign(h,headers);
+try{const r=await fetch(c.url+path,{method,signal:ac.signal,headers:h,keepalive:!!keepalive,body:body?JSON.stringify(body):undefined});let d={};try{d=await r.json()}catch(e){}return{ok:r.ok,status:r.status,data:d}}
 catch(e){return{ok:false,status:0,data:{},offline:true}}finally{clearTimeout(t)}}
 const why=r=>{if(r.cfg)return A.err.config;if(r.offline)return A.err.offline;const k=(r.data&&(r.data.error_code||r.data.error))||'';
 return({invalid_credentials:A.err.invalid,email_not_confirmed:A.err.unconfirmed,weak_password:A.err.weak,same_password:A.err.same,over_request_rate_limit:A.err.rate,over_email_send_rate_limit:A.err.rate,captcha_failed:A.err.captcha,user_banned:A.err.suspended,otp_expired:A.err.expired,email_address_invalid:A.err.emailBad,validation_failed:A.err.emailBad,signup_disabled:A.err.generic})[k]||(r.status===429?A.err.rate:A.err.generic)};
@@ -32,7 +32,10 @@ async function session(){const s=read();if(!s||!s.access_token)return null;if(s.
 if(!rp)rp=(async()=>{const r=await api('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:{refresh_token:s.refresh_token}});rp=null;
 if(r.ok&&r.data.access_token){setS(r.data);return read()}if(r.status>=400&&r.status<500){st.del(SK);return null}return s.expires_at>Date.now()/1000?s:null})();return rp}
 const rest=async(p,s)=>api('/rest/v1/'+p,{token:s.access_token});
-async function signOut(){const s=read();st.del(SK);if(s)api('/auth/v1/logout',{method:'POST',token:s.access_token});hdr()}
+/* write helper for the portal: restW('client_briefs?id=eq.X',s,{method:'PATCH',body:{...},prefer:'return=representation'}) */
+const restW=async(p,s,o={})=>api('/rest/v1/'+p,{method:o.method||'POST',body:o.body,token:s.access_token,keepalive:o.keepalive,headers:o.prefer?{Prefer:o.prefer}:undefined});
+const has=()=>{const s=read();return !!(s&&s.access_token)},peek=()=>read();
+async function signOut(){const s=read();st.del(SK);st.del('culmera.brief');st.del('culmera.brief.sync');if(s)api('/auth/v1/logout',{method:'POST',token:s.access_token});hdr()}
 async function exchange(){const p=pending;pending=null;const v=st.get(PK);if(!p||!p.code||!v)return{ok:false};
 const r=await api('/auth/v1/token?grant_type=pkce',{method:'POST',body:{auth_code:p.code,code_verifier:v}});st.del(PK);if(r.ok&&r.data.access_token){setS(r.data);return{ok:true}}return{ok:false}}
 /* ---------- Cloudflare Turnstile (own widget; the API forwards the token to Supabase CAPTCHA) ---------- */
@@ -87,7 +90,7 @@ await run(async()=>{const ch=await pkce();const r=await api('/auth/v1/recover?re
 if(r.ok||r.status===404||r.status===400&&!(r.data.error_code==='captcha_failed'||r.data.error_code==='validation_failed')){say(fill(A.rstSent,{email:m}),true)}else say(why(r))})}
 else if(f.id==='fnp'){const a=($('#np')||{}).value||'',c2=($('#np2')||{}).value||'';if(a.length<10||!/[A-Za-z]/.test(a)||!/\d/.test(a)){say(A.err.pwShort);return}if(a!==c2){say(A.err.mismatch);return}
 await run(async()=>{const s=await session();if(!s){say(A.err.expired);return}const r=await api('/auth/v1/user',{method:'PUT',token:s.access_token,body:{password:a}});if(r.ok){say(A.saved,true);setTimeout(()=>{location.hash='#/account'},900)}else say(why(r))})}});
-document.addEventListener('click',e=>{if(e.target.closest('[data-so]')){signOut().then(()=>{location.hash='#/signin'})}});
+document.addEventListener('click',e=>{if(e.target.closest('[data-so]')){signOut().then(()=>{location.hash='#/signin';location.reload()})}});
 /* ---------- header link and search-engine hygiene ---------- */
 function hdr(){const a=$('#acc'),m=$('#mm-acc'),on=!!read();[a,m].forEach(x=>{if(x){x.textContent=on?A.account:A.signIn;x.setAttribute('href',on?'#/account':'#/signin')}})}
 const NOIDX=/^#\/(account|new-password|reset)/;
@@ -95,5 +98,5 @@ function robots(){let m=$('meta[name=robots]');if(NOIDX.test(location.hash)){if(
 addEventListener('hashchange',()=>{robots();hdr()});setTimeout(()=>{robots();hdr()},0);
 window.PAGES=window.PAGES||{};Object.assign(window.PAGES,{signup,signin,reset,'new-password':newpw,account});
 window.PAGES.title=Object.assign(window.PAGES.title||{},{signup:A.upH,signin:A.signIn,reset:A.rstH,'new-password':A.newH,account:A.account});
-window.CulmeraAuth={session,signOut,api,rest};
+window.CulmeraAuth={session,signOut,api,rest,restW,has,peek};
 })();
