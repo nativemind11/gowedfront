@@ -362,3 +362,37 @@ table.tm .btn{padding:.5rem 1rem;min-block-size:40px;font-size:.85rem}
 /* Phase 7: many testimonials: the dots wrap inside the box instead of widening the page */
 .ctl [role=tablist]{flex-wrap:wrap;max-inline-size:100%;row-gap:.2rem}
 @media(max-width:600px){.ctl [role=tab]{inline-size:2.2rem}.ctl .cn{margin-inline-start:0}}
+
+/* ===== Phase 8: language switcher, right-to-left and per-language type ===== */
+.lg{position:relative}
+.lgb{display:inline-flex;align-items:center;gap:.4rem;font:500 .78rem var(--sans);letter-spacing:.06em;color:var(--steel);background:none;border:1px solid var(--line2);padding:.35rem .65rem;border-radius:2px;cursor:pointer;min-block-size:34px}
+.lgb:hover,.lgb[aria-expanded=true]{color:var(--ivory);border-color:var(--steel)}
+.lgb:focus-visible,.lgm button:focus-visible,.mm-lg button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.lgm{position:absolute;inset-inline-end:0;inset-block-start:calc(100% + .5rem);margin:0;padding:.4rem;list-style:none;background:var(--mid);border:1px solid var(--line);box-shadow:0 30px 60px -20px #000;min-inline-size:11rem;z-index:70}
+.lgm[hidden]{display:none}
+.lgm button{display:block;inline-size:100%;text-align:start;background:none;border:0;color:var(--steel);font:400 .95rem var(--sans);padding:.6rem .8rem;cursor:pointer;border-radius:2px}
+.lgm button:hover{background:#ffffff0a;color:var(--ivory)}
+.lgm button[aria-current=true]{color:var(--ivory);box-shadow:inset 3px 0 0 var(--gold)}[dir=rtl] .lgm button[aria-current=true]{box-shadow:inset -3px 0 0 var(--gold)}
+.mm-lg{display:flex;flex-wrap:wrap;gap:.5rem;padding-block-start:1rem}
+.mm-lg button{background:none;border:1px solid var(--line2);color:var(--steel);font:400 .95rem var(--sans);padding:.5rem .9rem;border-radius:2px;cursor:pointer}
+.mm-lg button[aria-current=true]{color:var(--ink);background:var(--ivory);border-color:var(--ivory)}
+@media(max-width:900px){.nav .lg{display:block}.lgb{padding:.3rem .5rem}}
+@media(max-width:600px){.lgb svg{display:none}}
+.vnote{margin-block-start:1rem;max-inline-size:60ch}
+/* right-to-left: things that only exist as physical rules */
+[dir=rtl] .nav a.l::after{transform-origin:right}
+[dir=rtl] .ib svg,[dir=rtl] .arr{transform:scaleX(-1)}
+/* Arabic and Chinese: joined or ideographic scripts must not be letter-spaced or italicised, and they use system fonts (no CDN, no extra download) */
+:lang(ar),:lang(zh){--serif:'Cormorant Garamond',var(--hf);--sans:'Inter',var(--bf)}
+:lang(ar) *,:lang(zh) *{letter-spacing:0!important;font-style:normal}
+:lang(ar){--hf:'Noto Naskh Arabic','Geeza Pro','Traditional Arabic','Segoe UI',Tahoma,'Noto Sans Arabic',serif;--bf:system-ui,'Segoe UI',Tahoma,'Geeza Pro','Noto Sans Arabic','Noto Naskh Arabic',sans-serif}
+:lang(zh){--hf:'Noto Serif CJK SC','Source Han Serif SC','Songti SC','SimSun',serif;--bf:system-ui,'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','Source Han Sans SC',sans-serif}
+:lang(ar) h1,:lang(ar) h2,:lang(ar) h3,:lang(ar) h4{line-height:1.35}
+:lang(zh) h1,:lang(zh) h2,:lang(zh) h3,:lang(zh) h4{line-height:1.3;font-weight:500}
+:lang(ar) body,:lang(ar){line-height:1.9}
+/* numbers, emails, codes and dates stay left-to-right inside right-to-left text */
+[dir=rtl] a[href^="mailto:"],[dir=rtl] [data-ltr],[dir=rtl] input[type=email],[dir=rtl] input[type=tel],[dir=rtl] input[type=url]{direction:ltr;unicode-bidi:isolate}
+[dir=rtl] input[type=email],[dir=rtl] input[type=tel],[dir=rtl] input[type=url]{text-align:right}
+/* long words (German, Russian) wrap instead of breaking the layout */
+h1,h2,h3,h4,.btn,.chip,.card p,.area p,.pr p{overflow-wrap:anywhere}
+:lang(de) p,:lang(nl) p,:lang(ru) p,:lang(fr) p,:lang(pt) p{hyphens:auto}
