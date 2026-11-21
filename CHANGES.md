@@ -83,3 +83,14 @@
 - Hooks: first account view of a client (`registered`), `js/brief.js` after a successful signed-in submit (`brief_submitted`), `js/portal.js` after a booking, a reschedule and a cancel (`meeting`). Nothing blocks or slows the page; a failed notification is never shown as an error.
 - Visitors without an account are not affected: the public form still goes to `/api/brief`, which emails the Founder as before.
 - Tests: new `tools/notify-test.py` (browser, mock Supabase + mock notify API); `tools/team-test.py`, `portal-test.py`, `brief-test.py`, `auth-test.py` still pass; `node tools/validate.js <back>` passes.
+
+## Phase 5 fixes
+- Text that was out of date after Phase 4 is corrected: signed-in staff on the brief and booking pages (and the account fallback) now say their tools are in the team dashboard, not "in a later release".
+- Privacy text ("Who handles it") now says what the notification emails hold and who receives them: name, company, country and the brief reference or call time go to the CULMERA team and, for a client introduced by a partner, to that partner and their director; never the client's email address, phone, answers or notes. **A lawyer must review this wording (see the launch pack).**
+
+## Phase 6: content and launch
+- **Home: "How pricing works"** block (3 steps, no prices, no "best price" claim, one button to the brief). Home order is now: hero, five areas, how an engagement works, selected work (hidden until supplied), pricing, principles, proof, team, leadership, certifications, final call to action. Strings are in `L.pricing` (English only until Phase 8).
+- **Selected work: anonymous "features-only" entries.** `proof.caseStudies` entries may now carry `summary` + `features` (3 or more) instead of `problem` + `solution`. They show only when `verified:true` and `permission:"approved"`; the page prints "A features-only description" and never invents a problem, a result or a client name. Text is escaped. With no approved entry the section, the header link and the route stay hidden (nothing is drawn as a placeholder). **No entry is shipped yet: the owner's feature lists for the two projects are still needed.**
+- `tools/validate.js`: new checks (pricing block has 3 steps and no price; case-study ids unique and valid; a verified entry must be approved; a features-only entry needs a summary and 3+ features; every outcome needs a source; no "later release" text). Proven to fail when a price is put in the pricing block.
+- New `tools/launch-test.py` (browser, 23 checks): pricing block, order, no sideways scroll at 360 px, work section hidden when empty / unverified / too short / no summary, shown when approved, escaped text, no problem/solution invented, no JavaScript errors.
+- No new file to delete by hand; `routes.json` and `sitemap.xml` are unchanged.

@@ -20,6 +20,13 @@ for (const k of ['stats', 'clients', 'testimonials', 'certs', 'leaders', 'caseSt
 for (const k of ['stats', 'clients', 'testimonials', 'certs', 'leaders', 'caseStudies']) if (CFG.proof[k].length) warns.push('proof.' + k + ' has ' + CFG.proof[k].length + ' item(s): they only show when verified:true and permission:"approved" (see js/config.js)');
 if (/\.example/.test(CFG.siteUrl + CFG.api)) warns.push('siteUrl/api are still placeholders: run node tools/set-urls.js <site> <api>');
 for (const [k, v] of Object.entries(CFG.socials)) ok(v === '' || /^https:\/\//.test(v), 'social "' + k + '" must be empty or an https URL (no "#")');
+// 3b. Phase 6: home pricing block (no public prices) and case-study entries
+ok(L.pricing && Array.isArray(L.pricing.steps) && L.pricing.steps.length === 3, 'L.pricing must have exactly 3 steps (home pricing block)');
+{ const t = JSON.stringify(L.pricing || {}); ok(!/[$\u20ac\u00a3]|\b\d[\d,.]*\s?(USD|EUR|EGP|GBP)\b|best price|cheapest|lowest price/i.test(t), 'the pricing block must not show a price or a \"best price\" claim'); }
+{ const ids = (CFG.proof.caseStudies || []).map(x => x && x.id); ok(new Set(ids).size === ids.length, 'duplicate case-study ids');
+  for (const x of CFG.proof.caseStudies || []) { ok(/^[a-z0-9-]+$/.test(x.id || ''), 'case-study id must be lowercase letters, digits and dashes'); if (x.verified === true) ok(x.permission === 'approved', 'case study ' + x.id + ' is verified but not approved'); if (!x.problem && !x.solution) ok(Array.isArray(x.features) && x.features.length >= 3 && !!x.summary, 'features-only case study ' + x.id + ' needs a summary and at least 3 features'); ok(!x.outcomes || x.outcomes.every(o => o && o.source), 'case study ' + x.id + ': every outcome needs a source'); } }
+for (const f of ['js/i18n/en.js']) { const t = fs.readFileSync(path.join(root, f), 'utf8'); ok(!/arrive in a later release/.test(t), 'stale \"later release\" text in ' + f); }
+
 // 4. catalogue <-> groups <-> levels
 const cats = new Set(D.D.cats.map(c => c.slug)), inGroup = L.groups.flatMap(g => g.cats);
 ok(L.groups.length === 5, 'expected 5 public groups');
