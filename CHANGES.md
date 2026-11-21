@@ -77,3 +77,9 @@
 - Needs `supabase/migration-004-team.sql` (back-end repo) and `api/admin.js` (Vercel). No new environment variables.
 - Tests: `tools/team-test.py` (browser, mock), `tools/portal-test.py`, `tools/brief-test.py`, `tools/auth-test.py`.
 - English only for now; strings are in `L.tm`.
+
+## Phase 5: email and protection
+- `js/auth.js`: `CulmeraAuth.notify(event, id)` tells `/api/notify` (derived from the API address in `js/config.js`) after a real event, with only the event name and a record id plus the user's token. A small queue in `localStorage` key `culmera.notify` (ids only, no personal data) retries after a network or server failure on the next page load; items are dropped after 3 days, 6 tries, or when the server answers 400/401/403/404/409. `culmera.reg.<user>` remembers that a new account was already reported.
+- Hooks: first account view of a client (`registered`), `js/brief.js` after a successful signed-in submit (`brief_submitted`), `js/portal.js` after a booking, a reschedule and a cancel (`meeting`). Nothing blocks or slows the page; a failed notification is never shown as an error.
+- Visitors without an account are not affected: the public form still goes to `/api/brief`, which emails the Founder as before.
+- Tests: new `tools/notify-test.py` (browser, mock Supabase + mock notify API); `tools/team-test.py`, `portal-test.py`, `brief-test.py`, `auth-test.py` still pass; `node tools/validate.js <back>` passes.
