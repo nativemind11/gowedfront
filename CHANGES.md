@@ -34,3 +34,14 @@
 - Contact email is `info@culmera-solutions.com` everywhere (config); the old Gmail address is gone.
 - Site address set to https://culmera-solutions.com (config, canonical/Open Graph, sitemap, robots) and a `CNAME` file added for GitHub Pages. The API address is still a placeholder until the Vercel project exists.
 - `supabase.url` and `supabase.key` (publishable key only) added to config for the upcoming portal.
+
+## Phase 1, step 1
+- Removed the leftover images/people folder (AI portraits) that was still in the repository copy. Nothing referenced it.
+
+## Phase 3, step 1: accounts
+- New `js/auth.js`: sign-up, sign-in, password reset, new password, account page. No library: Supabase Auth over HTTPS with the publishable key only, PKCE flow (email links return to `<site>/?auth=confirm|recovery&code=...`, which the hash router cannot break), automatic token refresh, sign-out.
+- Sign-up sends `full_name, company, country, phone, partner_code, locale` and never a role. `?ref=CODE` pre-fills the partner code (editable). Turnstile token is forwarded for Supabase CAPTCHA.
+- Account page shows brief status, meeting, details and next steps; staff roles see a short note until Phase 4. Suspended users are signed out.
+- Header gets Sign in / Your account. Auth pages are noindex (except sign-up and sign-in in the sitemap).
+- `tools/auth-test.py`: 32 browser checks against a mocked Supabase.
+- English only for now; translations come in the languages phase.
