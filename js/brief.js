@@ -194,7 +194,7 @@ const s=await AU().session();if(!s)return fail();const body={answers:ans,selecte
 if(!acct.id){const r=await AU().restW('client_briefs',s,{prefer:'return=representation',body:{client_id:acct.uid,status:'draft',...body}});if(!(r.ok&&Array.isArray(r.data)&&r.data[0]))return fail();acct.id=r.data[0].id;acct.ref=r.data[0].ref}
 const r=await AU().restW('client_briefs?id=eq.'+enc(acct.id),s,{method:'PATCH',prefer:'return=representation',body:{...body,status:'submitted'}});
 if(!(r.ok&&Array.isArray(r.data)&&r.data[0]))return fail();
-const row=r.data[0];acct.status=row.status;acct.submittedAt=row.submitted_at;acct.ref=row.ref;sv.pend=false;mark(row.id);busy=false;sent={saved:true,ref:row.ref,acct:true};rr()}
+const row=r.data[0];acct.status=row.status;acct.submittedAt=row.submitted_at;acct.ref=row.ref;sv.pend=false;mark(row.id);busy=false;sent={saved:true,ref:row.ref,acct:true};try{AU().notify&&AU().notify('brief_submitted',row.id)}catch(e){}rr()}
 /* ---------- legal and info pages ---------- */
 const html=(t,b)=>`<section class="wrap pad tight hdrline" style="max-inline-size:900px"><h1 class="h1s">${t}</h1>${b}</section>`;
 const legal=(o)=>{const intro=o.intro.replace('{legal}',C().legalName).replace('{country}',C().country);const mail=`<a href="mailto:${esc(C().email)}">${esc(C().email)}</a>`;

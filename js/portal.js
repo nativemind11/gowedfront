@@ -92,13 +92,13 @@ const c=S.ctx,x=S.sel,btn=$('#mtbtn');S.busy=true;btn.disabled=true;btn.textCont
 const s=await AU().session();if(!s)return fail(M.errAuth);
 const body={starts_at:mk(x.d,+x.h,+x.m).toISOString(),timezone:tz(),duration_min:+x.dur,status:'requested',note:(x.note||'').trim()||null};
 const r=c.active?await AU().restW('meetings?id=eq.'+enc(c.active.id),s,{method:'PATCH',prefer:'return=representation',body}):await AU().restW('meetings',s,{prefer:'return=representation',body:{brief_id:c.brief.id,client_id:c.uid,...body}});
-if(r.ok&&Array.isArray(r.data)&&r.data[0]){S.busy=false;S.msg=c.active?M.okMoved:M.okBooked;S.ok=true;S.edit=false;S.ask=false;await load(true);return}
+if(r.ok&&Array.isArray(r.data)&&r.data[0]){try{AU().notify&&AU().notify('meeting',r.data[0].id)}catch(e){}S.busy=false;S.msg=c.active?M.okMoved:M.okBooked;S.ok=true;S.edit=false;S.ask=false;await load(true);return}
 if(r.ok){/* zero rows: the team moved this meeting on */S.busy=false;S.msg=M.errChanged;S.ok=false;S.edit=false;await load(true);return}
 if(dup(r)){S.busy=false;S.msg=M.errDup;S.ok=false;S.edit=false;await load(true);return}
 fail(why(r))}
 async function cancel(){if(S.busy||!S.ctx||!S.ctx.active)return;S.busy=true;const s=await AU().session();if(!s){S.busy=false;S.msg=M.errAuth;S.ok=false;paint();return}
 const r=await AU().restW('meetings?id=eq.'+enc(S.ctx.active.id),s,{method:'PATCH',prefer:'return=representation',body:{status:'cancelled'}});S.busy=false;S.ask=false;
-if(r.ok&&Array.isArray(r.data)&&r.data[0]){S.msg=M.okCancelled;S.ok=true;S.edit=false;S.sel=fresh().sel;await load(true);return}
+if(r.ok&&Array.isArray(r.data)&&r.data[0]){try{AU().notify&&AU().notify('meeting',r.data[0].id)}catch(e){}S.msg=M.okCancelled;S.ok=true;S.edit=false;S.sel=fresh().sel;await load(true);return}
 S.msg=r.ok?M.errChanged:why(r);S.ok=false;if(r.ok)await load(true);else paint()}
 /* ---------- events ---------- */
 function move(dt){const t=new Date(),a=new Date(t.getFullYear(),t.getMonth(),t.getDate()),l=new Date(latest());if(dt<a)dt=a;if(dt>l)dt=new Date(l.getFullYear(),l.getMonth(),l.getDate());S.fd=key(dt);S.view={y:dt.getFullYear(),m:dt.getMonth()};S.focus='[data-day="'+S.fd+'"]';paint()}
