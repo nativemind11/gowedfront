@@ -352,3 +352,13 @@ table.tm .btn{padding:.5rem 1rem;min-block-size:40px;font-size:.85rem}
 .showgrid{grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr))}
 .card.show .cardart{border-block-end:1px solid var(--line)}.card.show .cb{padding:1.1rem 1.2rem 1.3rem}.card.show h3{margin-block:.5rem .4rem}
 .showgrid+.note{margin-block-start:1.5rem}
+
+/* Phase 7: testimonial rating and context line */
+.stars{position:relative;display:inline-block;font-size:1.15rem;letter-spacing:.12em;line-height:1;margin-block-end:.7rem;white-space:nowrap}
+.stars .sb{color:var(--line2)}
+.stars .sf{position:absolute;inset-block-start:0;inset-inline-start:0;overflow:hidden;color:var(--gold);white-space:nowrap}
+.feat figcaption .ctx{display:block;margin-block-start:.15rem;font-size:.85rem;letter-spacing:.04em}
+.feat figcaption{display:block}
+/* Phase 7: many testimonials: the dots wrap inside the box instead of widening the page */
+.ctl [role=tablist]{flex-wrap:wrap;max-inline-size:100%;row-gap:.2rem}
+@media(max-width:600px){.ctl [role=tab]{inline-size:2.2rem}.ctl .cn{margin-inline-start:0}}

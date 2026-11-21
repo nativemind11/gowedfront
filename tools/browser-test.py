@@ -65,8 +65,8 @@ with sync_playwright() as p:
     for bad in ['Trusted by', 'Certif', 'Testimonials']:
         check(f'home: no unverified text "{bad}"', bad not in body)
     check('home: owner-confirmed figures shown with plain labels', pg.locator('.sband .stat').count() == 2 and 'Projects delivered' in body and 'Countries with delivered projects' in body)
-    check('home: neutral client-feedback line instead of placeholders', 'Client feedback available on request' in body)
-    check('home: no portraits/images of people or client logos', pg.locator('.pf img, .trust img, .mono').count() == 0)
+    check('home: the 12 approved client testimonials are shown (Phase 7), no placeholder line', pg.locator('#fq figure').count() == 12 and 'Client feedback available on request' not in body)
+    check('home: no portraits/images of people or client logos (monograms only)', pg.locator('.pf img, .trust img').count() == 0)
     check('home: case-study section hidden', pg.locator('#cs-h').count() == 0 and pg.locator('a[href^="#/work"]').count() == 0)
     check('home: brand line kept as secondary line only', pg.locator('.brandline').inner_text() == 'Any website. Any system. No ceiling.' and 'No ceiling' not in pg.inner_text('h1'))
     check('home: preloader gone within 1.2s', pg.wait_for_function('!document.getElementById("pre")', timeout=1200) is not None)

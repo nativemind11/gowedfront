@@ -104,3 +104,11 @@
 - Removed the "Budget range" and "Currency" fields from the brief (form, summary text, answer whitelist). No price or budget is asked or shown anywhere.
 - Timing options are now 5, 7, 10, 20 and 30 days (was ASAP / 1-3 months / 3-6 months / Flexible). Old saved answers with budget/currency are dropped by the whitelist on load.
 - Privacy text and brief intro no longer mention budget.
+
+## Phase 7: client testimonials
+- 12 client opinions from "CULMERA Client Voices" entered in `proof.testimonials` (js/config.js). The owner confirmed the data in the chat (names, roles, companies, wording and ratings) on 2026-11-21; `approvedOn` records it. Display mode: full name, role and company. The "draft / not verified" notice printed in the PDF is not published. The PDF's Gmail address is ignored.
+- Ratings are shown one by one (half stars supported, e.g. 4.5 of 5). No average or total rating anywhere; no Review/AggregateRating data.
+- Component: `displayMode` full | first | anonymous. Anonymous never prints the name, company or role. Photos only when `photoReal:true` in full mode; otherwise a monogram. Carousel with 2+ entries (pause control, reduced motion respected); dots wrap on small screens.
+- `tools/validate.js`: fails if an unverified/unapproved entry is in the file, if rating, displayMode, approvedOn or id are wrong, if a quote carries a price or percentage, or if Review/AggregateRating data appears.
+- New `tools/testimonials-test.py` (hidden when empty / unverified, shown when approved, anonymous never reveals the name, escaped text, 360 and 1280 px, RTL preview). Screenshots in /home/claude/shots.
+- No database change and no back-end change: no migration for Phase 7 (next migration number is still 006, for Phase 8 languages).

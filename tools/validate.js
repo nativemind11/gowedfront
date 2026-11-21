@@ -20,6 +20,20 @@ for (const k of ['stats', 'clients', 'testimonials', 'certs', 'leaders', 'caseSt
 for (const k of ['stats', 'clients', 'testimonials', 'certs', 'leaders', 'caseStudies']) if (CFG.proof[k].length) warns.push('proof.' + k + ' has ' + CFG.proof[k].length + ' item(s): they only show when verified:true and permission:"approved" (see js/config.js)');
 if (/\.example/.test(CFG.siteUrl + CFG.api)) warns.push('siteUrl/api are still placeholders: run node tools/set-urls.js <site> <api>');
 for (const [k, v] of Object.entries(CFG.socials)) ok(v === '' || /^https:\/\//.test(v), 'social "' + k + '" must be empty or an https URL (no "#")');
+// 3a. Phase 7: testimonials. Only confirmed entries may be in the file; unconfirmed ones must not be there at all.
+{ const T = CFG.proof.testimonials || [], ids = T.map(x => x && x.id);
+  ok(new Set(ids).size === ids.length, 'duplicate testimonial ids');
+  for (const x of T) { const n = x && x.id || '?';
+    ok(x && /^[a-z0-9-]+$/.test(x.id || ''), 'testimonial id must be lowercase letters, digits and dashes (' + n + ')');
+    ok(x && x.verified === true && x.permission === 'approved', 'testimonial ' + n + ' is not verified and approved: remove it from js/config.js (unconfirmed entries must not be in the file)');
+    ok(x && typeof x.quote === 'string' && x.quote.trim().length >= 20 && x.quote.length <= 600, 'testimonial ' + n + ' needs a quote of 20 to 600 characters');
+    ok(x && ['full', 'first', 'anonymous'].includes(x.displayMode), 'testimonial ' + n + ' needs displayMode full, first or anonymous');
+    if (x && x.displayMode !== 'anonymous') ok(x.name && x.name.trim(), 'testimonial ' + n + ' needs a name unless it is anonymous');
+    if (x && x.displayMode === 'anonymous') ok(!x.name && !x.company, 'anonymous testimonial ' + n + ' must not carry a name or company');
+    ok(x && typeof x.rating === 'number' && x.rating >= 1 && x.rating <= 5 && Math.round(x.rating * 2) === x.rating * 2, 'testimonial ' + n + ' rating must be 1 to 5 in steps of 0.5');
+    ok(x && /^\d{4}-\d{2}-\d{2}$/.test(x.approvedOn || ''), 'testimonial ' + n + ' needs approvedOn (YYYY-MM-DD)');
+    ok(!/[$\u20ac\u00a3]|\b\d[\d,.]*\s?(USD|EUR|EGP|GBP)\b|\b\d+\s?%/.test(x && x.quote || ''), 'testimonial ' + n + ' quote contains a price or a percentage claim'); }
+  for (const f of ['index.html', 'js/app.js']) { const t = fs.readFileSync(path.join(root, f), 'utf8'); ok(!/AggregateRating|"@type"\s*:\s*"Review"|averageRating|ratingValue/.test(t), 'no Review/AggregateRating data or average rating allowed in ' + f); } }
 // 3b. Phase 6: home pricing block (no public prices) and case-study entries
 ok(L.pricing && Array.isArray(L.pricing.steps) && L.pricing.steps.length === 3, 'L.pricing must have exactly 3 steps (home pricing block)');
 { const t = JSON.stringify(L.pricing || {}); ok(!/[$\u20ac\u00a3]|\b\d[\d,.]*\s?(USD|EUR|EGP|GBP)\b|best price|cheapest|lowest price/i.test(t), 'the pricing block must not show a price or a \"best price\" claim'); }
