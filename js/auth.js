@@ -4,7 +4,7 @@
    Redirect target is always CFG.siteUrl, which must be listed under Supabase > Auth > URL Configuration. */
 (()=>{
 const A=L.auth,$=s=>document.querySelector(s),G=()=>window.GW,C=()=>G().C,esc=s=>G().esc(s),fill=(s,o)=>G().fill(s,o);
-const SK='culmera.session',PK='culmera.pkce',RK='culmera.ref';
+const SK='culmera.session',PK='culmera.pkce',RK='culmera.ref',IK='culmera.invite';
 const st={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
 const EM=/^[^@\s]+@[^@\s]+\.[^@\s]+$/,SB=()=>C().supabase||{};
 /* ---------- boot: ?ref=CODE (pre-fills sign-up) and ?code= (PKCE return from an email link) ---------- */
@@ -27,6 +27,12 @@ return({invalid_credentials:A.err.invalid,email_not_confirmed:A.err.unconfirmed,
 /* ---------- session (stored in this browser only; refreshed automatically) ---------- */
 const read=()=>{try{return JSON.parse(st.get(SK)||'null')}catch(e){return null}};
 const setS=d=>st.set(SK,JSON.stringify({access_token:d.access_token,refresh_token:d.refresh_token,expires_at:d.expires_at||Math.floor(Date.now()/1000)+(d.expires_in||3600),user:{id:d.user&&d.user.id,email:d.user&&d.user.email}}));
+/* invitation link (Phase 4): admin invitations cannot use PKCE, so Supabase returns the tokens in the URL fragment. Read them once,
+   store the session, remove them from the address bar and send the invited person to choose a password. */
+if(/^#access_token=/.test(location.hash)){const h=new URLSearchParams(location.hash.slice(1));let to='#/signin';
+try{const at=h.get('access_token'),rt=h.get('refresh_token');if(h.get('type')==='invite'&&at&&rt){const j=JSON.parse(atob(at.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+if(j.sub){setS({access_token:at,refresh_token:rt,expires_at:Number(h.get('expires_at'))||undefined,expires_in:Number(h.get('expires_in'))||3600,user:{id:j.sub,email:j.email}});st.set(IK,'1');to='#/new-password'}}}catch(e){}
+history.replaceState(null,'',location.pathname+to)}
 let rp=null;
 async function session(){const s=read();if(!s||!s.access_token)return null;if(s.expires_at-60>Date.now()/1000)return s;
 if(!rp)rp=(async()=>{const r=await api('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:{refresh_token:s.refresh_token}});rp=null;
@@ -57,7 +63,8 @@ const signin=()=>{setTimeout(()=>ts('#ats'),0);const n=notice;notice='';
 return page(A.signIn,`<p class="lead-p">${esc(A.inLead)}</p><form class="cform aform" id="fin" novalidate>${fld('ie',A.email,{t:'email',ltr:1,ac:'email'})}${fld('ip',A.password,{t:'password',ac:'current-password',max:72})}${C().turnstileSiteKey?'<div id="ats"></div>':''}<p id="am" role="alert" aria-live="polite" class="note" style="color:#f0a3a3">${esc(n)}</p><p><button class="btn p" type="submit" id="ib">${esc(A.signIn)}</button></p></form><p>${lnk('#/reset',A.forgot)}</p><p>${esc(A.noAcct)} ${lnk('#/signup',A.upH)}</p>`)};
 const reset=()=>{setTimeout(()=>ts('#ats'),0);return page(A.rstH,`<p class="lead-p">${esc(A.rstLead)}</p><form class="cform aform" id="frs" novalidate>${fld('re',A.email,{t:'email',ltr:1,ac:'email'})}${C().turnstileSiteKey?'<div id="ats"></div>':''}${msg()}<p><button class="btn p" type="submit" id="rb">${esc(A.rstSend)}</button></p></form><p>${lnk('#/signin',A.signIn)}</p>`)};
 const newpw=()=>{setTimeout(async()=>{if(pending){const r=await exchange();if(!r.ok){const a=$('#app');if(a&&location.hash==='#/new-password')a.innerHTML=page(A.newH,`<p role="alert">${esc(A.err.expired)}</p><p>${lnk('#/reset',A.rstH)}</p>`)}}},0);
-return page(A.newH,`<form class="cform aform" id="fnp" novalidate>${fld('np',A.newPw,{t:'password',ac:'new-password',max:72,h:A.pwHelp})}${fld('np2',A.newPw2,{t:'password',ac:'new-password',max:72})}${msg()}<p><button class="btn p" type="submit">${esc(A.save)}</button></p></form>`)};
+const inv=st.get(IK)==='1',TM=L.tm;
+return page(inv?TM.inviteH:A.newH,`${inv?`<p class="lead-p">${esc(TM.inviteP)}</p>`:''}<form class="cform aform" id="fnp" novalidate>${inv?fld('np0',A.name,{ac:'name',max:120}):''}${fld('np',A.newPw,{t:'password',ac:'new-password',max:72,h:A.pwHelp})}${fld('np2',A.newPw2,{t:'password',ac:'new-password',max:72})}${msg()}<p><button class="btn p" type="submit">${esc(A.save)}</button></p></form>`)};
 const dt=(s,z)=>{try{return new Intl.DateTimeFormat(L.locale,{dateStyle:'full',timeStyle:'short',timeZone:z||undefined}).format(new Date(s))}catch(e){return s}};
 const account=()=>{setTimeout(fillAccount,0);return page(A.account,`<div id="acct" aria-live="polite"><p>${esc(pending?A.confH:A.loading)}</p></div>`,980)};
 async function fillAccount(){const box=$('#acct');if(!box)return;let ok=true;
@@ -67,6 +74,7 @@ const [p,c]=await Promise.all([rest('profiles?select=full_name,role,status,email
 if(!$('#acct'))return;const pr=p.ok&&p.data[0];
 if(!pr){$('#acct').innerHTML=`<p role="alert">${esc(A.loadErr)}</p>`;return}
 if(pr.status!=='active'){await signOut();notice=A.err.suspended;location.hash='#/signin';return}
+if(pr.role!=='client'){location.replace('#/team');return}
 const name=pr.full_name||pr.email||'';let h=`<p class="lead-p">${esc(fill(A.hi,{name}))}</p>`;
 if(pr.role!=='client'){h+=`<p>${esc(fill(A.staff,{role:A.roles[pr.role]||pr.role}))}</p>`}
 else{const cl=c.ok&&c.data[0]||{},[b,m]=await Promise.all([rest('client_briefs?select=ref,status,updated_at&order=updated_at.desc&limit=1',s),rest('meetings?select=id,starts_at,timezone,duration_min,status&status=neq.cancelled&order=starts_at.desc&limit=1',s)]);if(!$('#acct'))return;
@@ -89,11 +97,11 @@ else if(f.id==='frs'){const m=g('re');if(!EM.test(m)){say(A.err.emailBad);return
 await run(async()=>{const ch=await pkce();const r=await api('/auth/v1/recover?redirect_to='+encodeURIComponent(back('recovery')),{method:'POST',body:{email:m,...ch,...sec()}});
 if(r.ok||r.status===404||r.status===400&&!(r.data.error_code==='captcha_failed'||r.data.error_code==='validation_failed')){say(fill(A.rstSent,{email:m}),true)}else say(why(r))})}
 else if(f.id==='fnp'){const a=($('#np')||{}).value||'',c2=($('#np2')||{}).value||'';if(a.length<10||!/[A-Za-z]/.test(a)||!/\d/.test(a)){say(A.err.pwShort);return}if(a!==c2){say(A.err.mismatch);return}
-await run(async()=>{const s=await session();if(!s){say(A.err.expired);return}const r=await api('/auth/v1/user',{method:'PUT',token:s.access_token,body:{password:a}});if(r.ok){say(A.saved,true);setTimeout(()=>{location.hash='#/account'},900)}else say(why(r))})}});
+await run(async()=>{const s=await session();if(!s){say(A.err.expired);return}const r=await api('/auth/v1/user',{method:'PUT',token:s.access_token,body:{password:a}});if(r.ok){const nn=g('np0');if(st.get(IK)==='1'&&nn.length>=2)await restW('profiles?id=eq.'+encodeURIComponent(s.user.id),s,{method:'PATCH',body:{full_name:nn.slice(0,120)}});st.del(IK);say(A.saved,true);setTimeout(()=>{location.hash='#/account'},900)}else say(why(r))})}});
 document.addEventListener('click',e=>{if(e.target.closest('[data-so]')){signOut().then(()=>{location.hash='#/signin';location.reload()})}});
 /* ---------- header link and search-engine hygiene ---------- */
 function hdr(){const a=$('#acc'),m=$('#mm-acc'),on=!!read();[a,m].forEach(x=>{if(x){x.textContent=on?A.account:A.signIn;x.setAttribute('href',on?'#/account':'#/signin')}})}
-const NOIDX=/^#\/(account|meeting|new-password|reset)/;
+const NOIDX=/^#\/(account|meeting|team|new-password|reset)/;
 function robots(){let m=$('meta[name=robots]');if(NOIDX.test(location.hash)){if(!m){m=document.createElement('meta');m.name='robots';document.head.appendChild(m)}m.content='noindex,nofollow'}else if(m)m.remove()}
 addEventListener('hashchange',()=>{robots();hdr()});setTimeout(()=>{robots();hdr()},0);
 window.PAGES=window.PAGES||{};Object.assign(window.PAGES,{signup,signin,reset,'new-password':newpw,account});

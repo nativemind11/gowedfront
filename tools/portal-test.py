@@ -198,7 +198,7 @@ with sync_playwright() as p:
     reset(briefs=[brief('in_review')]); open_account(); ok(pg.locator('.tl li.dn').count() == 2 and 'In review' in pg.inner_text('.tl li.nw'), 'in review: two completed steps, current is In review')
     reset(meetings=[{'id': 'm9', 'brief_id': 'b1', 'starts_at': '2030-01-01T10:00:00+00:00', 'timezone': 'UTC', 'duration_min': 30, 'status': 'done', 'note': None}]); open_account(); ok(pg.locator('#acct a[href="#/meeting"]').count() == 0 and 'Done' in pg.inner_text('#acct'), 'a done meeting has no manage button')
     reset(meetings=[{'id': 'm9', 'brief_id': 'b1', 'starts_at': '2030-01-01T10:00:00+00:00', 'timezone': 'UTC', 'duration_min': 30, 'status': 'done', 'note': None}]); open_meeting(); ok('This call has taken place' in pg.inner_text('#mt') and pg.locator('.cal').count() == 0, 'after a done call the page does not offer another booking')
-    reset(role='partner'); pg.goto(BASE + '#/account'); pg.reload(); pg.wait_for_selector('#acct .lead-p', timeout=5000); w(500); ok(pg.locator('.tl').count() == 0 and pg.locator('#dr').count() == 0, 'staff account page has no client timeline or data requests')
+    reset(role='partner'); pg.goto(BASE + '#/account'); pg.reload(); w(1200); ok('#/team' in pg.url and pg.locator('.tl').count() == 0 and pg.locator('#dr').count() == 0, 'staff opening the account page go to their dashboard (no client timeline or data requests)')
 
     # 11 data requests
     reset(); open_account(); n = len(calls); pg.click('[data-dr=export]'); pg.wait_for_selector('text=Your request is recorded', timeout=4000); wr = writes(n, 'data_requests')

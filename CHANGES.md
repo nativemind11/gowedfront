@@ -65,3 +65,15 @@
 - Floating "Start your project brief" button is hidden on the booking and account pages.
 - Needs `supabase/migration-003-portal.sql` in the back-end repo (run once in the Supabase SQL Editor): unique active meeting per brief and the `data_requests` table with Row Level Security.
 - Tests: `tools/portal-test.py` (78 browser checks against a mock), `tools/brief-test.py` 43/43, `tools/auth-test.py` 32/32.
+
+## Phase 4: partner portal and management consoles
+- New `js/team.js` and one private route `#/team` (noindex, not in the sitemap). It adapts to the role; clients are sent to their account, and staff opening `#/account` land on the dashboard. Everything is read and written with the signed-in user's own token, so Row Level Security decides what each role sees; buttons the database would refuse are simply not shown.
+- **Partner:** personal code, link builder (home or sign-up page) with copy button, own clients with brief status and call, client page (details, answers shown as plain text, internal notes), counts by status, and the **Partner Playbook**.
+- **Director:** the same for the whole group, plus brief status changes, confirming / finishing / cancelling calls (two time zones shown), "needs attention" list, group totals, partner list with activate / deactivate, invitations (partners into his own group only) and cancelling invitations.
+- **Founder:** everything above for all groups, plus reassigning clients, moving partners between groups, changing Partner / Partner Director roles, suspend and delete (both ask for confirmation first), data requests (export / deletion) with status handling, activity log, CSV export of clients, briefs and calls.
+- **Playbook** is read from the database table `playbook` (staff only), not from the public site files. Edit it in Supabase > Table Editor > playbook.
+- Invitation emails: the invited person opens the link, lands on "Welcome to the CULMERA team", enters a name and a password, then goes to their dashboard. Tokens are removed from the address bar immediately.
+- CSV cells that start with `=`, `+`, `-` or `@` are neutralised so a spreadsheet cannot run them. Answers, notes and call notes are always escaped.
+- Needs `supabase/migration-004-team.sql` (back-end repo) and `api/admin.js` (Vercel). No new environment variables.
+- Tests: `tools/team-test.py` (browser, mock), `tools/portal-test.py`, `tools/brief-test.py`, `tools/auth-test.py`.
+- English only for now; strings are in `L.tm`.
