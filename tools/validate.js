@@ -27,6 +27,8 @@ ok(L.pricing && Array.isArray(L.pricing.steps) && L.pricing.steps.length === 3, 
   for (const x of CFG.proof.caseStudies || []) { ok(/^[a-z0-9-]+$/.test(x.id || ''), 'case-study id must be lowercase letters, digits and dashes'); if (x.verified === true) ok(x.permission === 'approved', 'case study ' + x.id + ' is verified but not approved'); if (!x.problem && !x.solution) ok(Array.isArray(x.features) && x.features.length >= 3 && !!x.summary, 'features-only case study ' + x.id + ' needs a summary and at least 3 features'); ok(!x.outcomes || x.outcomes.every(o => o && o.source), 'case study ' + x.id + ': every outcome needs a source'); } }
 for (const f of ['js/i18n/en.js']) { const t = fs.readFileSync(path.join(root, f), 'utf8'); ok(!/arrive in a later release/.test(t), 'stale \"later release\" text in ' + f); }
 
+{ const sh = L.show || {}; ok(Array.isArray(sh.items) && sh.items.length >= 4 && /not client projects/.test(sh.note || ''), 'L.show needs 4+ items and a note saying the pictures are not client projects');
+  const app = fs.readFileSync(path.join(root, 'js/app.js'), 'utf8'); for (const i of sh.items || []) ok(new RegExp('\\b' + i[2] + ':`<svg').test(app), 'no picture for show item ' + i[2]); }
 // 4. catalogue <-> groups <-> levels
 const cats = new Set(D.D.cats.map(c => c.slug)), inGroup = L.groups.flatMap(g => g.cats);
 ok(L.groups.length === 5, 'expected 5 public groups');

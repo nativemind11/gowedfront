@@ -94,3 +94,8 @@
 - `tools/validate.js`: new checks (pricing block has 3 steps and no price; case-study ids unique and valid; a verified entry must be approved; a features-only entry needs a summary and 3+ features; every outcome needs a source; no "later release" text). Proven to fail when a price is put in the pricing block.
 - New `tools/launch-test.py` (browser, 23 checks): pricing block, order, no sideways scroll at 360 px, work section hidden when empty / unverified / too short / no summary, shown when approved, escaped text, no problem/solution invented, no JavaScript errors.
 - No new file to delete by hand; `routes.json` and `sitemap.xml` are unchanged.
+
+### Phase 6 addition: "Examples" section (what we can build)
+- New home section after "How an engagement works": 8 simple illustrations (platforms with roles, studios and media platforms, dashboards, online stores, booking and client portals, company websites, assistants and automation, operations systems). Each card is labelled "Illustration" and the section says plainly that these are concepts, not client projects. No real project, client, sector, number or person is shown or hinted at. Pictures are inline SVG (no image files, no people), hidden from screen readers; the text carries the meaning. Strings in `L.show`; pictures in `ART` in `js/app.js`.
+- Because no client work is published, the "Selected work" section stays hidden until the owner chooses to supply entries (it is optional).
+- `tools/validate.js` and `tools/launch-test.py` check the section (8 cards, labelled, no sector or client claim, no external images).

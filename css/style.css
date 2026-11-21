@@ -348,3 +348,7 @@ table.tm .btn{padding:.5rem 1rem;min-block-size:40px;font-size:.85rem}
 .pill.submitted,.pill.in_review,.pill.scheduled,.pill.in_discussion,.pill.active{border-color:var(--gold);color:var(--gold)}
 .pill.won{background:var(--gold);border-color:var(--gold);color:var(--ink)}
 @media(max-width:600px){.tm-dl{grid-template-columns:1fr}.tm-tabs button{padding:.6rem .7rem}}
+/* Phase 6: "What we build" illustrations */
+.showgrid{grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr))}
+.card.show .cardart{border-block-end:1px solid var(--line)}.card.show .cb{padding:1.1rem 1.2rem 1.3rem}.card.show h3{margin-block:.5rem .4rem}
+.showgrid+.note{margin-block-start:1.5rem}
