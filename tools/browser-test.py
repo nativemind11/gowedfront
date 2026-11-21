@@ -47,7 +47,7 @@ def fill_brief(pg, goal='sell', pack=True, unsure=False):
     if pack: pg.click('[data-pkg="0"]')
     pg.click('[data-go="1"]')
     pg.fill('[data-p="project.goal"]', 'We want to sell our products online across several countries.')
-    pg.select_option('[data-p="project.launch"]', '1–3 months'); pg.select_option('[data-p="project.budget"]', '10–50k'); pg.select_option('[data-p="project.currency"]', 'USD')
+    pg.select_option('[data-p="project.launch"]', '10 days')
     pg.click('[data-go="1"]')
     pg.fill('[data-p="you.name"]', 'Sara Ali'); pg.fill('[data-p="you.email"]', 'sara@example.com'); pg.fill('[data-p="you.company"]', 'Acme Ltd'); pg.fill('[data-p="you.country"]', 'Egypt'); pg.check('[data-p="you.consent"]')
     pg.click('[data-go="1"]')

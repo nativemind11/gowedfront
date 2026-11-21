@@ -99,3 +99,8 @@
 - New home section after "How an engagement works": 8 simple illustrations (platforms with roles, studios and media platforms, dashboards, online stores, booking and client portals, company websites, assistants and automation, operations systems). Each card is labelled "Illustration" and the section says plainly that these are concepts, not client projects. No real project, client, sector, number or person is shown or hinted at. Pictures are inline SVG (no image files, no people), hidden from screen readers; the text carries the meaning. Strings in `L.show`; pictures in `ART` in `js/app.js`.
 - Because no client work is published, the "Selected work" section stays hidden until the owner chooses to supply entries (it is optional).
 - `tools/validate.js` and `tools/launch-test.py` check the section (8 cards, labelled, no sector or client claim, no external images).
+
+## Brief: no prices, timing in days
+- Removed the "Budget range" and "Currency" fields from the brief (form, summary text, answer whitelist). No price or budget is asked or shown anywhere.
+- Timing options are now 5, 7, 10, 20 and 30 days (was ASAP / 1-3 months / 3-6 months / Flexible). Old saved answers with budget/currency are dropped by the whitelist on load.
+- Privacy text and brief intro no longer mention budget.
