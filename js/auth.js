@@ -69,10 +69,10 @@ if(!pr){$('#acct').innerHTML=`<p role="alert">${esc(A.loadErr)}</p>`;return}
 if(pr.status!=='active'){await signOut();notice=A.err.suspended;location.hash='#/signin';return}
 const name=pr.full_name||pr.email||'';let h=`<p class="lead-p">${esc(fill(A.hi,{name}))}</p>`;
 if(pr.role!=='client'){h+=`<p>${esc(fill(A.staff,{role:A.roles[pr.role]||pr.role}))}</p>`}
-else{const cl=c.ok&&c.data[0]||{},[b,m]=await Promise.all([rest('client_briefs?select=ref,status,updated_at&order=updated_at.desc&limit=1',s),rest('meetings?select=starts_at,timezone,status&status=neq.cancelled&order=starts_at.desc&limit=1',s)]);if(!$('#acct'))return;
-const br=b.ok&&b.data[0],mt=m.ok&&m.data[0];
-h+=`<div class="acct"><div><h2>${esc(A.briefH)}</h2>${br?`<p><span dir="ltr">${esc(br.ref)}</span> · ${esc(A.st[br.status]||br.status)}</p>`:`<p>${esc(A.briefNone)}</p>`}<p><a class="btn p" href="#/brief">${esc(br?A.briefOpen:A.briefStart)}</a></p></div><div><h2>${esc(A.meetH)}</h2>${mt?`<p>${esc(dt(mt.starts_at))}</p><p class="note">${esc(A.tz)}: <span dir="ltr">${esc(Intl.DateTimeFormat().resolvedOptions().timeZone)}</span> · ${esc(A.mst[mt.status]||mt.status)}</p>`:`<p>${esc(A.meetNone)}</p>`}</div><div><h2>${esc(A.detailsH)}</h2><p>${esc(cl.company||'')}${cl.company&&cl.country?' · ':''}${esc(cl.country||'')}</p><p dir="ltr" style="text-align:start">${esc(pr.email||'')}</p><p class="note">${esc(cl.code_used?fill(A.refBy,{code:cl.code_used}):A.direct)}</p></div></div><h2 style="margin-block-start:2.5rem">${esc(A.nextH)}</h2><ol>${A.next.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><p class="note">${esc(A.pricing)}</p>`}
-h+=`<p style="margin-block-start:2rem"><button class="btn" type="button" data-so>${esc(A.signOut)}</button></p>`;$('#acct').innerHTML=(ok?'':`<p role="alert">${esc(notice)}</p>`)+h;notice='';hdr()}
+else{const cl=c.ok&&c.data[0]||{},[b,m]=await Promise.all([rest('client_briefs?select=ref,status,updated_at&order=updated_at.desc&limit=1',s),rest('meetings?select=id,starts_at,timezone,duration_min,status&status=neq.cancelled&order=starts_at.desc&limit=1',s)]);if(!$('#acct'))return;
+const br=b.ok&&b.data[0],mt=m.ok&&m.data[0],PT=window.CulmeraPortal;
+h+=`<div class="acct"><div><h2>${esc(A.briefH)}</h2>${br?`<p><span dir="ltr">${esc(br.ref)}</span> · ${esc(A.st[br.status]||br.status)}</p>`:`<p>${esc(A.briefNone)}</p>`}<p><a class="btn p" href="#/brief">${esc(br?A.briefOpen:A.briefStart)}</a></p></div>${PT?PT.card(mt,br):''}<div><h2>${esc(A.detailsH)}</h2><p>${esc(cl.company||'')}${cl.company&&cl.country?' · ':''}${esc(cl.country||'')}</p><p dir="ltr" style="text-align:start">${esc(pr.email||'')}</p><p class="note">${esc(cl.code_used?fill(A.refBy,{code:cl.code_used}):A.direct)}</p></div></div>${!br||br.status==='draft'?`<h2 style="margin-block-start:2.5rem">${esc(A.nextH)}</h2><ol>${A.next.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`:''}${PT?PT.extras(br):`<p class="note">${esc(A.pricing)}</p>`}`}
+h+=`<p style="margin-block-start:2rem"><button class="btn" type="button" data-so>${esc(A.signOut)}</button></p>`;$('#acct').innerHTML=(ok?'':`<p role="alert">${esc(notice)}</p>`)+h;notice='';hdr();window.CulmeraPortal&&pr.role==='client'&&CulmeraPortal.rights()}
 /* ---------- events ---------- */
 document.addEventListener('submit',async e=>{const f=e.target.closest('form.aform');if(!f)return;e.preventDefault();const b=f.querySelector('button[type=submit]');if(b.disabled)return;
 const need=()=>{if(C().turnstileSiteKey&&!tok()){say(A.err.tsMissing);return true}};
@@ -93,7 +93,7 @@ await run(async()=>{const s=await session();if(!s){say(A.err.expired);return}con
 document.addEventListener('click',e=>{if(e.target.closest('[data-so]')){signOut().then(()=>{location.hash='#/signin';location.reload()})}});
 /* ---------- header link and search-engine hygiene ---------- */
 function hdr(){const a=$('#acc'),m=$('#mm-acc'),on=!!read();[a,m].forEach(x=>{if(x){x.textContent=on?A.account:A.signIn;x.setAttribute('href',on?'#/account':'#/signin')}})}
-const NOIDX=/^#\/(account|new-password|reset)/;
+const NOIDX=/^#\/(account|meeting|new-password|reset)/;
 function robots(){let m=$('meta[name=robots]');if(NOIDX.test(location.hash)){if(!m){m=document.createElement('meta');m.name='robots';document.head.appendChild(m)}m.content='noindex,nofollow'}else if(m)m.remove()}
 addEventListener('hashchange',()=>{robots();hdr()});setTimeout(()=>{robots();hdr()},0);
 window.PAGES=window.PAGES||{};Object.assign(window.PAGES,{signup,signin,reset,'new-password':newpw,account});
