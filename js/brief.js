@@ -107,7 +107,7 @@ sent={saved:false,reason:res.reason};rr()}
    Working copy = the same draft object the public wizard uses (G().B). Saved to public.client_briefs through the user's own token,
    so Row Level Security decides what is allowed. Answers are stored as slugs and option values, which are identical in every language. */
 const AU=()=>window.CulmeraAuth,PB=L.pb,enc=encodeURIComponent,signed=()=>!!(AU()&&AU().has());
-const SYNC='culmera.brief.sync',LOCALES=['en','fr','de','zh','ru','pt','nl','ar'],pickLoc=()=>LOCALES.includes(L.lang)?L.lang:'en';
+const SYNC='culmera.brief.sync',LOCALES=['en','fr','de','ar'],pickLoc=()=>LOCALES.includes(L.lang)?L.lang:'en';
 const lget=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lset=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
 const hash=t=>{let h=5381;for(let i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return String(h)};
 let sv={st:'idle',at:null,t:null,pend:false,flight:false,tries:0};

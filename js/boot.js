@@ -8,10 +8,6 @@ var LANGS={
 en:{n:'English',d:'ltr',l:'en-GB',h:'en',og:'en_US',ts:'en'},
 fr:{n:'Français',d:'ltr',l:'fr-FR',h:'fr',og:'fr_FR',ts:'fr'},
 de:{n:'Deutsch',d:'ltr',l:'de-DE',h:'de',og:'de_DE',ts:'de'},
-zh:{n:'中文',d:'ltr',l:'zh-CN',h:'zh-CN',og:'zh_CN',ts:'zh-cn'},
-ru:{n:'Русский',d:'ltr',l:'ru-RU',h:'ru',og:'ru_RU',ts:'ru'},
-pt:{n:'Português',d:'ltr',l:'pt-PT',h:'pt-PT',og:'pt_PT',ts:'pt-br'},
-nl:{n:'Nederlands',d:'ltr',l:'nl-NL',h:'nl',og:'nl_NL',ts:'nl'},
 ar:{n:'العربية',d:'rtl',l:'ar-EG-u-nu-latn',h:'ar',og:'ar_AR',ts:'ar-eg'}};
 var KEY='culmera.lang',c=null,m;
 try{m=/[?&]lang=([a-z]{2})\b/.exec(location.search);if(m&&LANGS[m[1]]){c=m[1];localStorage.setItem(KEY,c)}}catch(e){}
