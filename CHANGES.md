@@ -1,3 +1,26 @@
+# Phase 8, Batch 1 (languages): system + Arabic, French, German
+
+**Status: delivered for review. zh, ru, pt, nl are Batch 2.** Translations are AI-assisted: a native speaker must review each language before launch.
+
+## What is new
+- `js/boot.js` picks the language (`?lang=xx`, saved choice `culmera.lang`, browser language, English) and loads only `js/i18n/<code>.js` before any other script, so the first paint is already translated. `LANGS` there holds the 8 languages (en fr de zh ru pt nl ar). TO ADD A LANGUAGE: one file in `js/i18n/` + one line in `LANGS` (+ the code in the SQL check).
+- Pack format: `window.I18N_PACK={code,L,CAT}`. `L` has exactly the keys of `en.js`; `CAT` translates every catalogue sentence. `js/lang-apply.js` translates only display fields of the catalogue. Module names stay English as saved keys and are shown through `TR()`. Option values stay English; labels come from `L.optL` through `OL()`.
+- Language switcher in the header (desktop) and in the mobile menu: native names, `lang`/`dir` on each option, `aria-current`, Esc and arrow keys. Choosing a language saves it and reloads the same address (hash kept). The reload is deliberate: it refreshes every module's cached text reliably.
+- Title, description, `og:*`, `twitter:*`, `og:locale` follow the language. No `hreflang` (hash routes cannot have per-language URLs; that belongs to Phase 1).
+- Turnstile language comes from `LANGS[code].ts` (`pt` uses `pt-br`, `ar` uses `ar-eg`: Turnstile has no European Portuguese).
+- About 45 English texts that were written inside the code (validation messages, brief summary, slider buttons, footer, tooltips, stat labels) moved to `L.x`, `L.statL`, `L.optL`.
+- CSS: per-language system font stacks (ar, zh, ru), no letter-spacing for ar/zh, hyphenation, wrap-safe buttons. FIX found by the new test: the class `.lg` already existed as a grid class, so the switcher uses `.lsw`.
+- `LOCALES` in `brief.js` is now the 8 codes. Sign-up already sent `locale`.
+- `tools/validate.js` now fails the build if a pack has a missing or extra key, an empty text, a different `{placeholder}`, a changed non-text value, a catalogue sentence or option label without translation. Proven by a deliberate mistake.
+- `tools/i18n-test.py`: every public route in every delivered language at 360 and 1280 px (lang/dir, no JS errors, no sideways scroll, no English sentences left, switcher, persistence after reload, mobile menu). Last run: 213 passed, 0 failed (ar, fr, de). `tools/i18n-pseudo.js` makes a marker language to hunt hard-coded text.
+- Old tests (auth, brief, launch, notify, portal, team, testimonials) pass. `browser-test.py` already failed before this phase (waits for `.ref`).
+
+## Not tested
+- Private screens (account, meeting, dashboards) in ar/fr/de were checked only through the validator (every string translated) and the static scan, not by a browser crawl.
+- Testimonials stay in their approved English wording by design.
+
+---
+
 # CULMERA front end: change notes
 
 ## Positioning and structure

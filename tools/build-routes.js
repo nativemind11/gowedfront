@@ -11,7 +11,7 @@ function load() {
   const ctx = {}; ctx.window = ctx;
   vm.runInNewContext(read('js/catalog.js'), ctx);
   const c = {}; vm.runInNewContext(read('js/config.js') + ';this.CFG=CFG', c);
-  const l = {}; vm.runInNewContext(read('js/i18n/en.js') + ';this.L=L', l);
+  const l = {}; l.window = l; vm.runInNewContext(read('js/i18n/en.js') + ';this.L=L', l);
   return { D: ctx.CATALOG, CFG: c.CFG, L: l.L };
 }
 function routes({ D, CFG, L }) {

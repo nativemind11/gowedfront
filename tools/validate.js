@@ -60,7 +60,7 @@ ok(fs.readFileSync(path.join(root, 'robots.txt'), 'utf8').includes(site + '/site
 // 6. local assets referenced exist
 for (const f of text.filter(f => /\.(html|css|js)$/.test(f))) {
   const t = fs.readFileSync(f, 'utf8');
-  for (const m of t.matchAll(/(?:src|href)="((?:images|fonts|js|css)\/[^"#?]+)"/g)) ok(fs.existsSync(path.join(root, m[1])), `${path.relative(root, f)} references missing ${m[1]}`);
+  for (const m of t.matchAll(/(?:src|href)="((?:images|fonts|js|css)\/[^"#?']+)"/g)) ok(fs.existsSync(path.join(root, m[1])), `${path.relative(root, f)} references missing ${m[1]}`);
   for (const m of t.matchAll(/url\((\.\.\/[^)]+)\)/g)) ok(fs.existsSync(path.join(path.dirname(f), m[1])), `${path.relative(root, f)} references missing ${m[1]}`);
 }
 // 7. only expected external hosts
@@ -75,6 +75,52 @@ const sib = fs.readdirSync(path.join(root, '..'), { withFileTypes: true }).filte
 const be = process.argv[2] || sib || '';
 if (be && fs.existsSync(path.join(be, 'scripts/sync-from-front.js'))) { try { require('child_process').execFileSync(process.execPath, [path.join(be, 'scripts/sync-from-front.js'), root, '--check'], { stdio: 'pipe' }); } catch (e) { fails.push('backend allowlists differ from the front end: run npm run sync in the backend repo'); } }
 else warns.push('backend repo not found next to this one: skipped the slug/option allowlist check');
+// 10. language packs (Phase 8): every pack must have exactly the keys of en.js, no empty text, the same {placeholders}, identical non-text values, full catalogue + option label coverage
+{
+  const lib = require('./i18n-lib.js');
+  const L0 = lib.loadEn(), CAT0 = lib.loadCatalog(), catS = lib.catStrings(CAT0);
+  const flat = o => { const m = new Map(); lib.walk(o, (p, v, t) => m.set(p, [v, t])); return m; };
+  const en = flat(L0);
+  const bootSrc = fs.readFileSync(path.join(root, 'js/boot.js'), 'utf8');
+  const codes = [...bootSrc.matchAll(/^([a-z]{2}):\{n:'/gm)].map(m => m[1]);
+  ok(codes.includes('en') && codes.length === 8, 'js/boot.js LANGS must list the 8 languages, found: ' + codes.join(','));
+  const packs = fs.readdirSync(path.join(root, 'js/i18n')).filter(f => /^[a-z]{2}\.js$/.test(f) && f !== 'en.js').map(f => f.slice(0, 2));
+  packs.forEach(c => ok(codes.includes(c), `js/i18n/${c}.js is not listed in js/boot.js LANGS`));
+  const missing = codes.filter(c => c !== 'en' && !packs.includes(c));
+  if (missing.length) warns.push('language files not written yet: ' + missing.join(', ') + ' (the site shows English for them)');
+  for (const c of packs) {
+    let P; try { P = lib.loadPack(c); } catch (e) { ok(false, `js/i18n/${c}.js does not run: ${e.message}`); continue; }
+    ok(P && P.code === c && P.L && P.CAT, `js/i18n/${c}.js must set window.I18N_PACK = {code:'${c}', L, CAT}`);
+    if (!P || !P.L) continue;
+    const t = flat(P.L); const bad = [];
+    for (const [k, [v, ty]] of en) {
+      if (!t.has(k)) { bad.push('missing key ' + k); continue; }
+      const [tv, tt] = t.get(k);
+      if (tt !== ty) { bad.push('wrong type at ' + k); continue; }
+      if (ty === 's') {
+        if (/^(lang|dir|locale)$/.test(k)) continue;
+        if (lib.isKeep(k)) { if (tv !== v) bad.push('must stay identical: ' + k); continue; }
+        if (!String(tv).trim()) bad.push('empty text at ' + k);
+        else if (lib.placeholders(tv) !== lib.placeholders(v)) bad.push(`placeholders differ at ${k}: ${lib.placeholders(v)} vs ${lib.placeholders(tv)}`);
+        else if (/[<>]/.test(tv) && !/[<>]/.test(v)) bad.push('markup in translation at ' + k);
+      } else if (tv !== v) bad.push('value differs at ' + k);
+    }
+    for (const k of t.keys()) if (!en.has(k)) bad.push('extra key ' + k);
+    ok(!bad.length, `js/i18n/${c}.js: ${bad.length} problem(s), first: ${bad.slice(0, 5).join(' | ')}`);
+    ok(P.L.lang === c, `js/i18n/${c}.js: L.lang must be "${c}"`);
+    ok(P.L.dir === (c === 'ar' ? 'rtl' : 'ltr'), `js/i18n/${c}.js: L.dir wrong`);
+    const noCat = catS.filter(x => !P.CAT[x] || !String(P.CAT[x]).trim());
+    ok(!noCat.length, `js/i18n/${c}.js CAT: ${noCat.length} catalogue sentence(s) without translation, first: ${noCat.slice(0, 2).join(' | ')}`);
+    const extraCat = Object.keys(P.CAT).filter(x => !catS.includes(x));
+    ok(!extraCat.length, `js/i18n/${c}.js CAT has ${extraCat.length} sentence(s) not in the catalogue, first: ${extraCat.slice(0, 2).join(' | ')}`);
+    const badPh = catS.filter(x => P.CAT[x] && lib.placeholders(x) !== lib.placeholders(P.CAT[x]));
+    ok(!badPh.length, `js/i18n/${c}.js CAT placeholders differ: ${badPh.slice(0, 2).join(' | ')}`);
+    // option labels cover every option value shown in the brief
+    const vals = new Set(); for (const g of ['users', 'scale', 'have', 'integ', 'threeD', 'mood', 'launch']) L0.opts[g].forEach(v => vals.add(v));
+    ok([...vals].every(v => P.L.optL && P.L.optL[v]), `js/i18n/${c}.js: L.optL misses an option value`);
+  }
+  ok(Object.keys(L0.optL).length === new Set(['users', 'scale', 'have', 'integ', 'threeD', 'mood', 'launch'].flatMap(g => L0.opts[g])).size, 'en.js L.optL must list every option value exactly once');
+}
 warns.forEach(w => console.log('WARN  ' + w));
 if (fails.length) { fails.forEach(f => console.log('FAIL  ' + f)); process.exit(1); }
 console.log('front-end validation passed (' + D.D.types.length + ' types, ' + routes(D).length + ' routes)');

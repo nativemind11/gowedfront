@@ -67,7 +67,7 @@ if(e==='registered'&&st.get(regKey(s.user.id))==='1')return Promise.resolve();
 const q=nRead();if(!q.some(x=>x.e===e&&x.u===s.user.id&&(x.id||'')===(id||'')))q.push({e,id:id||'',u:s.user.id,t:Date.now(),n:0});nSave(q);return nFlush().catch(()=>{})}
 /* ---------- Cloudflare Turnstile (own widget; the API forwards the token to Supabase CAPTCHA) ---------- */
 let tsId=null;
-function ts(sel){if(!C().turnstileSiteKey||!$(sel))return;const go=()=>{const e=$(sel);if(!e||e.dataset.r||!window.turnstile)return;e.dataset.r=1;try{tsId=turnstile.render(sel,{sitekey:C().turnstileSiteKey,theme:'dark',language:L.code})}catch(x){}};
+function ts(sel){if(!C().turnstileSiteKey||!$(sel))return;const go=()=>{const e=$(sel);if(!e||e.dataset.r||!window.turnstile)return;e.dataset.r=1;try{tsId=turnstile.render(sel,{sitekey:C().turnstileSiteKey,theme:'dark',language:((window.LANGS||{})[L.lang]||{}).ts||'en'})}catch(x){}};
 if(window.turnstile)return go();if(!window.__tsl){window.__tsl=1;const s=document.createElement('script');s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';s.async=true;s.onload=go;document.head.appendChild(s)}else{const t=setInterval(()=>{if(window.turnstile){clearInterval(t);go()}},200);setTimeout(()=>clearInterval(t),15000)}}
 const tok=()=>{try{return window.turnstile&&tsId!=null?(turnstile.getResponse(tsId)||''):''}catch(e){return ''}},tsReset=()=>{try{window.turnstile&&tsId!=null&&turnstile.reset(tsId)}catch(e){}};
 const sec=()=>{const t=tok();return t?{gotrue_meta_security:{captcha_token:t}}:{}};
@@ -111,7 +111,7 @@ if(f.id==='fup'){const n=g('un'),m=g('ue'),pw=($('#up')||{}).value||'',co=g('uc'
 if(n.length<2||!EM.test(m)||!co||!k){say(A.err.fill);return}if(pw.length<10||!/[A-Za-z]/.test(pw)||!/\d/.test(pw)){say(A.err.pwShort);return}
 if(code&&!/^[A-Z0-9-]{3,20}$/.test(code)){say(A.err.codeBad);return}if(!$('#ux').checked){say(A.err.consent);return}if(need())return;
 await run(async()=>{b.textContent=A.creating;const ch=await pkce();
-const r=await api('/auth/v1/signup?redirect_to='+encodeURIComponent(back('confirm')),{method:'POST',body:{email:m,password:pw,data:{full_name:n,company:co,country:k,phone:g('uh'),partner_code:code,locale:L.code},...ch,...sec()}});
+const r=await api('/auth/v1/signup?redirect_to='+encodeURIComponent(back('confirm')),{method:'POST',body:{email:m,password:pw,data:{full_name:n,company:co,country:k,phone:g('uh'),partner_code:code,locale:L.lang},...ch,...sec()}});
 if(r.ok){$('#app').innerHTML=page(A.checkH,`<p>${esc(fill(A.checkP,{email:m}))}</p><p class="note">${esc(A.checkN)}</p>`)}else say(why(r))})}
 else if(f.id==='fin'){const m=g('ie'),pw=($('#ip')||{}).value||'';if(!EM.test(m)||!pw){say(A.err.fillIn);return}if(need())return;
 await run(async()=>{const r=await api('/auth/v1/token?grant_type=password',{method:'POST',body:{email:m,password:pw,...sec()}});if(r.ok&&r.data.access_token){setS(r.data);hdr();location.hash='#/account'}else say(why(r))})}
