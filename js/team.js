@@ -1,9 +1,11 @@
 /* CULMERA team consoles (Phase 4). No library. One private route, #/team, that adapts to the signed-in role:
-   Partner  : personal code and link, own clients with brief status and call, notes, Playbook.
-   Director : the same for the whole group, plus status changes, call confirmation, partner management and invitations.
-   Founder  : everything, plus reassigning clients, roles, suspend / delete, data requests, activity log and CSV export.
-   Every read and write uses the signed-in user's own token, so Row Level Security decides what each role can see and do; this
-   page only hides buttons that would be refused. People management that needs the service key (invite, suspend, delete) goes
+   Partner  : personal code and link, the NAMES of his clients, how many, the project each one asked for, Playbook. Nothing else.
+   Director : READ ONLY. His partners, each partner's clients, the project each client asked for, each client's brief status and
+              answers, the calls, Playbook. He changes nothing (no status, calls, partners, invitations).
+   Founder  : everything, plus status changes, call confirmation, partners on/off, invitations, reassigning clients, roles,
+              suspend / delete, data requests, activity log and CSV export.
+   Every read and write uses the signed-in user's own token, so Row Level Security decides what each role can see and do
+   (Partner and Director read through the read-only views of migration 007); this page only hides buttons that would be refused. People management that needs the service key (invite, suspend, delete) goes
    through the API (/api/admin), which checks the role again on the server. All strings live in L.tm. */
 (()=>{
 const T=L.tm,A=L.auth,M=L.mt,$=s=>document.querySelector(s),G=()=>window.GW,C=()=>G().C,esc=s=>G().esc(s),fill=(s,o)=>G().fill(s,o),AU=()=>window.CulmeraAuth,enc=encodeURIComponent;
@@ -23,7 +25,7 @@ const site=()=>C().siteUrl.replace(/\/$/,'');
 const adminUrl=()=>String(C().api||'').replace(/\/brief\/?$/,'/admin');
 const say=(t,ok)=>{S.msg=t||'';S.ok=!!ok;const e=$('#tmmsg');if(e){e.textContent=S.msg;e.style.color=ok?'':'#f0a3a3'}};
 const role=()=>S.me&&S.me.role;
-const isF=()=>role()==='founder',isDir=()=>role()==='director',canManage=()=>isF()||isDir();
+const isF=()=>role()==='founder',isDir=()=>role()==='director',isP=()=>role()==='partner',canManage=()=>isF(),seesOwner=()=>isF()||isDir();
 /* ---------- data ---------- */
 async function admin(action,body){const s=await AU().session();if(!s)return{ok:false,data:{code:'auth'}};if(!adminUrl())return{ok:false,data:{code:'noApi'}};
 const ac=new AbortController(),t=setTimeout(()=>ac.abort(),20000);
@@ -41,18 +43,40 @@ const me=pr.rows.find(x=>x.id===s.user.id);
 if(!me){S.state='paused';paint();return}
 if(me.status!=='active'){await AU().signOut();location.hash='#/signin';location.reload();return}
 if(me.role==='client'){location.hash='#/account';return}
-const staff=me.role==='founder'||me.role==='director';
-const [pa,cl,br,ms,iv,pb,rq]=await Promise.all([rd('partners?select=profile_id,code,director_id,active&limit='+CAP),rd('clients?select=profile_id,partner_id,code_used,company,country,phone,created_at&limit='+CAP),
+const EMPTY={ok:true,rows:[]},pbq=()=>rd('playbook?select=key,sort,title,body&order=sort.asc'),named=(rows,r)=>rows.map(x=>({id:x.profile_id,full_name:x.full_name||'',email:'',role:r,status:'active',locale:'en',created_at:x.created_at}));
+let people=pr.rows,pa,cl,br,ms,iv,pb,rq,types=null;
+if(me.role==='founder'){
+[pa,cl,br,ms,iv,pb,rq]=await Promise.all([rd('partners?select=profile_id,code,director_id,active&limit='+CAP),rd('clients?select=profile_id,partner_id,code_used,company,country,phone,created_at&limit='+CAP),
 rd('client_briefs?select=id,ref,client_id,status,locale,selected_types,created_at,updated_at,submitted_at&order=updated_at.desc&limit='+CAP),rd('meetings?select=id,brief_id,client_id,starts_at,timezone,duration_min,status,note&order=starts_at.desc&limit='+CAP),
-staff?rd('invitations?select=id,email,role,director_id,invited_by,expires_at,accepted_at,created_at&accepted_at=is.null&order=created_at.desc&limit=200'):{ok:true,rows:[]},
-rd('playbook?select=key,sort,title,body&order=sort.asc'),me.role==='founder'?rd('data_requests?select=id,client_id,kind,status,created_at,handled_at&order=created_at.desc&limit=200'):{ok:true,rows:[]}]);
+rd('invitations?select=id,email,role,director_id,invited_by,expires_at,accepted_at,created_at&accepted_at=is.null&order=created_at.desc&limit=200'),
+pbq(),rd('data_requests?select=id,client_id,kind,status,created_at,handled_at&order=created_at.desc&limit=200')])}
+else if(me.role==='director'){
+/* read-only views of migration 007: names only, no contact details, no notes */
+const [p1,tm,c1,b1,m1,pb1]=await Promise.all([rd('partners?select=profile_id,code,director_id,active&limit='+CAP),rd('director_team?select=profile_id,full_name,director_id,active,created_at&limit='+CAP),
+rd('director_clients?select=profile_id,partner_id,full_name,created_at&limit='+CAP),rd('director_briefs?select=id,ref,client_id,status,locale,selected_types,created_at,updated_at,submitted_at&order=updated_at.desc&limit='+CAP),
+rd('director_meetings?select=id,brief_id,client_id,starts_at,timezone,duration_min,status&order=starts_at.desc&limit='+CAP),pbq()]);
+if(![p1,tm,c1,b1,m1].every(x=>x.ok)){if(!$('#tm'))return;S.state='err';paint();return}
+people=[...pr.rows,...named(tm.rows,'partner'),...named(c1.rows,'client')];
+pa={ok:true,rows:[...p1.rows,...tm.rows.map(x=>({profile_id:x.profile_id,code:'',director_id:x.director_id,active:x.active}))]};
+cl={ok:true,rows:c1.rows.map(x=>({profile_id:x.profile_id,partner_id:x.partner_id,code_used:null,company:'',country:'',phone:null,created_at:x.created_at}))};
+br=b1;ms=m1;iv=EMPTY;pb=pb1;rq=EMPTY}
+else{
+/* partner: only the names of his clients and the project each asked for */
+const [p1,c1,pb1]=await Promise.all([rd('partners?select=profile_id,code,director_id,active&limit='+CAP),rd('partner_clients?select=profile_id,full_name,selected_types,created_at&limit='+CAP),pbq()]);
+if(![p1,c1].every(x=>x.ok)){if(!$('#tm'))return;S.state='err';paint();return}
+people=[...pr.rows,...named(c1.rows,'client')];types=new Map(c1.rows.map(x=>[x.profile_id,x.selected_types||[]]));
+pa=p1;cl={ok:true,rows:c1.rows.map(x=>({profile_id:x.profile_id,partner_id:me.id,code_used:null,company:'',country:'',phone:null,created_at:x.created_at}))};
+br=EMPTY;ms=EMPTY;iv=EMPTY;pb=pb1;rq=EMPTY}
 if(!$('#tm'))return;if(![pa,cl,br,ms,iv].every(x=>x.ok)){S.state='err';paint();return}
-S.me=me;D={profiles:pr.rows,pm:new Map(pr.rows.map(x=>[x.id,x])),partners:pa.rows,pa:new Map(pa.rows.map(x=>[x.profile_id,x])),clients:cl.rows,briefs:br.rows,meetings:ms.rows,inv:iv.rows,pb:pb.ok?pb.rows:null,req:rq.ok?rq.rows:[]};
+S.me=me;D={profiles:people,pm:new Map(people.map(x=>[x.id,x])),partners:pa.rows,pa:new Map(pa.rows.map(x=>[x.profile_id,x])),clients:cl.rows,briefs:br.rows,meetings:ms.rows,inv:iv.rows,pb:pb.ok?pb.rows:null,req:rq.ok?rq.rows:[],types};
 D.cap=[pr,pa,cl,br,ms].some(x=>x.rows.length>=CAP);index();S.state='ok';paint()}
+
 function index(){D.lb=new Map();D.bb=new Map();for(const b of D.briefs){if(!D.lb.has(b.client_id))D.lb.set(b.client_id,b);(D.bb.get(b.client_id)||D.bb.set(b.client_id,[]).get(b.client_id)).push(b)}
 D.mc=new Map();for(const m of D.meetings){(D.mc.get(m.client_id)||D.mc.set(m.client_id,[]).get(m.client_id)).push(m)}
 D.cm=new Map(D.clients.map(x=>[x.profile_id,x]))}
 const callOf=cid=>{const a=D.mc.get(cid)||[];return a.filter(m=>m.status==='requested'||m.status==='confirmed').sort((x,y)=>String(x.starts_at).localeCompare(String(y.starts_at)))[0]||a.find(m=>m.status==='done')||null};
+const projOf=cid=>D.types?(D.types.get(cid)||[]):((D.lb.get(cid)||{}).selected_types||[]);
+const projText=a=>(a||[]).map(x=>{const t=G().S[x];return t?t.name:x}).join(', ');
 const ownerLabel=c=>{if(!c.partner_id)return T.direct;if(c.partner_id===S.me.id)return T.fYou;return nm(D.pm.get(c.partner_id))};
 const myCode=()=>{const p=D.pa.get(S.me.id);return p&&p.code||''};
 const linkFor=()=>{const c=myCode(),b=site()+'/'+(c?'?ref='+enc(c):'');return S.f.lk==='signup'?b+'#/signup':b};
@@ -64,7 +88,7 @@ if(S.state==='paused'){box.innerHTML=`<p role="alert">${esc(T.paused)}</p><p><bu
 if(S.state!=='ok')return;
 const tabs=TABS[role()];if(!tabs.includes(S.tab))S.tab='overview';
 box.innerHTML=`<p class="lead-p">${esc(fill(T.hi,{name:nm(S.me)}))} <span class="pill active">${esc(A.roles[role()]||role())}</span></p>${D.cap?`<p class="note">${esc(T.cap)}</p>`:''}
-<div class="tm-tabs" role="tablist" aria-label="${esc(T.title)}">${tabs.map(t=>`<button type="button" role="tab" id="tt-${t}" aria-selected="${S.tab===t}" aria-controls="tmbody" tabindex="${S.tab===t?0:-1}" data-tm="tab" data-v="${t}">${esc(T.tabs[t])}${t==='meetings'&&calls().length?` <span class="pill requested" aria-label="${esc(T.stCalls)}">${calls().length}</span>`:''}</button>`).join('')}</div>
+<div class="tm-tabs" role="tablist" aria-label="${esc(T.title)}">${tabs.map(t=>`<button type="button" role="tab" id="tt-${t}" aria-selected="${S.tab===t}" aria-controls="tmbody" tabindex="${S.tab===t?0:-1}" data-tm="tab" data-v="${t}">${esc(T.tabs[t])}${t==='meetings'&&isF()&&calls().length?` <span class="pill requested" aria-label="${esc(T.stCalls)}">${calls().length}</span>`:''}</button>`).join('')}</div>
 <p id="tmmsg" role="status" aria-live="polite" class="note"></p><div id="tmbody" role="tabpanel" aria-labelledby="tt-${S.tab}" tabindex="-1">${body()}</div>
 <p style="margin-block-start:2.5rem"><button class="btn" type="button" data-tm="signout">${esc(T.signOut)}</button></p>`;
 say(S.msg,S.ok);if(S.tab==='audit'&&!S.open&&!S.aud)loadAudit()}
@@ -78,9 +102,11 @@ function overview(){const cl=D.clients;let h='';
 if(D.pa.has(S.me.id)){const c=myCode();h+=`<div class="tm-box"><h2>${esc(T.codeH)}</h2><p class="note">${esc(T.codeP)}</p><p>${esc(T.code)}: <b dir="ltr" class="tm-code" id="tmcode">${esc(c)}</b> <button class="btn" type="button" data-tm="copy" data-v="${esc(c)}">${esc(T.copy)}</button></p>
 <div class="cform" style="max-inline-size:none"><label>${esc(T.linkTo)}<select id="lnkp"><option value="home"${S.f.lk==='home'?' selected':''}>${esc(T.toHome)}</option><option value="signup"${S.f.lk==='signup'?' selected':''}>${esc(T.toSignup)}</option></select></label>
 <label>${esc(T.link)}<input id="lnk" readonly dir="ltr" value="${esc(linkFor())}"></label><p><button class="btn p" type="button" data-tm="copylink">${esc(T.copy)}</button></p></div></div>`}
+if(isP()){h+=`<h2 class="h2s">${esc(T.tabs.clients)}</h2><div class="tm-cards">${stat(cl.length,T.stClients)}</div>`;return h}
 const bs={};let nb=0;for(const c of cl){const b=D.lb.get(c.profile_id);if(!b)nb++;else bs[b.status]=(bs[b.status]||0)+1}
 const week=cl.filter(c=>Date.now()-new Date(c.created_at).getTime()<WEEK).length;
 h+=`<h2 class="h2s">${esc(T.statsH)}</h2><div class="tm-cards">${stat(cl.length,T.stClients)}${stat(week,T.stNew)}${stat(nb,T.stNoBrief)}${['draft',...BST].map(k=>stat(bs[k]||0,A.st[k])).join('')}</div>`;
+if(isDir())h+=`<div class="tm-cards">${stat(D.partners.filter(p=>p.profile_id!==S.me.id).length,T.stPartners)}</div>`;
 if(canManage()){const parts=D.partners.filter(p=>p.profile_id!==S.me.id);h+=`<div class="tm-cards">${stat(parts.length,T.stPartners)}${stat(D.inv.length,T.stInv)}${stat(calls().length,T.stCalls)}</div>`;
 const sub=cl.filter(c=>{const b=D.lb.get(c.profile_id);return b&&b.status==='submitted'}),req=calls();
 h+=`<h2 class="h2s">${esc(T.todoH)}</h2>`+(sub.length||req.length?`<ul class="tm-list">${sub.slice(0,6).map(c=>`<li>${esc(T.todoBrief)}: <b>${esc(nm(D.pm.get(c.profile_id)))}</b> <button class="btn" type="button" data-tm="openc" data-id="${esc(c.profile_id)}">${esc(T.open)}</button></li>`).join('')}${req.slice(0,6).map(m=>`<li>${esc(T.todoCall)}: <b>${esc(nm(D.pm.get(m.client_id)))}</b> (${esc(when(m.starts_at,tz(),true))}) <button class="btn" type="button" data-tm="openc" data-id="${esc(m.client_id)}">${esc(T.open)}</button></li>`).join('')}</ul>`:`<p>${esc(T.todoNone)}</p>`)}
@@ -92,19 +118,22 @@ if(S.f.st==='none'?!!b:S.f.st&&(!b||b.status!==S.f.st))return false;
 if(S.f.p==='direct'?!!c.partner_id:S.f.p&&c.partner_id!==S.f.p)return false;return true}).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))}
 function ownerOpts(sel,withDirect){const ppl=D.partners.map(x=>D.pm.get(x.profile_id)).filter(Boolean).sort((a,b)=>nm(a).localeCompare(nm(b)));
 return `<option value="">${esc(withDirect?T.fAll:T.fDirect)}</option>${withDirect?`<option value="direct"${sel==='direct'?' selected':''}>${esc(T.fDirect)}</option>`:''}${ppl.map(p=>`<option value="${esc(p.id)}"${sel===p.id?' selected':''}>${esc(p.id===S.me.id?T.fYou:nm(p))}</option>`).join('')}`}
-function clientsTab(){return `<div class="tmf"><label>${esc(T.q)}<input type="search" data-f="q" value="${esc(S.f.q)}" maxlength="80" autocomplete="off"></label>
-<label>${esc(T.fStatus)}<select data-f="st"><option value="">${esc(T.fAll)}</option><option value="none"${S.f.st==='none'?' selected':''}>${esc(T.fNoBrief)}</option>${['draft',...BST].map(k=>`<option value="${k}"${S.f.st===k?' selected':''}>${esc(A.st[k])}</option>`).join('')}</select></label>
-${canManage()?`<label>${esc(T.fPartner)}<select data-f="p">${ownerOpts(S.f.p,true)}</select></label>`:''}</div>${isF()?exportBar():''}<div id="tmlist">${clientList()}</div>`}
-function clientList(){const rows=filtered();if(!rows.length)return `<p>${esc(T.noMatch)}</p>`;const shown=rows.slice(0,S.lim);
-return `<div class="tw"><table class="tm"><caption class="sr">${esc(T.tabs.clients)}</caption><thead><tr><th scope="col">${esc(T.colClient)}</th>${canManage()?`<th scope="col">${esc(T.colOwner)}</th>`:''}<th scope="col">${esc(T.colBrief)}</th><th scope="col">${esc(T.colCall)}</th><th scope="col">${esc(T.colJoined)}</th><th scope="col"><span class="sr">${esc(T.colAction)}</span></th></tr></thead><tbody>${shown.map(c=>{const p=D.pm.get(c.profile_id),b=D.lb.get(c.profile_id),m=callOf(c.profile_id);
-return `<tr><th scope="row"><b>${esc(nm(p))}</b><br><span class="note">${esc(c.company)}</span></th>${canManage()?`<td>${esc(ownerLabel(c))}</td>`:''}<td>${b?`<span dir="ltr">${esc(b.ref)}</span><br>${bpill(b.status)}`:`<span class="note">${esc(T.fNoBrief)}</span>`}</td><td>${m?`${mpill(m.status)}<br><span class="note">${esc(when(m.starts_at,tz(),true))}</span>`:'—'}</td><td>${esc(when(c.created_at,undefined,true))}</td>
+function clientsTab(){return `<div class="tmf"><label>${esc(isF()?T.q:T.colName)}<input type="search" data-f="q" value="${esc(S.f.q)}" maxlength="80" autocomplete="off"></label>
+${isP()?'':`<label>${esc(T.fStatus)}<select data-f="st"><option value="">${esc(T.fAll)}</option><option value="none"${S.f.st==='none'?' selected':''}>${esc(T.fNoBrief)}</option>${['draft',...BST].map(k=>`<option value="${k}"${S.f.st===k?' selected':''}>${esc(A.st[k])}</option>`).join('')}</select></label>`}
+${seesOwner()?`<label>${esc(T.fPartner)}<select data-f="p">${ownerOpts(S.f.p,true)}</select></label>`:''}</div>${isF()?exportBar():''}<div id="tmlist">${clientList()}</div>`}
+function partnerList(){const q=S.f.q.trim().toLowerCase(),nmOf=c=>nm(D.pm.get(c.profile_id)),rows=D.clients.filter(c=>!q||nmOf(c).toLowerCase().includes(q)).sort((a,b)=>nmOf(a).localeCompare(nmOf(b)));
+if(!rows.length)return `<p>${esc(T.noMatch)}</p>`;
+return `<p class="note">${esc(T.stClients)}: ${rows.length}</p><div class="tw"><table class="tm"><caption class="sr">${esc(T.tabs.clients)}</caption><thead><tr><th scope="col">${esc(T.colClient)}</th><th scope="col">${esc(T.ans.packs)}</th></tr></thead><tbody>${rows.slice(0,S.lim).map(c=>`<tr><th scope="row"><b>${esc(nmOf(c))}</b></th><td>${esc(projText(projOf(c.profile_id))||'—')}</td></tr>`).join('')}</tbody></table></div>${rows.length>S.lim?`<p><button class="btn" type="button" data-tm="more">${esc(T.more)} (${rows.length-S.lim})</button></p>`:''}`}
+function clientList(){if(isP())return partnerList();const rows=filtered();if(!rows.length)return `<p>${esc(T.noMatch)}</p>`;const shown=rows.slice(0,S.lim);
+return `<div class="tw"><table class="tm"><caption class="sr">${esc(T.tabs.clients)}</caption><thead><tr><th scope="col">${esc(T.colClient)}</th>${seesOwner()?`<th scope="col">${esc(T.colOwner)}</th>`:''}<th scope="col">${esc(T.colBrief)}</th>${isDir()?`<th scope="col">${esc(T.ans.packs)}</th>`:''}<th scope="col">${esc(T.colCall)}</th><th scope="col">${esc(T.colJoined)}</th><th scope="col"><span class="sr">${esc(T.colAction)}</span></th></tr></thead><tbody>${shown.map(c=>{const p=D.pm.get(c.profile_id),b=D.lb.get(c.profile_id),m=callOf(c.profile_id);
+return `<tr><th scope="row"><b>${esc(nm(p))}</b><br>${isF()?`<br><span class="note">${esc(c.company)}</span>`:''}</th>${seesOwner()?`<td>${esc(ownerLabel(c))}</td>`:''}<td>${b?`<span dir="ltr">${esc(b.ref)}</span><br>${bpill(b.status)}`:`<span class="note">${esc(T.fNoBrief)}</span>`}</td>${isDir()?`<td>${esc(projText(projOf(c.profile_id))||'—')}</td>`:''}<td>${m?`${mpill(m.status)}<br><span class="note">${esc(when(m.starts_at,tz(),true))}</span>`:'—'}</td><td>${esc(when(c.created_at,undefined,true))}</td>
 <td><button class="btn" type="button" data-tm="openc" data-id="${esc(c.profile_id)}">${esc(T.open)}</button></td></tr>`}).join('')}</tbody></table></div>${rows.length>S.lim?`<p><button class="btn" type="button" data-tm="more">${esc(T.more)} (${rows.length-S.lim})</button></p>`:''}`}
 const paintList=()=>{const l=$('#tmlist');if(l)l.innerHTML=S.tab==='meetings'?meetList():clientList()};
 /* ---------- client detail ---------- */
 function clientView(id){const c=D.cm.get(id),p=D.pm.get(id);if(!c)return `<p>${esc(T.none)}</p><p><button class="btn" type="button" data-tm="back">${esc(T.back)}</button></p>`;
 const bl=D.bb.get(id)||[],b=D.lb.get(id),ml=D.mc.get(id)||[],dt=S.det&&S.det.id===id?S.det:null;
 let h=`<p><button class="btn" type="button" data-tm="back">${esc(T.back)}</button></p><h2 class="h2s" id="tmh" tabindex="-1">${esc(nm(p))}</h2><div class="acct">
-<div><h2>${esc(T.infoH)}</h2><dl class="tm-dl"><dt>${esc(T.email)}</dt><dd dir="ltr">${p?`<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>`:'—'}</dd><dt>${esc(T.company)}</dt><dd>${esc(c.company||'—')}</dd><dt>${esc(T.country)}</dt><dd>${esc(c.country||'—')}</dd><dt>${esc(T.phone)}</dt><dd dir="ltr">${esc(c.phone||'—')}</dd><dt>${esc(T.joined)}</dt><dd>${esc(when(c.created_at,undefined,true))}</dd><dt>${esc(T.usedCode)}</dt><dd dir="ltr">${esc(c.code_used||'—')}</dd><dt>${esc(T.lang)}</dt><dd>${esc(p?p.locale:'—')}</dd><dt>${esc(T.ownerH)}</dt><dd>${esc(ownerLabel(c))}</dd></dl>`;
+<div><h2>${esc(T.infoH)}</h2><dl class="tm-dl">${isF()?`<dt>${esc(T.email)}</dt><dd dir="ltr">${p?`<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>`:'—'}</dd><dt>${esc(T.company)}</dt><dd>${esc(c.company||'—')}</dd><dt>${esc(T.country)}</dt><dd>${esc(c.country||'—')}</dd><dt>${esc(T.phone)}</dt><dd dir="ltr">${esc(c.phone||'—')}</dd>`:''}<dt>${esc(T.joined)}</dt><dd>${esc(when(c.created_at,undefined,true))}</dd>${isF()?`<dt>${esc(T.usedCode)}</dt><dd dir="ltr">${esc(c.code_used||'—')}</dd><dt>${esc(T.lang)}</dt><dd>${esc(p?p.locale:'—')}</dd>`:''}<dt>${esc(T.ownerH)}</dt><dd>${esc(ownerLabel(c))}</dd></dl>`;
 if(isF()){h+=`<form class="cform tmform" novalidate data-form="reassign" style="margin-block-start:1rem"><label>${esc(T.reassign)}<select id="ro">${ownerOpts(c.partner_id||'',false)}</select></label><p class="note">${esc(T.reassignHint)}</p><p><button class="btn" type="submit">${esc(T.reassign)}</button></p></form>`;
 h+=acctActions(id,p)}
 h+=`</div><div><h2>${esc(T.briefH)}</h2>`;
@@ -112,7 +141,7 @@ if(!b)h+=`<p>${esc(T.briefNone)}</p>`;else{h+=`<p><span dir="ltr">${esc(b.ref)}<
 if(canManage()){h+=b.status==='draft'?`<p class="note">${esc(T.draftNote)}</p>`:`<form class="cform tmform" novalidate data-form="bstatus" data-id="${esc(b.id)}"><label>${esc(T.statusH)}<select id="bs">${BST.map(k=>`<option value="${k}"${b.status===k?' selected':''}>${esc(A.st[k])}</option>`).join('')}</select></label><p><button class="btn" type="submit">${esc(T.saveStatus)}</button></p></form>`}}
 h+=`</div><div><h2>${esc(T.callsH)}</h2>`+(ml.length?ml.map(m=>meetCard(m)).join(''):`<p>${esc(T.callNone)}</p>`)+`</div></div>`;
 if(b)h+=`<h2 class="h2s">${esc(T.answersH)}</h2><div class="tm-box" id="tmans">${dt&&dt.answers!==undefined?answers(dt.answers,b):`<p class="note">${esc(T.answersLoad)}</p>`}</div>`;
-h+=`<h2 class="h2s">${esc(T.notesH)}</h2><p class="note">${esc(T.notesHint)}</p><form class="cform tmform" novalidate data-form="note" data-id="${esc(id)}"><label>${esc(T.noteLabel)}<textarea id="nb" rows="3" maxlength="4000"></textarea></label><p><button class="btn p" type="submit">${esc(T.noteAdd)}</button></p></form><div id="tmnotes">${dt&&dt.notes?notes(dt.notes):''}</div>`;
+if(isF())h+=`<h2 class="h2s">${esc(T.notesH)}</h2><p class="note">${esc(T.notesHint)}</p><form class="cform tmform" novalidate data-form="note" data-id="${esc(id)}"><label>${esc(T.noteLabel)}<textarea id="nb" rows="3" maxlength="4000"></textarea></label><p><button class="btn p" type="submit">${esc(T.noteAdd)}</button></p></form><div id="tmnotes">${dt&&dt.notes?notes(dt.notes):''}</div>`;
 return h}
 function acctActions(id,p){const st=p&&p.status;let h=`<h2 style="margin-block-start:1.4rem">${esc(T.accountH)}</h2>`;
 if(S.ask&&S.ask.id===id)return h+`<p role="alert">${esc(S.ask.act==='delete'?T.askDelete:T.askSuspend)}</p><p><button class="btn p" type="button" data-tm="confirm">${esc(T.confirm)}</button> <button class="btn" type="button" data-tm="noask">${esc(T.cancel)}</button></p>`;
@@ -132,7 +161,7 @@ return `<dl class="tm-dl">${kv(a.project)}${kv(a.refine)}</dl>${items?`<h3>${esc
 function notes(list){if(!list.length)return `<p class="note">${esc(T.noteNone)}</p>`;
 return `<ul class="tm-list">${list.map(n=>{const a=D.pm.get(n.author_id),b=n.brief_id?D.briefs.find(x=>x.id===n.brief_id):null;return `<li><span class="note">${esc(n.author_id===S.me.id?T.you:(a?nm(a):T.teamMember))} · ${esc(when(n.created_at,tz(),false))}${b?` · ${esc(fill(T.noteBrief,{ref:b.ref}))}`:''}</span><span class="tm-pre">${esc(n.body)}</span></li>`}).join('')}</ul>`}
 async function openClient(id){S.open={k:'client',id};S.ask=null;S.det={id};say('');paintBody();const h=$('#tmh');if(h)h.focus();
-const b=D.lb.get(id),[an,nt]=await Promise.all([b?rd('client_briefs?select=answers&id=eq.'+enc(b.id)):{ok:true,rows:[]},rd('notes?select=id,author_id,body,brief_id,created_at&client_id=eq.'+enc(id)+'&order=created_at.desc&limit=200')]);
+const b=D.lb.get(id),[an,nt]=await Promise.all([b?rd((isF()?'client_briefs':'director_briefs')+'?select=answers&id=eq.'+enc(b.id)):{ok:true,rows:[]},isF()?rd('notes?select=id,author_id,body,brief_id,created_at&client_id=eq.'+enc(id)+'&order=created_at.desc&limit=200'):{ok:true,rows:[]}]);
 if(!S.open||S.open.id!==id)return;S.det={id,answers:an.ok&&an.rows[0]?an.rows[0].answers||{}:(an.ok?{}:null),notes:nt.ok?nt.rows:[]};
 const a=$('#tmans');if(a)a.innerHTML=S.det.answers===null?`<p role="alert">${esc(T.err.generic)}</p>`:answers(S.det.answers,b);const n=$('#tmnotes');if(n)n.innerHTML=notes(S.det.notes)}
 /* ---------- calls ---------- */
@@ -140,7 +169,11 @@ function meetList(){const all=S.f.ms==='all',rows=D.meetings.filter(m=>all||m.st
 return rows.length?rows.slice(0,S.lim).map(m=>meetCard(m,true)).join('')+(rows.length>S.lim?`<p><button class="btn" type="button" data-tm="more">${esc(T.more)}</button></p>`:''):`<p>${esc(T.meetNone)}</p>`}
 function meetingsTab(){return `<div class="tmf"><label>${esc(T.meetFilter)}<select data-f="ms"><option value="active"${S.f.ms==='active'?' selected':''}>${esc(T.meetActive)}</option><option value="all"${S.f.ms==='all'?' selected':''}>${esc(T.meetAll)}</option></select></label></div>${isF()?exportBar('meetings'):''}<div id="tmlist">${meetList()}</div>`}
 /* ---------- team: people and invitations ---------- */
-function teamTab(){const ppl=D.partners.map(x=>({x,p:D.pm.get(x.profile_id)})).filter(r=>r.p&&r.p.id!==S.me.id).sort((a,b)=>nm(a.p).localeCompare(nm(b.p)));
+function teamRO(){const byName=(a,b)=>nm(D.pm.get(a.profile_id)).localeCompare(nm(D.pm.get(b.profile_id))),mine=id=>D.clients.filter(c=>c.partner_id===id).sort(byName);
+const blk=(title,list,tag)=>`<section class="tm-box"><h2>${esc(title)} <span class="note">(${list.length})</span>${tag||''}</h2>${list.length?`<ul class="tm-list">${list.map(c=>`<li><b>${esc(nm(D.pm.get(c.profile_id)))}</b> — ${esc(projText(projOf(c.profile_id))||'—')} <button class="btn" type="button" data-tm="openc" data-id="${esc(c.profile_id)}">${esc(T.open)}</button></li>`).join('')}</ul>`:`<p class="note">${esc(T.none)}</p>`}</section>`;
+const ppl=D.partners.filter(x=>x.profile_id!==S.me.id&&D.pm.get(x.profile_id)).sort((a,b)=>nm(D.pm.get(a.profile_id)).localeCompare(nm(D.pm.get(b.profile_id))));
+return `<h2 class="h2s" style="margin-block-start:.5rem">${esc(T.teamH)}</h2>`+(ppl.length?ppl.map(x=>blk(nm(D.pm.get(x.profile_id)),mine(x.profile_id),' '+(x.active?pill('active',T.active):pill('lost',T.inactive)))).join(''):`<p>${esc(T.teamNone)}</p>`)+(mine(S.me.id).length?blk(T.fYou,mine(S.me.id)):'')}
+function teamTab(){if(!isF())return teamRO();const ppl=D.partners.map(x=>({x,p:D.pm.get(x.profile_id)})).filter(r=>r.p&&r.p.id!==S.me.id).sort((a,b)=>nm(a.p).localeCompare(nm(b.p)));
 const cnt=id=>D.clients.filter(c=>c.partner_id===id).length;
 let h=`<h2 class="h2s" style="margin-block-start:.5rem">${esc(T.teamH)}</h2>`+(ppl.length?`<div class="tw"><table class="tm"><caption class="sr">${esc(T.teamH)}</caption><thead><tr><th scope="col">${esc(T.colName)}</th><th scope="col">${esc(T.colRole)}</th>${isF()?`<th scope="col">${esc(T.colGroup)}</th>`:''}<th scope="col">${esc(T.colCode)}</th><th scope="col">${esc(T.colClients)}</th><th scope="col">${esc(T.colStatus)}</th><th scope="col"><span class="sr">${esc(T.colAction)}</span></th></tr></thead><tbody>${ppl.map(({x,p})=>`<tr><th scope="row"><b>${esc(nm(p))}</b><br><span class="note" dir="ltr">${esc(p.email)}</span></th><td>${esc(A.roles[p.role]||p.role)}</td>${isF()?`<td>${esc(x.director_id?nm(D.pm.get(x.director_id)):'—')}</td>`:''}<td dir="ltr">${esc(x.code)}</td><td>${cnt(p.id)}</td><td>${p.status==='suspended'?pill('suspended',T.suspended):x.active?pill('active',T.active):pill('lost',T.inactive)}</td><td><button class="btn" type="button" data-tm="openu" data-id="${esc(p.id)}">${esc(T.open)}</button></td></tr>`).join('')}</tbody></table></div>`:`<p>${esc(T.teamNone)}</p>`);
 h+=`<h2 class="h2s">${esc(T.invH)}</h2><p class="note">${esc(T.invP)}</p><form class="cform tmform" novalidate data-form="invite"><label>${esc(T.invEmail)}<input id="ive" type="email" dir="ltr" autocomplete="off" maxlength="200"></label>`;
@@ -192,8 +225,8 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-tm]
 const lock=async fn=>{el.disabled=true;try{await fn()}finally{el.disabled=false}};
 if(a==='tab'){S.tab=v;S.open=null;S.ask=null;S.lim=100;say('');paint();const t=$('#tt-'+v);if(t)t.focus()}
 else if(a==='signout'){await AU().signOut();location.hash='#/signin';location.reload()}
-else if(a==='openc')await openClient(id);
-else if(a==='openu'){S.open={k:'user',id};S.ask=null;say('');paintBody();const h=$('#tmh');if(h)h.focus()}
+else if(a==='openc'&&!isP())await openClient(id);
+else if(a==='openu'&&isF()){S.open={k:'user',id};S.ask=null;say('');paintBody();const h=$('#tmh');if(h)h.focus()}
 else if(a==='back'){S.open=null;S.ask=null;say('');paintBody()}
 else if(a==='more'){S.lim+=100;paintList()}
 else if(a==='moreaud'){S.audLim=Math.min(CAP,S.audLim+200);S.aud=null;paintBody();loadAudit()}

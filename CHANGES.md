@@ -1,3 +1,13 @@
+# Phase 9, step 1 (roles): Partner, Director, Founder
+
+Needs the back end's `migration-007-roles.sql` (the page reads the new views). Deploy the back end and run the migration BEFORE publishing this page, or Partner and Director dashboards show a load error until the views exist. The Founder page is unaffected.
+
+- `js/team.js`: Partner reads only `partner_clients` and sees names, the count and the project per client (no status, brief, call, owner, search by email, client page or notes). Director reads `director_team`, `director_clients`, `director_briefs`, `director_meetings` and sees partners with their clients, the project per client, brief status and answers, calls: read only (no status form, no confirm / finish / cancel, no notes, no invite form, no deactivate, no CSV, no contact details). The Founder page is unchanged. No new text: every label reuses an existing one, so the 4 language packs need no change.
+- `tools/roles-test.py` (new): 38 browser checks with a mock Supabase (what each role sees, what it asks for, nothing written). `tools/team-test.py`: the old Partner and Director sections (old rules) were removed; Founder, invitation-link and layout sections pass.
+- Known, not from this change: `node tools/validate.js` still reports that `js/boot.js` lists 4 of the 8 languages (zh, ru, pt, nl are Batch 2).
+
+---
+
 # Phase 8, header fix + French polish (after Batch 1)
 - Header: every item stays on ONE line (cause: global `overflow-wrap:anywhere` on `.chip/.btn` broke "EN" and "Search" letter by letter and links wrapped). Search is now an icon button (tooltip shows Ctrl K). `fit()` in `js/app.js` steps down only when labels do not fit: short button text, then the menu button. Works for every language and for the "Your account" label change after sign-in.
 - French: non-breaking space before `: ; ! ?` and inside « », and "relire" -> "examiner".
