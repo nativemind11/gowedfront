@@ -8,7 +8,7 @@
 - Partner and Director: nothing new. They do not request brief_messages / visitor_replies / briefs, and no reply form, price or link is ever drawn for them
   (tools/roles-test.py proves it). Strings: L.tm.rp in the four languages.
 - Files changed in the front: js/team.js, js/i18n/{en,ar,de,fr}.js, css/style.css (plus 2.2: js/brief.js, js/portal.js, js/auth.js).
-- Tests run (Chromium, mock Supabase): tools/replies-test.py (new), roles-test.py (updated), team-test.py: all passed. NOT run: the real Supabase, the real mail, npm run test:rls.
+- Tests run (Chromium, mock Supabase): tools/flow-test.py (new: the WHOLE client<->Founder flow with one shared state and two browsers, 22 checks), tools/replies-test.py (new), roles-test.py (updated), team-test.py, convo-test, portal-test, brief-test, auth-test, notify-test, launch-test, testimonials-test: all passed. tools/browser-test.py is OLD: it still fills the meeting step that Phase 2.2 removed from the brief, so it stops at that step (brief-test.py covers the new brief). NOT run: the real Supabase, the real mail, npm run test:rls.
 - If migration 008 is NOT applied yet, the Founder console still opens; the conversation and Public briefs show a clear message instead of data.
 
 # Phase 2, step 2.2 (front: brief and client page): DONE (v4), NOT PUBLISHED
