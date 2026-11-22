@@ -133,13 +133,15 @@ a.chip:hover,button.chip:hover{border-color:var(--gold)}
 .card{position:relative;background:var(--mid);border:1px solid var(--line);overflow:hidden;transition:border-color var(--d1) var(--ease),background var(--d1) var(--ease)}
 .card:hover{border-color:#C9A96E55}
 .cardart{display:block;position:relative;background:var(--gr)}.cardart svg{display:block;inline-size:100%;block-size:auto}
+.cardart .catalog-art-img{display:block;inline-size:100%;block-size:auto;aspect-ratio:3/2;object-fit:cover;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.card:hover .cardart .catalog-art-img{transform:scale(1.025)}
 .tag{position:absolute;inset-inline-start:.8rem;top:.8rem;font:400 .7rem var(--sans);letter-spacing:.04em;background:#05060Acc;padding:.2rem .6rem;color:var(--steel);border:1px solid var(--line)}
 .cb{padding:1.5rem}.cb h3{margin:.5rem 0 .4rem;font-size:1.55rem}.cb p{color:var(--steel);font-size:.93rem;margin:.3rem 0 1.4rem;line-height:1.6}
 .row{display:flex;justify-content:space-between;align-items:center;gap:var(--s1);flex-wrap:wrap}
 .cb .btn{padding:.55rem 1.1rem;font-size:.86rem;min-block-size:40px}.cb .row>a{color:var(--steel);font-size:.88rem;text-decoration:none;border-block-end:1px solid var(--line2)}.cb .row>a:hover{color:var(--ivory)}
 .scope{display:inline-flex;align-items:center;gap:.5rem;font:500 .74rem var(--sans);letter-spacing:.06em;color:var(--gold)}
 .scope i{font-style:normal;color:var(--steel);font-weight:400}
-.t3d{aspect-ratio:1/.9;position:relative}.t3d .cardart{position:absolute;inset:0}.t3d .tag{z-index:2}.t3d .wc{inline-size:100%;background:#0b0e17}
+.t3d{aspect-ratio:1/.9;position:relative}.t3d .cardart{position:absolute;inset:0}.t3d .cardart .catalog-art-img{block-size:100%}.t3d .tag{z-index:2}.t3d .wc{inline-size:100%;background:#0b0e17}
 /* forms */
 input,select,textarea{background:#ffffff08;color:var(--ivory);border:1px solid var(--line2);border-radius:2px;padding:.85rem 1rem;font:inherit;font-size:1rem;inline-size:100%;min-block-size:46px;transition:border-color .5s var(--ease),box-shadow .5s var(--ease)}
 select option{background:var(--mid);color:var(--ivory)}

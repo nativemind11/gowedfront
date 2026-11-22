@@ -219,6 +219,12 @@
 
   function render(type, label) {
     const slug = String(type?.slug || 'service');
+    const featured = {
+      corporate: 'images/catalog-corporate.webp',
+      'landing-page': 'images/catalog-landing.webp',
+      portfolio: 'images/catalog-portfolio.webp'
+    }[slug];
+    if (featured) return `<img class="catalog-art-img" src="${featured}" alt="" loading="lazy" decoding="async" width="1200" height="800" aria-hidden="true">`;
     const scene = scenes[sceneBySlug[slug]] || scenes.dashboard;
     const accent = accentFor(slug);
     const id = `art-${slug.replace(/[^a-z0-9_-]/gi, '-')}`;
