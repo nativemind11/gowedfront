@@ -132,7 +132,7 @@ a.chip:hover,button.chip:hover{border-color:var(--gold)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--gut)}
 .card{position:relative;background:var(--mid);border:1px solid var(--line);overflow:hidden;transition:border-color var(--d1) var(--ease),background var(--d1) var(--ease)}
 .card:hover{border-color:#C9A96E55}
-.cardart{display:block;position:relative;background:var(--gr)}.cardart svg,.cardart img{display:block;inline-size:100%;block-size:auto}.cardart img{aspect-ratio:16/9;object-fit:cover}
+.cardart{display:block;position:relative;background:var(--gr)}.cardart svg{display:block;inline-size:100%;block-size:auto}
 .tag{position:absolute;inset-inline-start:.8rem;top:.8rem;font:400 .7rem var(--sans);letter-spacing:.04em;background:#05060Acc;padding:.2rem .6rem;color:var(--steel);border:1px solid var(--line)}
 .cb{padding:1.5rem}.cb h3{margin:.5rem 0 .4rem;font-size:1.55rem}.cb p{color:var(--steel);font-size:.93rem;margin:.3rem 0 1.4rem;line-height:1.6}
 .row{display:flex;justify-content:space-between;align-items:center;gap:var(--s1);flex-wrap:wrap}
