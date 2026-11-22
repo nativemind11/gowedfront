@@ -1,238 +1,118 @@
-/* Semantic, self-contained illustrations for the service catalogue. */
+/* Original, hand-authored vector artwork for every catalogue service. No generated images. */
 (() => {
   const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   })[char]);
 
-  const scenes = {
-    corporate: `
-      <rect x="26" y="34" width="308" height="126" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <path d="M40 47h30M82 47h20M114 47h20M290 47h27" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <rect x="40" y="61" width="150" height="82" rx="3" fill="#151c29"/>
-      <path d="M53 80h92M53 91h65" stroke="#f4efe6" stroke-width="3" stroke-linecap="round" opacity=".78"/>
-      <path d="M53 104h76" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <rect x="53" y="117" width="45" height="15" rx="2" fill="var(--accent)" opacity=".95"/>
-      <rect x="202" y="61" width="117" height="82" rx="3" fill="#182231"/>
-      <path d="M215 126V96l19-15 20 15v30M220 126v-18h28v18M257 126V87l18-14 30 14v39M263 126v-17h24v17" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" opacity=".9"/>
-      <path d="M40 151h78M126 151h39M202 151h48M259 151h60" stroke="#8a93a8" stroke-width="2" stroke-linecap="round" opacity=".6"/>`,
-    landing: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <path d="M40 47h41M277 47h42" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <path d="M48 73h139M48 84h105" stroke="#f4efe6" stroke-width="4" stroke-linecap="round" opacity=".85"/>
-      <path d="M48 96h108" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <rect x="48" y="108" width="66" height="20" rx="3" fill="var(--accent)"/>
-      <path d="M60 118h39" stroke="#10131b" stroke-width="2" stroke-linecap="round"/>
-      <circle cx="265" cy="99" r="39" fill="var(--accent)" opacity=".13"/>
-      <rect x="228" y="63" width="71" height="72" rx="7" fill="#20283a" stroke="#ffffff20"/>
-      <path d="M241 113c8-24 17-37 28-37 8 0 13 10 17 27" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="269" cy="79" r="5" fill="#f4efe6" opacity=".86"/>
-      <path d="M48 145h254" stroke="#ffffff19"/>
-      <circle cx="77" cy="153" r="3" fill="var(--accent)"/><circle cx="91" cy="153" r="3" fill="#8a93a8"/><circle cx="105" cy="153" r="3" fill="#8a93a8"/>`,
-    portfolio: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <path d="M42 48h45M276 48h42" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <rect x="43" y="60" width="81" height="84" rx="3" fill="#26313a"/>
-      <path d="M43 117l25-28 15 16 16-22 25 31v30H43z" fill="var(--accent)" opacity=".7"/>
-      <circle cx="98" cy="78" r="9" fill="#f4efe6" opacity=".72"/>
-      <rect x="132" y="60" width="82" height="38" rx="3" fill="#282437"/>
-      <path d="M132 89l20-18 19 11 16-15 27 16v15h-82z" fill="#b69199" opacity=".72"/>
-      <rect x="222" y="60" width="95" height="84" rx="3" fill="#182a2b"/>
-      <circle cx="269" cy="94" r="22" fill="none" stroke="var(--accent)" stroke-width="2"/>
-      <path d="M252 104l13-20 19 23" fill="none" stroke="#f4efe6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <rect x="132" y="105" width="82" height="39" rx="3" fill="#232b3b"/>
-      <path d="M144 119h55M144 128h36" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>`,
-    hospitality: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <rect x="42" y="52" width="122" height="91" rx="4" fill="#2b2520"/>
-      <path d="M42 112q30-33 61-9t61-9v49H42z" fill="var(--accent)" opacity=".55"/>
-      <circle cx="103" cy="94" r="25" fill="#e7ddc8" opacity=".92"/><circle cx="103" cy="94" r="17" fill="#72806a"/><circle cx="96" cy="89" r="4" fill="#c96f4a"/><circle cx="110" cy="99" r="5" fill="#c96f4a"/>
-      <path d="M181 62h128M181 74h88" stroke="#f4efe6" stroke-width="3" stroke-linecap="round" opacity=".72"/>
-      <path d="M181 91h111M181 101h95" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <rect x="181" y="116" width="88" height="20" rx="3" fill="var(--accent)"/><path d="M195 126h60" stroke="#10131b" stroke-width="2" stroke-linecap="round"/>`,
-    nonprofit: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <circle cx="101" cy="95" r="42" fill="var(--accent)" opacity=".13"/>
-      <path d="M101 122c-8-8-31-24-31-40 0-15 19-19 31-5 12-14 31-10 31 5 0 16-23 32-31 40z" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round"/>
-      <path d="M101 112v-23m0 12c-10-10-16-11-20-11m20 4c8-10 14-12 20-12" fill="none" stroke="#f4efe6" stroke-width="2" stroke-linecap="round"/>
-      <path d="M169 66h139M169 78h92" stroke="#f4efe6" stroke-width="3" stroke-linecap="round" opacity=".75"/>
-      <path d="M169 95h126M169 105h101" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <rect x="169" y="121" width="89" height="18" rx="3" fill="var(--accent)"/><path d="M181 130h62" stroke="#10131b" stroke-width="2" stroke-linecap="round"/>`,
-    education: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <path d="M48 129V84l55-31 55 31v45M60 128V89h86v39M80 128v-26h18v26M116 128v-26h18v26" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linejoin="round"/>
-      <path d="M48 130h111" stroke="#f4efe6" stroke-width="3" stroke-linecap="round" opacity=".7"/>
-      <path d="M184 64h126M184 76h92" stroke="#f4efe6" stroke-width="3" stroke-linecap="round" opacity=".75"/>
-      <path d="M184 94h119M184 104h98" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <rect x="184" y="120" width="51" height="22" rx="3" fill="#20283a"/><path d="M196 124l13 7-13 7z" fill="var(--accent)"/>
-      <rect x="243" y="120" width="67" height="22" rx="3" fill="#20283a"/><path d="M253 131h46" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>`,
-    civic: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <path d="M45 73l58-26 58 26H45zM51 132h104M58 79v48M80 79v48M103 79v48M126 79v48M149 79v48" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>
-      <path d="M177 62h131M177 74h91" stroke="#f4efe6" stroke-width="3" stroke-linecap="round" opacity=".74"/>
-      <path d="M177 93h127M177 103h104" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <rect x="177" y="119" width="130" height="24" rx="3" fill="#182231" stroke="#ffffff16"/><circle cx="190" cy="131" r="4" fill="var(--accent)"/><path d="M201 131h93" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>`,
-    poster: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#11131d" stroke="#ffffff18"/>
-      <rect x="46" y="47" width="85" height="102" rx="3" fill="#27243a"/>
-      <circle cx="89" cy="88" r="28" fill="var(--accent)" opacity=".75"/><path d="M61 119l26-34 17 20 17-19 10 11v34H61z" fill="#10131b" opacity=".75"/>
-      <path d="M154 65h150M154 77h111" stroke="#f4efe6" stroke-width="4" stroke-linecap="round" opacity=".8"/>
-      <path d="M154 94h121M154 104h104" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <rect x="154" y="121" width="66" height="18" rx="3" fill="var(--accent)"/><path d="M233 130h70" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>`,
-    magazine: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <rect x="42" y="50" width="112" height="91" rx="3" fill="#29333a"/><path d="M42 115l31-38 20 24 21-18 40 35v23H42z" fill="var(--accent)" opacity=".72"/><circle cx="124" cy="69" r="9" fill="#f4efe6" opacity=".8"/>
-      <path d="M169 58h144M169 70h126" stroke="#f4efe6" stroke-width="3" stroke-linecap="round" opacity=".78"/>
-      <path d="M169 88h134M169 98h120M169 112h129M169 122h108M169 136h133" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>`,
-    docs: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <rect x="43" y="49" width="62" height="98" rx="3" fill="#171e2a"/><circle cx="55" cy="63" r="3" fill="var(--accent)"/><path d="M64 63h28M52 78h40M52 89h34M52 100h41M52 111h28" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <path d="M126 58h162M126 70h132M126 87h151M126 98h141M126 109h155M126 120h97" stroke="#f4efe6" stroke-width="2.5" stroke-linecap="round" opacity=".68"/>
-      <rect x="126" y="132" width="58" height="5" rx="2" fill="var(--accent)"/>`,
-    storefront: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <path d="M47 72l9-22h78l9 22" fill="#242b38" stroke="var(--accent)" stroke-width="2"/><path d="M48 72h96v9a9 9 0 0 1-9 9 9 9 0 0 1-9-9 9 9 0 0 1-18 0 9 9 0 0 1-18 0 9 9 0 0 1-18 0 9 9 0 0 1-18 0z" fill="var(--accent)" opacity=".8"/>
-      <rect x="57" y="93" width="79" height="44" rx="2" fill="#1c2532"/><path d="M69 127l17-22 15 15 12-13 17 20" fill="none" stroke="#f4efe6" stroke-width="2"/>
-      <rect x="172" y="58" width="138" height="14" rx="3" fill="#20283a"/><path d="M184 65h82" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <rect x="172" y="83" width="60" height="55" rx="3" fill="#20283a"/><rect x="241" y="83" width="69" height="55" rx="3" fill="#20283a"/><path d="M183 124l17-25 19 24M251 122l16-20 31 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>`,
-    product: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <rect x="46" y="48" width="122" height="100" rx="4" fill="#192230"/>
-      <path d="M87 68l13-8 14 8 12 12-9 8-4-4v39H82V84l-4 4-9-8z" fill="var(--accent)" opacity=".82" stroke="#f4efe6" stroke-width="1.4" stroke-linejoin="round"/>
-      <path d="M101 61l-4 12 9 7 9-7-5-12" fill="none" stroke="#f4efe6" stroke-width="1.4"/>
-      <path d="M190 61h120M190 73h84" stroke="#f4efe6" stroke-width="3" stroke-linecap="round" opacity=".78"/>
-      <path d="M190 93h98M190 103h111" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <circle cx="198" cy="127" r="5" fill="var(--accent)"/><circle cx="214" cy="127" r="5" fill="#8a93a8"/><circle cx="230" cy="127" r="5" fill="#b69199"/>
-      <rect x="253" y="117" width="57" height="20" rx="3" fill="var(--accent)"/>`,
-    digital: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <rect x="48" y="54" width="92" height="82" rx="5" fill="#192433" stroke="#ffffff18"/>
-      <path d="M75 73h38v48H75z" fill="#202c3d" stroke="var(--accent)" stroke-width="2"/><path d="M82 82h24M82 91h24M82 100h18" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/><path d="M94 106v19m-9-8 9 9 9-9" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M168 64h143M168 76h100" stroke="#f4efe6" stroke-width="3" stroke-linecap="round" opacity=".75"/><path d="M168 95h127M168 105h111" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <rect x="168" y="121" width="88" height="18" rx="3" fill="var(--accent)"/><path d="M184 130h56" stroke="#10131b" stroke-width="2" stroke-linecap="round"/>`,
-    marketplace: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <path d="M45 65l8-15h54l8 15" fill="var(--accent)" opacity=".7"/><path d="M45 65h70v8a7 7 0 0 1-7 7 7 7 0 0 1-7-7 7 7 0 0 1-14 0 7 7 0 0 1-14 0 7 7 0 0 1-14 0 7 7 0 0 1-14 0z" fill="#c9a96e"/>
-      <path d="M144 65l8-15h54l8 15" fill="#6f8f8d" opacity=".8"/><path d="M144 65h70v8a7 7 0 0 1-7 7 7 7 0 0 1-7-7 7 7 0 0 1-14 0 7 7 0 0 1-14 0 7 7 0 0 1-14 0 7 7 0 0 1-14 0z" fill="#6f8f8d"/>
-      <path d="M243 65l8-15h54l8 15" fill="#b69199"/><path d="M243 65h70v8a7 7 0 0 1-7 7 7 7 0 0 1-7-7 7 7 0 0 1-14 0 7 7 0 0 1-14 0 7 7 0 0 1-14 0 7 7 0 0 1-14 0z" fill="#b69199"/>
-      <rect x="48" y="91" width="62" height="46" rx="2" fill="#20283a"/><rect x="146" y="91" width="62" height="46" rx="2" fill="#20283a"/><rect x="245" y="91" width="62" height="46" rx="2" fill="#20283a"/><path d="M58 125l18-22 24 26M156 126l15-17 26 25M255 123l18-18 24 29" fill="none" stroke="#f4efe6" stroke-width="2"/>`,
-    calendar: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <rect x="45" y="48" width="143" height="100" rx="4" fill="#151c29" stroke="#ffffff19"/><path d="M45 70h143" stroke="#ffffff19"/><path d="M61 58v-9M171 58v-9" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
-      <path d="M64 84h9m14 0h9m14 0h9m14 0h9m14 0h9M64 101h9m14 0h9m14 0h9m14 0h9m14 0h9M64 119h9m14 0h9m14 0h9m14 0h9m14 0h9" stroke="#8a93a8" stroke-width="5" stroke-linecap="round"/>
-      <circle cx="101.5" cy="101" r="8" fill="var(--accent)"/><circle cx="146.5" cy="119" r="8" fill="#263d3b" stroke="#7ba99b" stroke-width="1.5"/>
-      <path d="M214 60h92M214 72h62" stroke="#f4efe6" stroke-width="3" stroke-linecap="round" opacity=".75"/><rect x="214" y="88" width="93" height="22" rx="3" fill="#20283a"/><circle cx="227" cy="99" r="4" fill="var(--accent)"/><path d="M239 99h56" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/><rect x="214" y="118" width="93" height="22" rx="3" fill="var(--accent)"/>`,
-    event: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <rect x="47" y="49" width="91" height="98" rx="4" fill="#272238"/><path d="M47 119q28-30 45-11t46-20v59H47z" fill="var(--accent)" opacity=".8"/><circle cx="111" cy="70" r="9" fill="#f4efe6" opacity=".78"/>
-      <path d="M160 64h147M160 76h108" stroke="#f4efe6" stroke-width="3.5" stroke-linecap="round" opacity=".8"/><path d="M160 96h130M160 106h101" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <rect x="160" y="122" width="55" height="20" rx="3" fill="var(--accent)"/><path d="M230 132h76" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/><circle cx="303" cy="132" r="7" fill="#20283a" stroke="#8a93a8"/>`,
-    dashboard: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <rect x="40" y="48" width="49" height="100" rx="3" fill="#151c29"/><circle cx="54" cy="62" r="4" fill="var(--accent)"/><path d="M51 77h27M51 89h27M51 101h27M51 113h20M51 125h27" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <rect x="101" y="48" width="98" height="42" rx="3" fill="#1a2230"/><path d="M113 76V68h12v8M132 76V60h12v16M151 76V55h12v21M170 76V64h12v12" fill="var(--accent)" opacity=".82"/>
-      <rect x="208" y="48" width="111" height="42" rx="3" fill="#1a2230"/><path d="M220 76c14-20 23 5 37-7s19-13 29-11 16-9 22-10" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/><path d="M220 80h88" stroke="#ffffff18"/>
-      <rect x="101" y="99" width="218" height="49" rx="3" fill="#151c29"/><path d="M114 111h68M202 111h54M271 111h34M114 123h71M202 123h75M114 136h42M202 136h43" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/><circle cx="294" cy="123" r="4" fill="var(--accent)"/>`,
-    table: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <path d="M44 55h272M44 74h272M44 93h272M44 112h272M44 131h272" stroke="#ffffff16"/>
-      <path d="M91 48v90M174 48v90M247 48v90" stroke="#ffffff13"/>
-      <rect x="48" y="60" width="26" height="7" rx="2" fill="var(--accent)"/><path d="M102 63h54M184 63h45M258 63h43" stroke="#f4efe6" stroke-width="2" stroke-linecap="round" opacity=".65"/>
-      <circle cx="60" cy="83" r="5" fill="#6f9d8a"/><path d="M102 83h58M184 83h39M258 83h50" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <circle cx="60" cy="102" r="5" fill="#b69199"/><path d="M102 102h47M184 102h47M258 102h38" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <circle cx="60" cy="121" r="5" fill="var(--accent)"/><path d="M102 121h57M184 121h44M258 121h51" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>`,
-    map: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#111a21" stroke="#ffffff18"/>
-      <path d="M36 64l43-13 42 9 43-13 41 14 47-11 42 13v83l-43-14-46 12-44-11-43 14-43-11-39 12z" fill="#1a2a2d" stroke="#ffffff15" stroke-width="1.4"/>
-      <path d="M38 91l54-14 38 18 47-24 44 21 40-13 40 16M50 133l41-31 49 19 34-23 41 24 47-27 25 4" fill="none" stroke="#526e6c" stroke-width="3" stroke-linecap="round"/>
-      <path d="M93 80c0-8 6-14 14-14s14 6 14 14c0 11-14 25-14 25S93 91 93 80z" fill="var(--accent)"/><circle cx="107" cy="80" r="4" fill="#10131b"/>
-      <path d="M214 113c0-7 5-12 12-12s12 5 12 12c0 10-12 22-12 22s-12-12-12-22z" fill="#e5a77e"/><circle cx="226" cy="113" r="3.5" fill="#10131b"/>
-      <circle cx="170" cy="91" r="4" fill="#f4efe6"/><path d="M119 86q25-11 48 5t47 14" fill="none" stroke="#f4efe6" stroke-width="2" stroke-dasharray="4 4"/>`,
-    form: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <rect x="48" y="48" width="78" height="101" rx="4" fill="#171f2c"/><path d="M66 48v-6h43v6" fill="none" stroke="#8a93a8" stroke-width="2"/>
-      <path d="M63 68h46M63 79h46M63 90h33M63 105h46M63 116h35" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <path d="M63 135c16-17 24 7 46-10" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
-      <path d="M151 61h157M151 73h112" stroke="#f4efe6" stroke-width="3" stroke-linecap="round" opacity=".76"/>
-      <rect x="151" y="90" width="157" height="25" rx="3" fill="#1b2432"/><path d="M163 102h87" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/><circle cx="294" cy="102" r="6" fill="var(--accent)"/>
-      <rect x="151" y="124" width="84" height="18" rx="3" fill="var(--accent)"/>`,
-    media: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <rect x="43" y="48" width="159" height="100" rx="4" fill="#202536"/>
-      <path d="M43 122l33-36 23 22 26-30 41 47 36 23H43z" fill="var(--accent)" opacity=".7"/><circle cx="161" cy="68" r="10" fill="#f4efe6" opacity=".72"/>
-      <circle cx="123" cy="99" r="19" fill="#0d111b" opacity=".68"/><path d="M119 88l16 11-16 11z" fill="#f4efe6"/>
-      <path d="M216 62h96M216 74h71" stroke="#f4efe6" stroke-width="3" stroke-linecap="round" opacity=".76"/><path d="M216 94h91M216 104h85" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <path d="M217 128h91" stroke="#ffffff25" stroke-width="3" stroke-linecap="round"/><path d="M217 128h48" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/><circle cx="265" cy="128" r="4" fill="#f4efe6"/>`,
-    chat: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <rect x="46" y="50" width="133" height="35" rx="10" fill="#20283a"/><path d="M62 63h88M62 73h58" stroke="#c1c7d2" stroke-width="2" stroke-linecap="round"/>
-      <rect x="180" y="92" width="131" height="35" rx="10" fill="#263c3b"/><path d="M195 105h90M195 115h65" stroke="#e4e9e2" stroke-width="2" stroke-linecap="round"/>
-      <circle cx="57" cy="104" r="5" fill="var(--accent)"/><circle cx="73" cy="104" r="5" fill="#8a93a8"/><circle cx="89" cy="104" r="5" fill="#8a93a8"/>
-      <rect x="46" y="132" width="265" height="17" rx="8" fill="#171f2c" stroke="#ffffff17"/><circle cx="297" cy="140.5" r="5" fill="var(--accent)"/>`,
-    mobile: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <rect x="69" y="42" width="82" height="112" rx="12" fill="#080b12" stroke="#8a93a8" stroke-width="2"/><rect x="76" y="53" width="68" height="88" rx="5" fill="#182231"/>
-      <rect x="83" y="61" width="54" height="29" rx="3" fill="var(--accent)" opacity=".8"/><path d="M83 99h54M83 107h40M83 118h54M83 126h31" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/><circle cx="110" cy="147" r="2" fill="#8a93a8"/>
-      <path d="M179 65h130M179 77h88" stroke="#f4efe6" stroke-width="3" stroke-linecap="round" opacity=".76"/><path d="M179 100h124M179 111h103" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <circle cx="189" cy="135" r="8" fill="#263c3b"/><circle cx="215" cy="135" r="8" fill="#2d293f"/><circle cx="241" cy="135" r="8" fill="#41302c"/>`,
-    object: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <circle cx="112" cy="100" r="51" fill="var(--accent)" opacity=".08"/>
-      <path d="M69 118l42-68 42 68z" fill="#283345" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/><path d="M111 50v68M69 118h84M111 50l42 68M111 50L69 118" fill="none" stroke="#f4efe6" stroke-width="1.4" opacity=".72"/>
-      <path d="M185 61h125M185 73h94" stroke="#f4efe6" stroke-width="3" stroke-linecap="round" opacity=".76"/><path d="M185 94h116M185 104h105" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <rect x="185" y="122" width="23" height="19" rx="3" fill="#283345" stroke="var(--accent)"/><rect x="216" y="122" width="23" height="19" rx="3" fill="#283345" stroke="#8a93a8"/><rect x="247" y="122" width="23" height="19" rx="3" fill="#283345" stroke="#b69199"/>`,
-    data: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#0d111b" stroke="#ffffff18"/>
-      <circle cx="110" cy="97" r="39" fill="none" stroke="#263345" stroke-width="16"/><path d="M110 58a39 39 0 0 1 37 53" fill="none" stroke="var(--accent)" stroke-width="16" stroke-linecap="round"/><path d="M147 111a39 39 0 0 1-61 15" fill="none" stroke="#83a89b" stroke-width="16" stroke-linecap="round"/>
-      <circle cx="110" cy="97" r="4" fill="#f4efe6"/><path d="M179 62h131M179 74h88" stroke="#f4efe6" stroke-width="3" stroke-linecap="round" opacity=".76"/><path d="M179 98h122M179 108h107" stroke="#8a93a8" stroke-width="2" stroke-linecap="round"/>
-      <path d="M181 137h119" stroke="#ffffff22" stroke-width="2"/><circle cx="191" cy="137" r="4" fill="var(--accent)"/><circle cx="228" cy="137" r="4" fill="#83a89b"/><circle cx="265" cy="137" r="4" fill="#b69199"/>`,
-    tour: `
-      <rect x="27" y="34" width="306" height="128" rx="4" fill="#111a21" stroke="#ffffff18"/>
-      <rect x="43" y="48" width="274" height="99" rx="4" fill="#1b2a2c"/><path d="M43 117l39-42 39 22 38-34 52 40 37-31 69 41v34H43z" fill="#53756d" opacity=".8"/><path d="M43 128l53-25 47 29 58-34 58 25 58-18v42H43z" fill="#293b37"/>
-      <circle cx="269" cy="70" r="12" fill="var(--accent)" opacity=".9"/><circle cx="269" cy="70" r="20" fill="none" stroke="var(--accent)" opacity=".35"/><path d="M58 62h52" stroke="#f4efe6" stroke-width="2" stroke-linecap="round" opacity=".8"/><circle cx="303" cy="132" r="7" fill="#0d111b" stroke="#f4efe6"/><path d="M301 128l5 4-5 4z" fill="#f4efe6"/>`
+  // Each service owns its own miniature motif and composition family.
+  // Motifs use a common fine-line language so the catalogue feels art-directed, not templated.
+  const D = {
+    corporate:{c:0,l:0,m:`<path d="M8 72V32l20-12 20 12v40M17 72V42h22v30M14 35h28M22 48v7m10-7v7M22 61v7m10-7v7"/><path d="M4 72h50"/><path d="M15 29h5m16 0h5" stroke-width="4"/>`},
+    'landing-page':{c:0,l:1,m:`<circle cx="38" cy="38" r="25"/><circle cx="38" cy="38" r="15"/><circle cx="38" cy="38" r="5" fill="currentColor"/><path d="M38 38 66 10M56 10h10v10"/><rect x="20" y="67" width="38" height="8" rx="4" fill="currentColor" stroke="none"/>`},
+    portfolio:{c:2,l:2,m:`<rect x="5" y="9" width="30" height="46" rx="3"/><path d="m7 43 9-14 7 8 5-7 7 13"/><circle cx="26" cy="19" r="4" fill="currentColor"/><rect x="42" y="9" width="28" height="25" rx="3"/><path d="m44 29 8-10 8 7 5-5 5 8"/><rect x="42" y="41" width="28" height="31" rx="3"/><path d="M48 62q7-18 16 0"/>`},
+    'hospitality-site':{c:1,l:3,m:`<ellipse cx="38" cy="52" rx="28" ry="12"/><path d="M10 52a28 28 0 0 1 56 0M16 52h44M38 24v-7m-6 0h12"/><path d="M38 31c-8 8-6 17 0 20 7-4 8-13 0-20z" fill="currentColor"/><path d="M20 68h36"/>`},
+    events:{c:2,l:1,m:`<path d="M11 21h52v15a8 8 0 0 0 0 16v15H11V52a8 8 0 0 0 0-16z"/><path d="M24 28v8m0 16v10m9-28v28" stroke-dasharray="2 4"/><path d="m49 30 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z" fill="currentColor"/>`},
+    nonprofit:{c:3,l:0,m:`<path d="M38 59S12 44 12 29c0-13 17-16 26-3 9-13 26-10 26 3 0 15-26 30-26 30z" fill="currentColor" opacity=".78"/><path d="M12 67q12-17 26-8 13-9 26 8M38 56V39m0 8q-8-9-15-8m15 4q8-9 15-8"/>`},
+    'education-showcase':{c:4,l:2,m:`<path d="M7 27q17-8 31 3 14-11 31-3v39q-17-8-31 3-14-11-31-3z"/><path d="M38 30v39M14 36q10-4 18 1m-18 8q10-4 18 1m20-9q8-5 18-1m-18 10q8-5 18-1"/><path d="m38 12 29 10-29 11-29-11zM24 28v9q14 10 28 0v-9" fill="currentColor" opacity=".82"/>`},
+    institutional:{c:0,l:3,m:`<path d="m7 27 31-15 31 15zM12 65h52M17 31v31m14-31v31m14-31v31m14-31v31"/><path d="M8 70h60"/><circle cx="38" cy="24" r="3" fill="currentColor"/>`},
+    microsite:{c:2,l:1,m:`<rect x="15" y="8" width="47" height="65" rx="4"/><circle cx="39" cy="31" r="13" fill="currentColor" opacity=".75"/><path d="M24 52h29m-29 7h21m-21 7h26"/><path d="m10 16-5 5m63 37 5 5"/>`},
+    'content-media':{c:4,l:2,m:`<rect x="8" y="11" width="60" height="58" rx="3"/><path d="M14 19h25m-25 6h25m-25 6h25m-25 6h25m-25 6h25m-25 6h25"/><rect x="45" y="18" width="17" height="18" rx="2" fill="currentColor" opacity=".65"/><path d="m51 22 8 5-8 5z" fill="#111722" stroke="none"/><path d="M45 42h17m-17 6h17m-17 6h11"/>`},
+    'docs-knowledge':{c:5,l:0,m:`<path d="M8 18q15-7 30 3 15-10 30-3v44q-15-7-30 3-15-10-30-3z"/><path d="M38 21v44M15 29q10-4 17 1m-17 7q10-4 17 1m14-9q10-5 17-1m-17 9q10-5 17-1"/><path d="M17 18v-7h10v12" fill="currentColor"/>`},
+    'online-store':{c:0,l:1,m:`<path d="M17 29h42l-4 39H21z"/><path d="M28 31v-8a10 10 0 0 1 20 0v8"/><path d="M29 46h18"/><circle cx="31" cy="57" r="2" fill="currentColor"/><circle cx="46" cy="57" r="2" fill="currentColor"/><path d="M12 24h51" stroke-width="4"/>`},
+    'digital-store':{c:5,l:2,m:`<path d="M20 9h27l14 14v45H20z"/><path d="M47 9v15h14M29 34h23m-23 8h23m-23 8h15"/><path d="M38 49v18m-8-8 8 8 8-8" stroke="currentColor" stroke-width="3"/><circle cx="38" cy="48" r="21" fill="none" stroke="currentColor" opacity=".2"/>`},
+    subscriptions:{c:1,l:3,m:`<rect x="10" y="22" width="56" height="39" rx="7"/><path d="M10 34h56"/><path d="M20 48h15m-15 6h9"/><path d="M53 16a25 25 0 0 1 18 21m-5-5 5 5 5-5M23 67A25 25 0 0 1 5 46m5 5-5-5-5 5"/>`},
+    marketplace:{c:2,l:0,m:`<path d="m7 31 7-17h17l7 17M38 31l7-17h17l7 17"/><path d="M7 31h31v9a7 7 0 0 1-14 0 7 7 0 0 1-14 0zM38 31h31v9a7 7 0 0 1-14 0 7 7 0 0 1-14 0z" fill="currentColor" opacity=".72"/><path d="M12 49h22v20H12zm31 0h22v20H43z"/><path d="m15 65 7-9 8 9m16-1 6-9 8 9"/>`},
+    'b2b-wholesale':{c:1,l:1,m:`<path d="m9 28 18-10 18 10-18 11zM9 28v22l18 10V39m18-11v22L27 60"/><path d="m42 48 13-7 14 8-14 8zM42 48v16l13 8 14-8V49M55 57v15"/><path d="M15 32v13m7-9v13m25 2v9" stroke="currentColor"/>`},
+    'dropshipping-pod':{c:3,l:3,m:`<path d="m25 18 13-8 13 8 14 12-8 10-7-5v34H26V35l-7 5-8-10z"/><path d="m29 17 9 14 9-14M38 31v38"/><rect x="50" y="50" width="18" height="15" rx="2" fill="currentColor" opacity=".68"/><path d="M54 55h10m-10 4h7"/>`},
+    'auctions-rentals':{c:0,l:2,m:`<path d="m18 20 10-10 24 24-10 10zM43 46l9-9 12 12-9 9zM29 31l-8 8m18-26 8-8"/><path d="M16 61h44M26 54h30M22 68h38"/><circle cx="58" cy="18" r="9" fill="currentColor" opacity=".8"/><path d="M58 13v6l4 2" stroke="#111722"/>`},
+    'catalog-orders':{c:4,l:0,m:`<rect x="10" y="10" width="39" height="55" rx="4"/><path d="M19 22h21m-21 8h21m-21 8h14"/><circle cx="19" cy="51" r="3" fill="currentColor"/><path d="M49 38h19l-3 21H51zM47 34h4l3 21m4 6a2 2 0 1 0 4 0m-18 0a2 2 0 1 0 4 0"/><path d="M55 42h8"/>`},
+    'configurator-store':{c:5,l:1,m:`<path d="m37 10 26 14v31L37 70 11 55V24zM37 40v30M11 24l26 16 26-16M24 17l26 15"/><circle cx="63" cy="62" r="7" fill="currentColor"/><path d="M64 53V45m0-5v-3m-9 15-6 4m5 7-3 3"/>`},
+    appointments:{c:4,l:2,m:`<rect x="10" y="15" width="54" height="52" rx="6"/><path d="M10 29h54M23 10v11m28-11v11"/><circle cx="38" cy="47" r="13"/><path d="M38 39v9l7 4" stroke="currentColor" stroke-width="3"/><circle cx="22" cy="39" r="2" fill="currentColor"/>`},
+    stays:{c:1,l:0,m:`<path d="M10 56V32a7 7 0 0 1 14 0v8h29a9 9 0 0 1 9 9v7M10 47h52M14 59v8m44-8v8"/><path d="M12 28V17h18v11m-15-5h12"/><circle cx="18" cy="32" r="3" fill="currentColor"/>`},
+    'table-booking':{c:0,l:3,m:`<circle cx="38" cy="42" r="22"/><circle cx="38" cy="42" r="12"/><path d="M38 42 48 32M38 42l-2-12"/><path d="M13 22v18m-5-18v8a5 5 0 0 0 10 0v-8m37 0v45m0-45q12 9 0 19"/><circle cx="38" cy="42" r="4" fill="currentColor"/>`},
+    ticketing:{c:2,l:1,m:`<path d="M10 21h56v15a8 8 0 0 0 0 16v15H10V52a8 8 0 0 0 0-16z"/><path d="M25 26v8m0 20v8m10-36v34" stroke-dasharray="2 4"/><path d="M47 30h11m-11 6h11m-11 6h11m-11 6h11"/><circle cx="52" cy="55" r="5" fill="currentColor"/>`},
+    rentals:{c:5,l:3,m:`<circle cx="38" cy="39" r="20"/><path d="M48 55 65 72M31 40l7 7 15-18"/><path d="M17 14h26M17 20h19"/><rect x="10" y="10" width="25" height="17" rx="4" fill="none"/>`},
+    'on-demand':{c:0,l:2,m:`<path d="M38 72S14 47 14 31a24 24 0 0 1 48 0c0 16-24 41-24 41z"/><circle cx="38" cy="31" r="9" fill="currentColor"/><path d="m42 23-10 13h8l-4 10 12-15h-8z" fill="#111722" stroke="none"/>`},
+    travel:{c:4,l:1,m:`<path d="m10 43 26-7 16-24 7 2-9 24 18 10-2 6-22-5-13 18-5-1 6-20-22 3z"/><path d="M20 61h17m-10 7h18"/><circle cx="60" cy="18" r="5" fill="currentColor"/>`},
+    saas:{c:5,l:0,m:`<path d="M20 58h38a14 14 0 0 0 0-28 21 21 0 0 0-40-3 16 16 0 0 0 2 31z"/><rect x="28" y="39" width="26" height="24" rx="4"/><path d="M34 46h14m-14 6h9"/><circle cx="57" cy="19" r="3" fill="currentColor"/>`},
+    crm:{c:3,l:2,m:`<circle cx="38" cy="26" r="10"/><path d="M18 64a20 20 0 0 1 40 0"/><circle cx="14" cy="26" r="5" fill="currentColor"/><circle cx="62" cy="26" r="5" fill="currentColor"/><path d="M19 29 29 36m28-7L47 36M19 55l-5 5m50-5 5 5"/>`},
+    erp:{c:0,l:3,m:`<circle cx="38" cy="40" r="19"/><circle cx="38" cy="40" r="7" fill="currentColor"/><path d="M38 12v9m0 38v9M10 40h9m38 0h9M18 20l7 7m26 26 7 7m0-40-7 7m-26 26-7 7"/><rect x="4" y="8" width="13" height="10" rx="2"/><rect x="58" y="8" width="13" height="10" rx="2"/>`},
+    hr:{c:2,l:1,m:`<circle cx="25" cy="28" r="9"/><circle cx="52" cy="28" r="9"/><path d="M8 66a17 17 0 0 1 34 0m-3 0a14 14 0 0 1 28 0"/><path d="M38 15v-6m-4 4 4-4 4 4" stroke="currentColor"/>`},
+    'project-management':{c:1,l:2,m:`<rect x="8" y="12" width="18" height="52" rx="4"/><rect x="30" y="12" width="18" height="52" rx="4"/><rect x="52" y="12" width="18" height="52" rx="4"/><path d="M12 21h10m-10 6h8m4 5H12m22-11h10m-10 6h8m4 5H34m22-11h10m-10 6h8"/><circle cx="18" cy="52" r="4" fill="currentColor"/><circle cx="40" cy="43" r="4" fill="currentColor"/>`},
+    accounting:{c:4,l:0,m:`<rect x="14" y="9" width="38" height="58" rx="4"/><path d="M23 21h20m-20 8h20m-20 8h11m-11 8h20"/><circle cx="54" cy="54" r="14" fill="#151b27" stroke="currentColor"/><path d="M54 46v16m5-13q-2-4-6-3-6 0-5 4 1 3 7 4 5 1 4 5-1 4-6 4-4 0-6-3"/>`},
+    logistics:{c:1,l:3,m:`<path d="M8 29h38v27H8zM46 38h13l10 11v7H46z"/><circle cx="21" cy="59" r="6"/><circle cx="57" cy="59" r="6"/><path d="M12 36h22m-22 7h15m17 1h12"/><path d="M11 18h47" stroke-dasharray="3 5"/><circle cx="11" cy="18" r="4" fill="currentColor"/><path d="m56 14 5 4-5 4"/>`},
+    pos:{c:0,l:1,m:`<path d="M17 22h42l-4 19H21zM22 41v26m33-26v26M17 67h43"/><path d="M25 16v8m10-8v8m10-8v8m10-8v8"/><rect x="26" y="47" width="24" height="12" rx="2" fill="currentColor"/><path d="M30 51h16" stroke="#111722"/>`},
+    'property-mgmt':{c:5,l:2,m:`<path d="M12 67V25l26-15 26 15v42M21 67V32h34v35M30 40h5m8 0h5m-18 11h5m8 0h5"/><path d="M34 67V54h9v13"/><circle cx="59" cy="56" r="10" fill="#151b27" stroke="currentColor"/><path d="M59 50v12m-4-8h7"/>`},
+    'support-desk':{c:2,l:0,m:`<path d="M12 43v-8a26 26 0 0 1 52 0v8M12 42h11v19H18a6 6 0 0 1-6-6zm52 0H53v19h5a6 6 0 0 0 6-6z"/><path d="M58 62q-4 10-17 10h-5"/><circle cx="32" cy="72" r="3" fill="currentColor"/><path d="M28 34q10-10 21 0"/>`},
+    'documents-esign':{c:5,l:1,m:`<path d="M18 9h29l13 13v45H18zM47 9v14h13"/><path d="M26 34h23m-23 7h23m-23 7h11"/><path d="m29 60 12-9 11 6-15 9-8-6z" fill="currentColor"/><path d="m46 54 7-8 7 6-8 8"/>`},
+    portals:{c:1,l:3,m:`<path d="M24 68V22a15 15 0 0 1 30 0v46M17 68h44"/><circle cx="38" cy="35" r="6"/><path d="M27 59a11 11 0 0 1 22 0M13 30h9m32 0h10"/><circle cx="11" cy="30" r="3" fill="currentColor"/><circle cx="66" cy="30" r="3" fill="currentColor"/>`},
+    'education-lms':{c:4,l:0,m:`<rect x="9" y="15" width="44" height="47" rx="4"/><path d="M17 24h25m-25 7h25m-25 7h16"/><circle cx="55" cy="52" r="14" fill="#151b27" stroke="currentColor"/><path d="m52 45 10 7-10 7z" fill="currentColor"/><path d="M17 67h45"/>`},
+    healthcare:{c:3,l:2,m:`<path d="M38 66S13 51 13 34c0-13 17-16 25-3 8-13 25-10 25 3 0 17-25 32-25 32z"/><path d="M16 43h13l5-10 8 20 6-10h13" stroke="currentColor" stroke-width="3"/><path d="M38 13v10m-5-5h10"/>`},
+    fintech:{c:0,l:1,m:`<circle cx="38" cy="39" r="25"/><path d="M45 29q-3-6-10-5-9 1-7 8 1 5 10 7 9 2 7 9-2 6-10 6-7 0-10-5M38 18v42"/><path d="M12 68h52"/><path d="m14 59 13-11 10 5 19-20" fill="none" stroke="currentColor" stroke-width="2"/>`},
+    'real-estate':{c:1,l:0,m:`<path d="m8 37 30-25 30 25v30H8zM19 67V43h38v24M32 67V51h12v16"/><path d="M38 12V5"/><circle cx="58" cy="25" r="8" fill="#151b27" stroke="currentColor"/><path d="M58 21v5l4 2"/>`},
+    automotive:{c:2,l:3,m:`<path d="m11 51 5-17q2-7 9-7h27q7 0 10 8l5 16v12H11zM17 49h44"/><path d="m21 33 5 13h27l5-13"/><circle cx="23" cy="62" r="7"/><circle cx="57" cy="62" r="7"/><path d="M28 24h24"/>`},
+    'hospitality-systems':{c:1,l:2,m:`<path d="M12 66V29h52v37M8 66h60M19 29V17h38v12"/><path d="M20 42h13v14H20zm22 0h13v14H42z"/><circle cx="38" cy="18" r="4" fill="currentColor"/><path d="M25 35h26"/>`},
+    'industry-iot':{c:3,l:1,m:`<path d="M38 65V38m0 15Q22 53 18 39q16-2 20 14m0-3q16-3 22-18-16-3-22 18"/><path d="M18 68h40"/><circle cx="38" cy="21" r="12"/><path d="M38 4v5m-17 1 4 4m26-4-4 4M16 21h5m34 0h5"/><circle cx="38" cy="21" r="4" fill="currentColor"/>`},
+    legal:{c:0,l:0,m:`<path d="M38 14v48M22 23h32m-16-9 5 7M17 25 8 43h18zM59 25 50 43h18zM7 43q10 13 20 0m23 0q10 13 20 0M24 67h28"/><circle cx="38" cy="18" r="4" fill="currentColor"/>`},
+    government:{c:5,l:3,m:`<path d="m8 28 30-16 30 16zM12 66h52M17 33v29m14-29v29m14-29v29m14-29v29"/><path d="M8 70h60"/><path d="M38 4v8"/><circle cx="38" cy="4" r="3" fill="currentColor"/>`},
+    'media-streaming':{c:2,l:2,m:`<rect x="8" y="14" width="60" height="48" rx="8"/><path d="m31 26 20 12-20 12z" fill="currentColor"/><path d="M15 68h46M18 7v4m10-4v4m10-4v4m10-4v4m10-4v4"/><path d="M13 55q6-8 12 0t12 0" opacity=".55"/>`},
+    recruitment:{c:4,l:1,m:`<path d="M10 27h56v38H10zM25 27v-9h26v9m-41 8 28 15 28-15M38 50v15"/><circle cx="38" cy="39" r="6" fill="currentColor"/><path d="M28 59a10 10 0 0 1 20 0"/>`},
+    community:{c:3,l:0,m:`<circle cx="38" cy="24" r="8"/><circle cx="17" cy="47" r="7"/><circle cx="59" cy="47" r="7"/><path d="M22 68a16 16 0 0 1 32 0M6 68a11 11 0 0 1 18-9m46 9a11 11 0 0 0-18-9M25 31l-5 9m31-9 5 9"/><path d="M30 24h16" stroke-dasharray="2 4"/>`},
+    'sports-fitness':{c:4,l:3,m:`<circle cx="38" cy="39" r="25"/><path d="M19 21q18 9 38 0M15 43q22-9 46 0M27 15q11 24 0 48m22-48q-11 24 0 48"/><path d="M38 9v8m0 44v8" stroke="currentColor" stroke-width="3"/>`},
+    games:{c:2,l:1,m:`<path d="M22 27h32q9 0 12 10l5 20q2 10-7 10-4 0-8-5l-5-6H29l-5 6q-4 5-8 5-9 0-7-10l5-20q3-10 8-10z"/><path d="M25 37v16m-8-8h16" stroke-width="3"/><circle cx="53" cy="41" r="3" fill="currentColor"/><circle cx="61" cy="49" r="3" fill="currentColor"/>`},
+    'emerging-tech':{c:5,l:2,m:`<path d="m38 8 25 14v29L38 67 13 51V22zM38 37 63 22M38 37v30M38 37 13 22"/><circle cx="38" cy="37" r="7" fill="currentColor"/><path d="M8 10h10m-5-5v10M61 68h10m-5-5v10"/>`},
+    'ai-data-platform':{c:5,l:0,m:`<circle cx="38" cy="39" r="21"/><path d="M38 18v42M17 39h42M23 24l30 30m0-30L23 54"/><circle cx="38" cy="18" r="4" fill="currentColor"/><circle cx="17" cy="39" r="4" fill="currentColor"/><circle cx="59" cy="39" r="4" fill="currentColor"/><circle cx="38" cy="60" r="4" fill="currentColor"/><circle cx="38" cy="39" r="7" fill="currentColor" opacity=".75"/>`},
+    chatbots:{c:2,l:3,m:`<rect x="13" y="18" width="50" height="42" rx="12"/><path d="M25 60v9l13-9"/><circle cx="28" cy="37" r="4" fill="currentColor"/><circle cx="48" cy="37" r="4" fill="currentColor"/><path d="M29 48q9 7 18 0M38 18v-8m-4 4 4-4 4 4"/>`},
+    automation:{c:1,l:1,m:`<circle cx="38" cy="40" r="22"/><path d="M38 11v9m0 40v9M9 40h9m40 0h9M18 20l7 7m26 26 7 7m0-40-7 7M25 53l-7 7"/><path d="M30 36h16m-8-8 8 8-8 8" stroke="currentColor" stroke-width="3"/><circle cx="38" cy="40" r="5" fill="currentColor"/>`},
+    bi:{c:4,l:2,m:`<path d="M12 66V39h12v27m7 0V25h12v41m7 0V12h12v54M8 67h60"/><path d="m14 31 16-9 11 5 22-16"/><circle cx="14" cy="31" r="3" fill="currentColor"/><circle cx="30" cy="22" r="3" fill="currentColor"/><circle cx="41" cy="27" r="3" fill="currentColor"/><circle cx="63" cy="11" r="3" fill="currentColor"/>`},
+    'internal-tools':{c:0,l:3,m:`<path d="M18 18h40v44H18zM27 29h22m-22 8h22m-22 8h13"/><path d="m51 50 15 15m-9-23 9 9-19 19-9 1 1-9z"/><circle cx="28" cy="56" r="3" fill="currentColor"/>`},
+    'recording-studio':{c:2,l:0,m:`<rect x="28" y="10" width="20" height="42" rx="10"/><path d="M19 35a19 19 0 0 0 38 0M38 54v13m-12 0h24"/><path d="M10 28v14m8-20v26m40-26v26m8-20v14" stroke="currentColor" stroke-width="3"/>`},
+    'interactive-studio':{c:2,l:2,m:`<rect x="9" y="13" width="60" height="48" rx="5"/><path d="m29 27 20 13-11 3-5 11z" fill="currentColor"/><circle cx="55" cy="27" r="7" fill="none" stroke="currentColor"/><path d="M15 67h48"/><path d="M15 20h7"/>`},
+    'configurator-3d':{c:5,l:1,m:`<path d="m38 10 27 15v31L38 71 11 56V25zM38 40l27-15M38 40v31M38 40 11 25"/><path d="M23 18 50 34" stroke="currentColor"/><circle cx="64" cy="63" r="7" fill="currentColor"/><path d="M64 54v-6m-8 11-5-3m17 3 5-3"/>`},
+    'virtual-showroom':{c:1,l:3,m:`<path d="M10 35 38 18l28 17M16 33v34h44V33"/><path d="M25 67V44h26v23M31 49h14v10H31z"/><path d="M38 18V8m-5 5 5-5 5 5"/><circle cx="57" cy="22" r="4" fill="currentColor"/>`},
+    ar:{c:3,l:2,m:`<rect x="25" y="8" width="27" height="64" rx="6"/><path d="M31 16h15m-12 45h9"/><path d="m61 27 12 7v14l-12 7-12-7V34zM61 41l12-7m-12 7v14m0-14-12-7" stroke="currentColor"/><circle cx="61" cy="41" r="3" fill="currentColor"/>`},
+    'launch-campaign':{c:0,l:0,m:`<path d="M38 62Q18 44 31 19q6-10 20-14 5 15-3 30 16-8 20-4-2 17-17 24L38 62z"/><circle cx="48" cy="25" r="5" fill="currentColor"/><path d="m32 55-11 9m18 2-4 8M27 45l-9 1"/><path d="M51 8q12-7 20 2" stroke="currentColor" stroke-dasharray="2 4"/>`},
+    'digital-twin':{c:1,l:1,m:`<path d="M10 64V31l19-11 19 11v33M17 64V37h24v27M25 45h7m-7 8h7"/><path d="M48 39q12-12 23 0v25H48m0-20h23m-23 9h23" stroke="currentColor" stroke-dasharray="3 3"/><circle cx="58" cy="18" r="4" fill="currentColor"/><path d="M29 13v7m-4-4 4-4 4 4"/>`},
+    'virtual-events':{c:4,l:3,m:`<circle cx="38" cy="34" r="23"/><path d="M15 34h46M38 11q-16 23 0 46m0-46q16 23 0 46"/><path d="M8 66h60M17 61v-9h42v9"/><circle cx="38" cy="56" r="4" fill="currentColor"/><path d="M31 56h14"/>`},
+    'interactive-identity':{c:2,l:2,m:`<circle cx="38" cy="39" r="7" fill="currentColor"/><ellipse cx="38" cy="39" rx="29" ry="11"/><ellipse cx="38" cy="39" rx="29" ry="11" transform="rotate(60 38 39)"/><ellipse cx="38" cy="39" rx="29" ry="11" transform="rotate(120 38 39)"/><path d="M38 6v9m0 48v9"/>`},
+    'mobile-apps':{c:3,l:0,m:`<rect x="23" y="7" width="31" height="66" rx="7"/><path d="M31 15h15m-17 12h19v15H29zm0 21h19m-19 7h15"/><circle cx="38" cy="66" r="2" fill="currentColor"/><rect x="57" y="29" width="14" height="22" rx="3" fill="currentColor" opacity=".65"/>`},
+    integrations:{c:5,l:1,m:`<path d="M16 25h16v14H16zM48 25h16v14H48zM32 51h16v14H32z"/><path d="M32 32h16m-8 7v12m-24-12v8h24m24-8v8H40"/><circle cx="24" cy="32" r="3" fill="currentColor"/><circle cx="56" cy="32" r="3" fill="currentColor"/><circle cx="40" cy="58" r="3" fill="currentColor"/>`},
+    'admin-cms':{c:0,l:2,m:`<rect x="8" y="12" width="60" height="55" rx="5"/><path d="M8 25h60M20 12v13"/><rect x="17" y="34" width="17" height="25" rx="2" fill="currentColor" opacity=".7"/><path d="M40 36h20m-20 7h20m-20 7h15m-15 7h20"/><circle cx="15" cy="18" r="2" fill="currentColor"/>`},
+    'multi-region':{c:1,l:3,m:`<circle cx="38" cy="39" r="28"/><path d="M10 39h56M38 11q-17 28 0 56m0-56q17 28 0 56M17 23h42M17 55h42"/><path d="M53 17c0 6-8 15-8 15s-8-9-8-15a8 8 0 1 1 16 0z" fill="currentColor"/><circle cx="45" cy="17" r="2" fill="#111722"/>`},
+    migration:{c:5,l:0,m:`<path d="M12 52h31a12 12 0 0 0 0-24 18 18 0 0 0-34-3 14 14 0 0 0 3 27z"/><path d="M25 42h36m-8-8 8 8-8 8"/><path d="M47 58h15v12H47zM12 60h20v10H12z"/>`},
+    redesign:{c:2,l:2,m:`<rect x="8" y="15" width="28" height="49" rx="4"/><rect x="42" y="15" width="28" height="49" rx="4"/><path d="M14 25h16m-16 7h16m-16 7h16m-16 7h9M48 25h16m-16 7h16"/><path d="m50 51 5 5 9-11" stroke="currentColor" stroke-width="3"/><path d="M38 39h3m-2-3 3 3-3 3"/>`},
+    maintenance:{c:0,l:1,m:`<path d="M48 15a20 20 0 0 0-24 25L10 54l14 14 14-14a20 20 0 0 0 25-24l-13 13-13-3-3-13z"/><circle cx="25" cy="57" r="3" fill="currentColor"/><path d="M47 23h11m-5-5v10"/>`},
+    audit:{c:4,l:3,m:`<circle cx="34" cy="34" r="22"/><path d="m50 50 17 17M23 34l8 8 16-18" stroke="currentColor" stroke-width="3"/><path d="M17 14h10m-5-5v10"/>`},
+    training:{c:3,l:0,m:`<rect x="9" y="12" width="58" height="39" rx="4"/><path d="M15 20h46m-46 7h46m-46 7h29"/><circle cx="48" cy="39" r="7" fill="currentColor"/><path d="M22 69a16 16 0 0 1 32 0m-16-18v8"/><path d="M38 59h13"/>`}
   };
 
-  const sceneBySlug = {
-    'corporate':'corporate','landing-page':'landing','portfolio':'portfolio','hospitality-site':'hospitality',
-    'events':'event','nonprofit':'nonprofit','education-showcase':'education','institutional':'civic','microsite':'poster',
-    'content-media':'magazine','docs-knowledge':'docs','online-store':'storefront','digital-store':'digital',
-    'subscriptions':'digital','marketplace':'marketplace','b2b-wholesale':'table','dropshipping-pod':'product',
-    'auctions-rentals':'event','catalog-orders':'storefront','configurator-store':'object','appointments':'calendar',
-    'stays':'hospitality','table-booking':'calendar','ticketing':'event','rentals':'calendar','on-demand':'map','travel':'tour',
-    'saas':'dashboard','crm':'table','erp':'dashboard','hr':'table','project-management':'table','accounting':'dashboard',
-    'logistics':'map','pos':'storefront','property-mgmt':'table','support-desk':'chat','documents-esign':'form','portals':'dashboard',
-    'education-lms':'media','healthcare':'dashboard','fintech':'dashboard','real-estate':'map','automotive':'object',
-    'hospitality-systems':'table','industry-iot':'dashboard','legal':'form','government':'civic','media-streaming':'media',
-    'recruitment':'table','community':'chat','sports-fitness':'calendar','games':'object','emerging-tech':'object',
-    'ai-data-platform':'data','chatbots':'chat','automation':'dashboard','bi':'data','internal-tools':'table',
-    'recording-studio':'media','interactive-studio':'object','configurator-3d':'object','virtual-showroom':'tour','ar':'mobile',
-    'launch-campaign':'poster','digital-twin':'map','virtual-events':'event','interactive-identity':'portfolio','mobile-apps':'mobile',
-    'integrations':'docs','admin-cms':'dashboard','multi-region':'map','migration':'docs','redesign':'portfolio',
-    'maintenance':'dashboard','audit':'data','training':'media'
-  };
-
-  const palette = ['#c9a96e','#8db5a6','#b99bab','#91a8c8','#d18e72','#a79bd0'];
-  function accentFor(slug) {
-    let seed = 0;
-    for (const char of slug) seed = (seed * 31 + char.charCodeAt(0)) >>> 0;
-    return palette[seed % palette.length];
-  }
+  const accents = ['#c9a96e','#89a99e','#b2919d','#89a9c5','#b4a274','#9b94bd'];
+  const layouts = [
+    (m,a) => `<rect x="32" y="28" width="296" height="124" rx="12" fill="#0d121d" stroke="#ffffff1a"/><rect x="43" y="39" width="112" height="102" rx="9" fill="#151d2a" stroke="#ffffff15"/><circle cx="99" cy="90" r="47" fill="${a}" opacity=".08"/><g transform="translate(63 52) scale(.9)" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="color:${a}">${m}</g><path d="M176 53h121M176 63h83" stroke="#f4efe6" stroke-width="2.4" stroke-linecap="round" opacity=".66"/><rect x="176" y="78" width="137" height="25" rx="6" fill="#171f2d"/><circle cx="190" cy="90" r="4" fill="${a}"/><path d="M201 90h94" stroke="#929caf" stroke-width="2" stroke-linecap="round"/><path d="M176 117h66m-66 9h112" stroke="#6e788b" stroke-width="2" stroke-linecap="round" opacity=".7"/><circle cx="305" cy="48" r="3" fill="${a}"/>`,
+    (m,a) => `<rect x="31" y="30" width="298" height="120" rx="12" fill="#0d121d" stroke="#ffffff1a"/><path d="M48 55h49m-49 8h34M264 54h45m-45 8h29" stroke="#788397" stroke-width="2" stroke-linecap="round"/><rect x="124" y="39" width="112" height="103" rx="16" fill="#161e2b" stroke="#ffffff20"/><circle cx="180" cy="90" r="47" fill="${a}" opacity=".08"/><g transform="translate(145 54) scale(.88)" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="color:${a}">${m}</g><path d="M54 99h48m-48 8h36m170-8h46m-46 8h33" stroke="#747f92" stroke-width="2" stroke-linecap="round"/><circle cx="77" cy="126" r="4" fill="${a}"/><circle cx="91" cy="126" r="4" fill="#657185"/><circle cx="105" cy="126" r="4" fill="#657185"/><rect x="249" y="119" width="61" height="18" rx="9" fill="${a}" opacity=".82"/>`,
+    (m,a) => `<rect x="31" y="29" width="298" height="122" rx="12" fill="#0d121d" stroke="#ffffff1a"/><path d="M47 51h104m-104 9h79m-79 9h58" stroke="#f4efe6" stroke-width="2.4" stroke-linecap="round" opacity=".7"/><path d="M47 93h108m-108 8h87" stroke="#7d8799" stroke-width="2" stroke-linecap="round"/><rect x="190" y="39" width="121" height="101" rx="10" fill="#151d2a" stroke="#ffffff16"/><circle cx="251" cy="90" r="48" fill="${a}" opacity=".08"/><g transform="translate(205 53) scale(.9)" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="color:${a}">${m}</g><path d="M47 121h91" stroke="${a}" stroke-width="3" stroke-linecap="round"/><circle cx="151" cy="121" r="4" fill="${a}"/>`,
+    (m,a) => `<path d="M42 42q0-9 9-9h80q9 0 9 9v91q0 9-9 9H51q-9 0-9-9z" fill="#151d2a" stroke="#ffffff20"/><circle cx="91" cy="88" r="45" fill="${a}" opacity=".08"/><g transform="translate(56 52) scale(.9)" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="color:${a}">${m}</g><rect x="166" y="39" width="151" height="102" rx="10" fill="#0d121d" stroke="#ffffff1a"/><path d="M183 57h115m-115 9h77" stroke="#f4efe6" stroke-width="2.4" stroke-linecap="round" opacity=".7"/><rect x="183" y="78" width="116" height="23" rx="6" fill="#171f2d"/><circle cx="196" cy="89" r="4" fill="${a}"/><path d="M207 89h80m-104 30h72m-72 8h92" stroke="#7d8799" stroke-width="2" stroke-linecap="round"/><circle cx="310" cy="34" r="3" fill="${a}"/>`
+  ];
 
   function render(type, label) {
-    const slug = String(type?.slug || 'service');
-    const featured = {
-      corporate: 'images/catalog-corporate.webp',
-      'landing-page': 'images/catalog-landing.webp',
-      portfolio: 'images/catalog-portfolio.webp'
-    }[slug];
-    if (featured) return `<img class="catalog-art-img" src="${featured}" alt="" loading="lazy" decoding="async" width="1200" height="800" aria-hidden="true">`;
-    const scene = scenes[sceneBySlug[slug]] || scenes.dashboard;
-    const accent = accentFor(slug);
-    const id = `art-${slug.replace(/[^a-z0-9_-]/gi, '-')}`;
-    return `<svg viewBox="0 0 360 180" role="img" aria-label="${escape(label)}: ${escape(type?.name)}" xmlns="http://www.w3.org/2000/svg" style="--accent:${accent}">
-      <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#151b28"/><stop offset="1" stop-color="#090c13"/></linearGradient><radialGradient id="${id}-glow"><stop offset="0" stop-color="${accent}" stop-opacity=".18"/><stop offset="1" stop-color="${accent}" stop-opacity="0"/></radialGradient></defs>
-      <rect width="360" height="180" fill="url(#${id})"/><ellipse cx="290" cy="45" rx="100" ry="70" fill="url(#${id}-glow)"/>
-      <rect x="0" y="0" width="360" height="18" fill="#07090eee"/><circle cx="12" cy="9" r="2.5" fill="#c9a96e"/><circle cx="21" cy="9" r="2.5" fill="#8a93a8"/><circle cx="30" cy="9" r="2.5" fill="#8a93a8" opacity=".55"/>
-      ${scene}
+    const slug = String(type?.slug || '');
+    const design = D[slug] || D.corporate;
+    const color = accents[design.c];
+    const safe = slug.replace(/[^a-z0-9_-]/gi, '-') || 'service';
+    const id = `vector-${safe}`;
+    const scene = layouts[design.l](design.m, color);
+    return `<svg viewBox="0 0 360 180" role="img" aria-label="${escape(label)}: ${escape(type?.name)}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="${id}-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#171d2a"/><stop offset=".58" stop-color="#0f131e"/><stop offset="1" stop-color="#090c13"/></linearGradient>
+        <radialGradient id="${id}-glow"><stop offset="0" stop-color="${color}" stop-opacity=".22"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient>
+        <pattern id="${id}-grid" width="18" height="18" patternUnits="userSpaceOnUse"><path d="M18 0H0v18" fill="none" stroke="#ffffff" stroke-opacity=".045" stroke-width=".6"/></pattern>
+        <filter id="${id}-shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#000" flood-opacity=".3"/></filter>
+      </defs>
+      <rect width="360" height="180" fill="url(#${id}-bg)"/><rect width="360" height="180" fill="url(#${id}-grid)" opacity=".38"/>
+      <ellipse cx="274" cy="48" rx="118" ry="81" fill="url(#${id}-glow)"/>
+      <path d="M0 157q84-24 166-4t194-9v36H0z" fill="#070a11" opacity=".42"/>
+      <g filter="url(#${id}-shadow)">${scene}</g>
+      <path d="M18 18h25" stroke="${color}" stroke-width="2" stroke-linecap="round" opacity=".9"/><circle cx="50" cy="18" r="1.7" fill="#f4efe6" opacity=".7"/>
     </svg>`;
   }
 
