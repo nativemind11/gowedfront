@@ -1,3 +1,10 @@
+# Phase 8, header fix + French polish (after Batch 1)
+- Header: every item stays on ONE line (cause: global `overflow-wrap:anywhere` on `.chip/.btn` broke "EN" and "Search" letter by letter and links wrapped). Search is now an icon button (tooltip shows Ctrl K). `fit()` in `js/app.js` steps down only when labels do not fit: short button text, then the menu button. Works for every language and for the "Your account" label change after sign-in.
+- French: non-breaking space before `: ; ! ?` and inside « », and "relire" -> "examiner".
+- Still to deliver (Batch 2): zh, ru, pt, nl.
+
+---
+
 # Phase 8, Batch 1 (languages): system + Arabic, French, German
 
 **Status: delivered for review. zh, ru, pt, nl are Batch 2.** Translations are AI-assisted: a native speaker must review each language before launch.

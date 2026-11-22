@@ -21,7 +21,7 @@ window.I18N_PACK={
    "myBrief": "Votre brief",
    "book": "Réserver un rendez-vous"
   },
-  "title": "CULMERA : des produits numériques conçus autour du fonctionnement de votre entreprise",
+  "title": "CULMERA : des produits numériques conçus autour du fonctionnement de votre entreprise",
   "metaDesc": "CULMERA conçoit et développe des sites web, des plateformes et des systèmes métier adaptés à la façon dont les organisations travaillent réellement, d’un brief clair à un lancement fiable.",
   "brandLine": "Tout site web. Tout système. Aucune limite.",
   "lg": {
@@ -97,7 +97,7 @@ window.I18N_PACK={
    "mustN": "{n} indispensable(s)",
    "notesPh": "Tout ce que vous savez déjà du projet (facultatif)",
    "discH": "L’entretien de cadrage",
-   "emailLine": "E-mail :",
+   "emailLine": "E-mail :",
    "e": {
     "name": "Veuillez saisir votre nom complet.",
     "email": "Veuillez saisir une adresse e-mail professionnelle valide.",
@@ -108,30 +108,30 @@ window.I18N_PACK={
    },
    "sum": {
     "title": "Brief de projet CULMERA",
-    "name": "Nom :",
-    "email": "E-mail :",
-    "company": "Entreprise :",
-    "country": "Pays :",
-    "phone": "Téléphone :",
-    "start": "Point de départ :",
-    "goal": "Objectif :",
-    "timing": "Préférence de calendrier :",
+    "name": "Nom :",
+    "email": "E-mail :",
+    "company": "Entreprise :",
+    "country": "Pays :",
+    "phone": "Téléphone :",
+    "start": "Point de départ :",
+    "goal": "Objectif :",
+    "timing": "Préférence de calendrier :",
     "pref": "(une préférence, pas un engagement)",
-    "types": "Types :",
-    "none": "- Aucun choisi pour l’instant : un entretien de cadrage est recommandé",
-    "modules": "Modules :",
+    "types": "Types :",
+    "none": "- Aucun choisi pour l’instant : un entretien de cadrage est recommandé",
+    "modules": "Modules :",
     "mustTag": "(indispensable)",
     "niceTag": "(souhaitable)",
-    "threeD": "3D et animation :",
-    "notes": "Notes :",
-    "meeting": "Rendez-vous ({n} min, fuseau horaire du visiteur {tz}) :",
-    "callLang": "Langue de l’appel :",
-    "subject": "Brief de projet {ref} : {company}",
+    "threeD": "3D et animation :",
+    "notes": "Notes :",
+    "meeting": "Rendez-vous ({n} min, fuseau horaire du visiteur {tz}) :",
+    "callLang": "Langue de l’appel :",
+    "subject": "Brief de projet {ref} : {company}",
     "unsaved": "(non enregistré en ligne)",
     "attach": "Veuillez joindre le PDF."
    }
   },
-  "ogAlt": "Logo CULMERA : sites web, plateformes et systèmes métier, d’un brief clair à un lancement fiable.",
+  "ogAlt": "Logo CULMERA : sites web, plateformes et systèmes métier, d’un brief clair à un lancement fiable.",
   "hero": {
    "h1": [
     "Des produits numériques conçus autour de",
@@ -210,7 +210,7 @@ window.I18N_PACK={
   "engage": {
    "kick": "Comment se déroule une collaboration",
    "h": "Un chemin clair, du brief au lancement.",
-   "lead": "Chaque étape a un livrable défini : vous savez toujours ce qui a été convenu et ce qui suit.",
+   "lead": "Chaque étape a un livrable défini : vous savez toujours ce qui a été convenu et ce qui suit.",
    "steps": [
     [
      "Brief",
@@ -243,12 +243,12 @@ window.I18N_PACK={
    "items": [
     [
      "Plateformes à rôles",
-     "Membres, chefs d’équipe et responsables principaux : chacun voit et fait uniquement ce que son rôle permet.",
+     "Membres, chefs d’équipe et responsables principaux : chacun voit et fait uniquement ce que son rôle permet.",
      "roles"
     ],
     [
      "Studios et plateformes média",
-     "Enregistrer, téléverser, relire et livrer de l’audio, de la vidéo ou des images à grande échelle.",
+     "Enregistrer, téléverser, examiner et livrer de l’audio, de la vidéo ou des images à grande échelle.",
      "studio"
     ],
     [
@@ -273,7 +273,7 @@ window.I18N_PACK={
     ],
     [
      "Assistants et automatisation",
-     "Répondre, qualifier et orienter : le travail manuel disparaît.",
+     "Répondre, qualifier et orienter : le travail manuel disparaît.",
      "assist"
     ],
     [
@@ -410,7 +410,7 @@ window.I18N_PACK={
    "h": "Ce que nous construisons",
    "lead": "{n} types de sites web, de systèmes et d’expériences dans cinq domaines. Ajoutez-en à votre brief. Les illustrations sont des concepts, pas des réalisations passées.",
    "search": "Rechercher",
-   "searchPh": "Par exemple : réservation, 3D, CRM",
+   "searchPh": "Par exemple : réservation, 3D, CRM",
    "area": "Domaine",
    "allAreas": "Tous les domaines",
    "level": "Niveau",
@@ -468,7 +468,7 @@ window.I18N_PACK={
    ],
    [
     "Réalisation",
-    "Le travail est présenté par étapes que vous pouvez relire."
+    "Le travail est présenté par étapes que vous pouvez examiner."
    ]
   ],
   "values": [
@@ -478,19 +478,19 @@ window.I18N_PACK={
   ],
   "hfaq": [
    [
-    "Que dois-je préparer ?",
+    "Que dois-je préparer ?",
     "Vos objectifs, les futurs utilisateurs et les exemples qui vous plaisent."
    ],
    [
-    "Qui doit participer ?",
+    "Qui doit participer ?",
     "Toute personne qui décide ou qui connaît le besoin au quotidien."
    ],
    [
-    "Quelles langues ?",
+    "Quelles langues ?",
     "Choisissez la langue de l’appel dans le brief."
    ],
    [
-    "Ce que je partage est-il confidentiel ?",
+    "Ce que je partage est-il confidentiel ?",
     "Nous n’utilisons ce que vous partagez que pour préparer et suivre l’entretien. Consultez la page de confidentialité pour savoir ce que nous collectons et qui le traite."
    ]
   ],
@@ -533,9 +533,9 @@ window.I18N_PACK={
    "inLead": "Accédez à votre brief de projet, à votre rendez-vous et à leur état.",
    "email": "E-mail",
    "password": "Mot de passe",
-   "forgot": "Mot de passe oublié ?",
-   "noAcct": "Nouveau chez CULMERA ?",
-   "haveAcct": "Vous avez déjà un compte ?",
+   "forgot": "Mot de passe oublié ?",
+   "noAcct": "Nouveau chez CULMERA ?",
+   "haveAcct": "Vous avez déjà un compte ?",
    "upH": "Créer votre compte",
    "upLead": "Un seul compte réunit votre brief, votre rendez-vous et l’état de votre projet.",
    "name": "Nom complet",
@@ -561,7 +561,7 @@ window.I18N_PACK={
    "save": "Enregistrer le mot de passe",
    "saved": "Mot de passe mis à jour.",
    "confH": "Confirmation de votre adresse e-mail…",
-   "confFail": "Nous n’avons pas pu terminer la confirmation dans ce navigateur. Votre adresse est peut-être déjà confirmée : essayez de vous connecter.",
+   "confFail": "Nous n’avons pas pu terminer la confirmation dans ce navigateur. Votre adresse est peut-être déjà confirmée : essayez de vous connecter.",
    "loading": "Chargement de votre compte…",
    "loadErr": "Nous n’avons pas pu charger votre compte. Réessayez dans un instant.",
    "hi": "Bienvenue, {name}",
@@ -654,7 +654,7 @@ window.I18N_PACK={
     "Un court échange permet de confirmer le périmètre. Proposez-nous un créneau qui vous convient et nous en confirmons un.",
     "Vérifiez ce que vous envoyez. Rien n’est envoyé tant que vous n’appuyez pas sur le bouton."
    ],
-   "goalQ": "Que souhaitez-vous accomplir ?",
+   "goalQ": "Que souhaitez-vous accomplir ?",
    "goalHint": "Choisissez l’objectif le plus important. Vous pourrez en ajouter d’autres plus tard.",
    "goals": [
     [
@@ -701,12 +701,12 @@ window.I18N_PACK={
     ]
    ],
    "unsureH": "Pas de problème. Commencez par un entretien de cadrage.",
-   "unsureP": "Vous n’avez rien de technique à choisir. Continuez pour indiquer votre nom, votre entreprise et un créneau qui vous convient : nous parlerons de votre situation et recommanderons une direction.",
+   "unsureP": "Vous n’avez rien de technique à choisir. Continuez pour indiquer votre nom, votre entreprise et un créneau qui vous convient : nous parlerons de votre situation et recommanderons une direction.",
    "startH": "Points de départ suggérés",
    "startP": "Ajoutez-en un, ou choisissez des types précis ci-dessous. Vous pourrez tout affiner plus tard.",
    "pick": "Choisir des types précis (facultatif)",
    "pickP": "Choisissez ceux dont vous savez déjà avoir besoin. Vous pouvez en combiner autant que vous voulez.",
-   "pickNone": "Choisissez un point de départ, sélectionnez des types ci-dessous ou cochez « Je ne sais pas encore ».",
+   "pickNone": "Choisissez un point de départ, sélectionnez des types ci-dessous ou cochez « Je ne sais pas encore ».",
    "packUse": "Utiliser ce point de départ",
    "packIn": "Dans votre brief",
    "refine": "Affiner les suggestions (facultatif)",
@@ -753,15 +753,15 @@ window.I18N_PACK={
      "q"
     ]
    ],
-   "goalLabel": "Que doit accomplir ce projet ?",
+   "goalLabel": "Que doit accomplir ce projet ?",
    "goalPh": "Quelques phrases suffisent",
    "goalMiss": "Dites-nous en une ou deux phrases ce que ce projet doit accomplir.",
-   "launch": "Dans quel délai en avez-vous besoin ?",
+   "launch": "Dans quel délai en avez-vous besoin ?",
    "adv": "Détails avancés (facultatif)",
    "advP": "Passez cette étape si vous préférez. Ces détails accélèrent l’entretien mais ne sont jamais obligatoires.",
    "perType": "Détails pour chaque type choisi",
    "modules": "Modules",
-   "modulesNote": "Cliquez une fois pour « Indispensable », deux fois pour « Souhaitable », trois fois pour effacer.",
+   "modulesNote": "Cliquez une fois pour « Indispensable », deux fois pour « Souhaitable », trois fois pour effacer.",
    "users": "Qui l’utilisera",
    "scale": "Utilisateurs attendus par mois",
    "have": "Ce que vous avez déjà",
@@ -778,7 +778,7 @@ window.I18N_PACK={
    "avoid": "Ce qu’il faut éviter",
    "describe": "Décrivez ce que cela doit faire, avec vos propres mots",
    "industry": "Secteur d’activité",
-   "success": "Comment le succès sera-t-il mesuré ?",
+   "success": "Comment le succès sera-t-il mesuré ?",
    "systems": "Systèmes existants",
    "stake": "Nombre de parties prenantes",
    "name": "Nom complet",
@@ -813,7 +813,7 @@ window.I18N_PACK={
    "serverErr": "Le serveur n’a pas pu enregistrer votre brief pour le moment.",
    "retry": "Réessayer",
    "checks": [
-    "Choisissez un point de départ ou « Je ne sais pas encore »",
+    "Choisissez un point de départ ou « Je ne sais pas encore »",
     "Objectif du projet",
     "Votre nom",
     "Une adresse e-mail professionnelle valide",
@@ -829,11 +829,11 @@ window.I18N_PACK={
    "edit": "Modifier",
    "send": "Envoyer le brief",
    "sending": "Envoi en cours…",
-   "resume": "Reprendre votre brief ? Nous avons conservé votre dernière session sur cet appareil.",
+   "resume": "Reprendre votre brief ? Nous avons conservé votre dernière session sur cet appareil.",
    "continue": "Continuer",
    "startOver": "Recommencer",
    "reset": "Réinitialiser",
-   "confirmReset": "Effacer votre brief sur cet appareil ?",
+   "confirmReset": "Effacer votre brief sur cet appareil ?",
    "back": "Retour",
    "nextBtn": "Suivant",
    "stepOf": "Étape {n} sur {t}",
@@ -859,7 +859,7 @@ window.I18N_PACK={
      "Vous recevez l’invitation, puis nous planifions ensemble la suite."
     ]
    ],
-   "contactH": "Vous préférez parler à quelqu’un ?",
+   "contactH": "Vous préférez parler à quelqu’un ?",
    "contactP": "Écrivez à {email} en indiquant votre numéro de référence.",
    "confirmSent": "Un e-mail de confirmation vous a été envoyé.",
    "confirmNone": "Nous n’avons pas envoyé d’e-mail de confirmation. Conservez votre numéro de référence.",
@@ -868,9 +868,9 @@ window.I18N_PACK={
    "pdf": "Enregistrer le brief en PDF",
    "copy": "Copier le brief sous forme de texte",
    "newBrief": "Démarrer un nouveau brief",
-   "pdfHint": "Pour conserver un PDF, choisissez « Enregistrer en PDF » dans la fenêtre d’impression.",
-   "pdfHintFail": "Joignez le PDF à votre e-mail. Dans la fenêtre d’impression, choisissez « Enregistrer en PDF ».",
-   "pdfErr": "Le PDF n’a pas pu être créé. Utilisez plutôt « Copier le brief sous forme de texte ».",
+   "pdfHint": "Pour conserver un PDF, choisissez « Enregistrer en PDF » dans la fenêtre d’impression.",
+   "pdfHintFail": "Joignez le PDF à votre e-mail. Dans la fenêtre d’impression, choisissez « Enregistrer en PDF ».",
+   "pdfErr": "Le PDF n’a pas pu être créé. Utilisez plutôt « Copier le brief sous forme de texte ».",
    "copied": "Copié.",
    "copyErr": "La copie a échoué. Sélectionnez le texte dans l’étape de relecture et copiez-le.",
    "tsHint": "Veuillez effectuer la vérification ci-dessous, puis envoyer."
@@ -892,11 +892,11 @@ window.I18N_PACK={
    "submit": "Envoyer le brief",
    "submitting": "Envoi en cours…",
    "submitErr": "Nous n’avons pas pu envoyer votre brief. Vos réponses sont enregistrées. Veuillez réessayer.",
-   "subNote": "Envoyé le {d}. Vous pouvez encore modifier vos réponses ici : les modifications sont enregistrées et notre équipe les voit.",
+   "subNote": "Envoyé le {d}. Vous pouvez encore modifier vos réponses ici : les modifications sont enregistrées et notre équipe les voit.",
    "subDone": "Votre brief est envoyé. Les modifications que vous apportez sont enregistrées automatiquement.",
    "doneH": "Brief envoyé",
    "doneP": "Merci. Votre brief est enregistré dans votre compte et il est entre les mains de notre équipe.",
-   "doneNext": "Prochaine étape : choisissez un créneau pour votre premier appel gratuit. Sélectionnez un jour et une heure dans votre fuseau horaire.",
+   "doneNext": "Prochaine étape : choisissez un créneau pour votre premier appel gratuit. Sélectionnez un jour et une heure dans votre fuseau horaire.",
    "bookCta": "Réserver votre appel gratuit",
    "nextSteps": [
     [
@@ -914,15 +914,15 @@ window.I18N_PACK={
    ],
    "viewAcct": "Aller à votre compte",
    "another": "Démarrer un autre brief",
-   "confirmClear": "Effacer toutes les réponses de ce brief ?",
+   "confirmClear": "Effacer toutes les réponses de ce brief ?",
    "lockedH": "Votre brief est entre les mains de notre équipe",
-   "lockedP": "Son statut est « {status} ». Pour modifier quoi que ce soit maintenant, écrivez à {email} en indiquant la référence ci-dessous.",
+   "lockedP": "Son statut est « {status} ». Pour modifier quoi que ce soit maintenant, écrivez à {email} en indiquant la référence ci-dessous.",
    "staffH": "Les briefs sont réservés aux comptes clients",
    "staffP": "Vous êtes connecté en tant que {role}. Les briefs clients se gèrent dans votre tableau de bord d’équipe."
   },
   "mt": {
    "title": "Réserver votre appel gratuit",
-   "lead": "Choisissez le jour et l’heure qui vous conviennent. Une demande n’est pas un rendez-vous confirmé : notre équipe le confirme et vous voyez le statut ici.",
+   "lead": "Choisissez le jour et l’heure qui vous conviennent. Une demande n’est pas un rendez-vous confirmé : notre équipe le confirme et vous voyez le statut ici.",
    "loading": "Chargement de votre réservation…",
    "loadErr": "Nous n’avons pas pu charger votre réservation. Vérifiez votre connexion et réessayez.",
    "tryAgain": "Réessayer",
@@ -932,7 +932,7 @@ window.I18N_PACK={
    "needSubP": "Votre brief est enregistré comme brouillon. Envoyez-le, puis revenez ici pour choisir un créneau.",
    "openBrief": "Ouvrir votre brief",
    "closedH": "La réservation est fermée pour ce brief",
-   "closedP": "Son statut est « {status} ». Pour organiser un autre appel, écrivez à {email} en indiquant {ref}.",
+   "closedP": "Son statut est « {status} ». Pour organiser un autre appel, écrivez à {email} en indiquant {ref}.",
    "staffH": "La réservation est réservée aux comptes clients",
    "staffP": "Vous êtes connecté en tant que {role}. Les rendez-vous se gèrent dans votre tableau de bord d’équipe.",
    "yourH": "Votre appel",
@@ -942,12 +942,12 @@ window.I18N_PACK={
    "min": "{n} minutes",
    "noteH": "Votre note",
    "pastNote": "Ce créneau est passé. Choisissez un nouveau créneau ou annulez la demande.",
-   "confirmedNote": "Notre équipe a confirmé ce créneau. Si vous le modifiez, la demande repasse à « Demandé » et nous confirmons de nouveau.",
+   "confirmedNote": "Notre équipe a confirmé ce créneau. Si vous le modifiez, la demande repasse à « Demandé » et nous confirmons de nouveau.",
    "requestedNote": "Notre équipe n’a pas encore confirmé ce créneau. Vous pouvez le modifier ou l’annuler d’ici là.",
    "doneNote": "Cet appel a eu lieu. Notre équipe vous contactera pour la suite.",
    "resched": "Modifier le créneau",
    "cancel": "Annuler cette demande",
-   "cancelAsk": "Annuler cette demande de rendez-vous ?",
+   "cancelAsk": "Annuler cette demande de rendez-vous ?",
    "cancelYes": "Oui, l’annuler",
    "cancelNo": "La conserver",
    "back": "Retour à votre compte",
@@ -957,7 +957,7 @@ window.I18N_PACK={
    "hour": "Heure",
    "minute": "Minute",
    "lenH": "Durée",
-   "noteL": "Y a-t-il quelque chose que nous devrions savoir avant l’appel ? (facultatif)",
+   "noteL": "Y a-t-il quelque chose que nous devrions savoir avant l’appel ? (facultatif)",
    "noteMax": "{n}/1000",
    "calLabel": "Agenda",
    "prev": "Mois précédent",
@@ -1059,7 +1059,7 @@ window.I18N_PACK={
    "dataP": "Vous pouvez demander une copie de vos données, ou nous demander de supprimer votre compte et tout ce qu’il contient. Nous examinons chaque demande manuellement. Rien n’est supprimé automatiquement, et nous vous contactons avant toute suppression.",
    "reqExport": "Demander une copie de mes données",
    "reqDelete": "Demander la suppression de mon compte et de mes données",
-   "delAsk": "Demander la suppression de votre compte et de vos données ? Nous vous contacterons pour confirmation avant toute suppression.",
+   "delAsk": "Demander la suppression de votre compte et de vos données ? Nous vous contacterons pour confirmation avant toute suppression.",
    "delYes": "Oui, envoyer la demande",
    "delNo": "Conserver mon compte",
    "kindExport": "Copie de vos données",
@@ -1095,7 +1095,7 @@ window.I18N_PACK={
     ],
     [
      "Comptes",
-     "Si vous créez un compte, nous stockons vos identifiants de connexion, les informations que vous fournissez à l’inscription, ainsi que les briefs et les demandes de rendez-vous que vous enregistrez, dans notre base de données (Supabase). Les e-mails de connexion sont envoyés via Resend. Un brief enregistré est visible par l’équipe CULMERA et, si un partenaire vous a présenté avec son code, par ce partenaire et son directeur. Vous pouvez nous demander d’exporter ou de supprimer vos données à tout moment depuis la page de votre compte, ou en écrivant à {email}. Nous examinons chaque demande manuellement ; rien n’est supprimé automatiquement."
+     "Si vous créez un compte, nous stockons vos identifiants de connexion, les informations que vous fournissez à l’inscription, ainsi que les briefs et les demandes de rendez-vous que vous enregistrez, dans notre base de données (Supabase). Les e-mails de connexion sont envoyés via Resend. Un brief enregistré est visible par l’équipe CULMERA et, si un partenaire vous a présenté avec son code, par ce partenaire et son directeur. Vous pouvez nous demander d’exporter ou de supprimer vos données à tout moment depuis la page de votre compte, ou en écrivant à {email}. Nous examinons chaque demande manuellement ; rien n’est supprimé automatiquement."
     ],
     [
      "Votre appareil",
@@ -1539,8 +1539,8 @@ window.I18N_PACK={
    "suspend": "Suspendre le compte",
    "restore": "Rétablir le compte",
    "delete": "Supprimer le compte",
-   "askSuspend": "Suspendre ce compte ? La personne est déconnectée et ne peut plus se connecter tant que vous ne le rétablissez pas.",
-   "askDelete": "Supprimer ce compte définitivement ? Ses briefs, appels et notes sont supprimés avec lui. Cette action est irréversible.",
+   "askSuspend": "Suspendre ce compte ? La personne est déconnectée et ne peut plus se connecter tant que vous ne le rétablissez pas.",
+   "askDelete": "Supprimer ce compte définitivement ? Ses briefs, appels et notes sont supprimés avec lui. Cette action est irréversible.",
    "confirm": "Oui, continuer",
    "cancel": "Annuler",
    "exportH": "Exporter",
@@ -1586,9 +1586,9 @@ window.I18N_PACK={
    "userGone": "Compte supprimé.",
    "userSuspended": "Compte suspendu.",
    "userRestored": "Compte rétabli.",
-   "userPartial": "Le compte est suspendu. Le blocage de la connexion elle-même n’a pas abouti ; réessayez dans un instant.",
+   "userPartial": "Le compte est suspendu. Le blocage de la connexion elle-même n’a pas abouti ; réessayez dans un instant.",
    "reqH": "Demandes de données",
-   "reqNote": "Export : préparez les données de la personne et envoyez-les par e-mail. Suppression : vérifiez l’identité du demandeur, puis supprimez le compte depuis la page du client. Rien n’est supprimé automatiquement.",
+   "reqNote": "Export : préparez les données de la personne et envoyez-les par e-mail. Suppression : vérifiez l’identité du demandeur, puis supprimez le compte depuis la page du client. Rien n’est supprimé automatiquement.",
    "reqExport": "Exporter mes données",
    "reqDeletion": "Supprimer mon compte",
    "reqSet": {
@@ -1648,7 +1648,7 @@ window.I18N_PACK={
   "Services & Add-ons": "Services et options",
   "Everything around the build.": "Tout ce qui entoure la réalisation.",
   "Corporate website": "Site d’entreprise",
-  "A polished home for your company: who you are, what you do, news and careers.": "Une vitrine soignée pour votre entreprise : qui vous êtes, ce que vous faites, actualités et carrières.",
+  "A polished home for your company: who you are, what you do, news and careers.": "Une vitrine soignée pour votre entreprise : qui vous êtes, ce que vous faites, actualités et carrières.",
   "Choose the modules that matter, set the level of 3D and motion, and describe how it should feel. We refine the scope together in a discovery meeting.": "Choisissez les modules qui comptent, réglez le niveau de 3D et d’animation, et décrivez l’ambiance souhaitée. Nous affinons le périmètre ensemble lors d’un entretien de cadrage.",
   "About & story": "À propos et histoire",
   "Service pages": "Pages de services",
@@ -1663,11 +1663,11 @@ window.I18N_PACK={
   "Companies and brands": "Entreprises et marques",
   "Founders and agencies": "Fondateurs et agences",
   "Public bodies and schools": "Organismes publics et écoles",
-  "Can it be adapted to my sector?": "Peut-il être adapté à mon secteur ?",
+  "Can it be adapted to my sector?": "Peut-il être adapté à mon secteur ?",
   "Yes. The modules are chosen around your needs and refined in the discovery meeting.": "Oui. Les modules sont choisis selon vos besoins et affinés lors de l’entretien de cadrage.",
-  "Can I combine it with other types?": "Puis-je le combiner avec d’autres types ?",
+  "Can I combine it with other types?": "Puis-je le combiner avec d’autres types ?",
   "Yes. Add as many types as you need to one brief.": "Oui. Ajoutez à un même brief autant de types que nécessaire.",
-  "Can it support several languages?": "Peut-il prendre en charge plusieurs langues ?",
+  "Can it support several languages?": "Peut-il prendre en charge plusieurs langues ?",
   "Yes. Languages and regions are part of the brief.": "Oui. Les langues et les régions font partie du brief.",
   "Landing page": "Page d’atterrissage",
   "One focused page built to convert visitors for a campaign, product or launch.": "Une page ciblée conçue pour convertir les visiteurs d’une campagne, d’un produit ou d’un lancement.",
@@ -1792,7 +1792,7 @@ window.I18N_PACK={
   "Reorders": "Réapprovisionnements",
   "Account managers": "Chargés de compte",
   "Dropshipping & print-on-demand": "Dropshipping et impression à la demande",
-  "Sell without stock: products made or shipped on order.": "Vendez sans stock : produits fabriqués ou expédiés à la commande.",
+  "Sell without stock: products made or shipped on order.": "Vendez sans stock : produits fabriqués ou expédiés à la commande.",
   "Supplier sync": "Synchronisation fournisseurs",
   "Product designer": "Concepteur de produit",
   "Auto-fulfilment": "Exécution automatique",
@@ -1855,7 +1855,7 @@ window.I18N_PACK={
   "Check-in": "Enregistrement à l’entrée",
   "Promo codes": "Codes promo",
   "Attendee list": "Liste des participants",
-  "Rentals: cars, equipment, venues": "Locations : voitures, matériel, salles",
+  "Rentals: cars, equipment, venues": "Locations : voitures, matériel, salles",
   "Booking with availability, deposits and rental terms.": "Réservation avec disponibilités, cautions et conditions de location.",
   "Inventory": "Inventaire",
   "Availability": "Disponibilités",
@@ -1936,7 +1936,7 @@ window.I18N_PACK={
   "Tracking": "Suivi",
   "Alerts": "Alertes",
   "Point of sale (POS)": "Point de vente (POS)",
-  "Restaurants and shops: sales, shifts, receipts and stock.": "Restaurants et commerces : ventes, services, tickets et stocks.",
+  "Restaurants and shops: sales, shifts, receipts and stock.": "Restaurants et commerces : ventes, services, tickets et stocks.",
   "Checkout screen": "Écran de caisse",
   "Menu/products": "Carte/produits",
   "Shifts": "Services",
@@ -2013,7 +2013,7 @@ window.I18N_PACK={
   "Finance enquiry": "Demande de financement",
   "Auctions": "Enchères",
   "Hospitality management": "Gestion hôtelière",
-  "Hotels: rooms, housekeeping, channels and guests.": "Hôtels : chambres, ménage, canaux et clients.",
+  "Hotels: rooms, housekeeping, channels and guests.": "Hôtels : chambres, ménage, canaux et clients.",
   "Room management": "Gestion des chambres",
   "Housekeeping": "Ménage",
   "Channel sync": "Synchronisation des canaux",
@@ -2135,7 +2135,7 @@ window.I18N_PACK={
   "Mobile version": "Version mobile",
   "Fallbacks": "Solutions de repli",
   "3D product configurator": "Configurateur de produits 3D",
-  "Cars, furniture, watches, glasses: customise in 3D.": "Voitures, meubles, montres, lunettes : personnalisez en 3D.",
+  "Cars, furniture, watches, glasses: customise in 3D.": "Voitures, meubles, montres, lunettes : personnalisez en 3D.",
   "3D model viewer": "Visionneuse de modèles 3D",
   "Options & materials": "Options et matières",
   "Camera presets": "Préréglages de caméra",
