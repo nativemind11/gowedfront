@@ -217,8 +217,8 @@ with sync_playwright() as p:
 
     # 12 brief screen points to booking
     reset(briefs=[brief('submitted', submitted_at='2026-11-20T10:00:00Z', answers={'v': 1, 'project': {'intent': 'sell', 'goal': 'Rugs'}, 'refine': {}, 'items': {'online-store': {}}})])
-    pg.goto(BASE + '#/brief'); pg.reload(); pg.wait_for_selector('[data-goal="sell"]', timeout=5000); w(300); pg.click('[data-step="5"]'); w(300)
-    ok(pg.locator('#bp a[href="#/meeting"]').count() == 1 and 'Book your free call' in pg.inner_text('#bp'), 'submitted brief review has a "Book your free call" button')
+    pg.goto(BASE + '#/brief'); pg.reload(); pg.wait_for_selector('[data-goal="sell"]', timeout=5000); w(300); pg.click('[data-step="4"]'); w(300)
+    ok(pg.locator('#bp a[href="#/meeting"]').count() == 1 and 'Request a call (optional)' in pg.inner_text('#bp'), 'submitted brief review has an optional "Request a call" link outside the brief (#/meeting)')
     ok('email you' not in pg.inner_text('#bp').lower(), 'no old "we will email you" promise on the brief screen')
 
     ok(not any('service_role' in json.dumps(c) or 'sb_secret' in json.dumps(c) for c in calls), 'no secret key in any request')

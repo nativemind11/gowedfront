@@ -50,18 +50,18 @@ const r=await api('/auth/v1/token?grant_type=pkce',{method:'POST',body:{auth_cod
    network or the server was down, so closing the tab right after a click does not lose the email. Never blocks the page. */
 const NQ='culmera.notify',nUrl=()=>String(C().api||'').replace(/\/brief\/?$/,'/notify'),regKey=u=>'culmera.reg.'+u;
 const nRead=()=>{try{const a=JSON.parse(st.get(NQ)||'[]');return Array.isArray(a)?a.filter(x=>x&&typeof x.e==='string'&&typeof x.u==='string').slice(0,20):[]}catch(e){return []}},nSave=a=>{a.length?st.set(NQ,JSON.stringify(a.slice(0,20))):st.del(NQ)};
-let nBusy=false;
+let nBusy=false,nAgain=false;
 async function nPost(s,x){const ac=new AbortController(),t=setTimeout(()=>ac.abort(),12000);
 try{const r=await fetch(nUrl(),{method:'POST',signal:ac.signal,keepalive:true,headers:{'Content-Type':'application/json',Authorization:'Bearer '+s.access_token},body:JSON.stringify(x.id?{event:x.e,id:x.id}:{event:x.e})});let d={};try{d=await r.json()}catch(e){}return{ok:r.ok&&d.ok!==false,status:r.status,data:d}}
 catch(e){return{ok:false,status:0,data:{}}}finally{clearTimeout(t)}}
-async function nFlush(){if(nBusy||!nUrl())return;const s=await session();if(!s||!s.user||!s.user.id)return;nBusy=true;
+async function nFlush(){if(nBusy){nAgain=true;return}if(!nUrl())return;const s=await session();if(!s||!s.user||!s.user.id)return;nBusy=true;
 try{let q=nRead();const keep=[];for(const x of q){if(x.u!==s.user.id){keep.push(x);continue}
 if(Date.now()-(x.t||0)>3*864e5||(x.n||0)>=6)continue;            /* too old or tried enough: give up quietly */
 const r=await nPost(s,x);
 if(r.ok){if(x.e==='registered'&&!(r.data&&r.data.retry))st.set(regKey(x.u),'1');if(r.data&&r.data.retry)keep.push({...x,n:(x.n||0)+1});continue}
 if(r.status===0||r.status===429||r.status>=500||r.status===503)keep.push({...x,n:(x.n||0)+1});       /* try again later */
 /* 400 / 401 / 403 / 404 / 409: the server will never accept it, drop it */}
-nSave(keep)}finally{nBusy=false}}
+const added=nRead().filter(y=>!q.some(x=>x.e===y.e&&x.u===y.u&&(x.id||'')===(y.id||'')));nSave([...keep,...added])}finally{nBusy=false;if(nAgain){nAgain=false;nFlush().catch(()=>{})}}}   /* an event added while another was being sent (a meeting and a reply, back to back) goes out right away, not at the next page load */
 function notify(e,id){const s=read();if(!s||!s.user||!s.user.id||!nUrl())return Promise.resolve();
 if(e==='registered'&&st.get(regKey(s.user.id))==='1')return Promise.resolve();
 const q=nRead();if(!q.some(x=>x.e===e&&x.u===s.user.id&&(x.id||'')===(id||'')))q.push({e,id:id||'',u:s.user.id,t:Date.now(),n:0});nSave(q);return nFlush().catch(()=>{})}
@@ -99,10 +99,10 @@ if(pr.role!=='client'){location.replace('#/team');return}
 notify('registered');
 const name=pr.full_name||pr.email||'';let h=`<p class="lead-p">${esc(fill(A.hi,{name}))}</p>`;
 if(pr.role!=='client'){h+=`<p>${esc(fill(A.staff,{role:A.roles[pr.role]||pr.role}))}</p>`}
-else{const cl=c.ok&&c.data[0]||{},[b,m]=await Promise.all([rest('client_briefs?select=ref,status,updated_at&order=updated_at.desc&limit=1',s),rest('meetings?select=id,starts_at,timezone,duration_min,status&status=neq.cancelled&order=starts_at.desc&limit=1',s)]);if(!$('#acct'))return;
+else{const cl=c.ok&&c.data[0]||{},[b,m]=await Promise.all([rest('client_briefs?select=ref,status,updated_at&order=updated_at.desc&limit=1',s),rest('meetings?select=id,starts_at,timezone,duration_min,status,teams_url&status=neq.cancelled&order=starts_at.desc&limit=1',s)]);if(!$('#acct'))return;
 const br=b.ok&&b.data[0],mt=m.ok&&m.data[0],PT=window.CulmeraPortal;
 h+=`<div class="acct"><div><h2>${esc(A.briefH)}</h2>${br?`<p><span dir="ltr">${esc(br.ref)}</span> · ${esc(A.st[br.status]||br.status)}</p>`:`<p>${esc(A.briefNone)}</p>`}<p><a class="btn p" href="#/brief">${esc(br?A.briefOpen:A.briefStart)}</a></p></div>${PT?PT.card(mt,br):''}<div><h2>${esc(A.detailsH)}</h2><p>${esc(cl.company||'')}${cl.company&&cl.country?' · ':''}${esc(cl.country||'')}</p><p dir="ltr" style="text-align:start">${esc(pr.email||'')}</p><p class="note">${esc(cl.code_used?fill(A.refBy,{code:cl.code_used}):A.direct)}</p></div></div>${!br||br.status==='draft'?`<h2 style="margin-block-start:2.5rem">${esc(A.nextH)}</h2><ol>${A.next.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`:''}${PT?PT.extras(br):`<p class="note">${esc(A.pricing)}</p>`}`}
-h+=`<p style="margin-block-start:2rem"><button class="btn" type="button" data-so>${esc(A.signOut)}</button></p>`;$('#acct').innerHTML=(ok?'':`<p role="alert">${esc(notice)}</p>`)+h;notice='';hdr();window.CulmeraPortal&&pr.role==='client'&&CulmeraPortal.rights()}
+h+=`<p style="margin-block-start:2rem"><button class="btn" type="button" data-so>${esc(A.signOut)}</button></p>`;$('#acct').innerHTML=(ok?'':`<p role="alert">${esc(notice)}</p>`)+h;notice='';hdr();window.CulmeraPortal&&pr.role==='client'&&(CulmeraPortal.rights(),CulmeraPortal.convo&&CulmeraPortal.convo())}
 /* ---------- events ---------- */
 document.addEventListener('submit',async e=>{const f=e.target.closest('form.aform');if(!f)return;e.preventDefault();const b=f.querySelector('button[type=submit]');if(b.disabled)return;
 const need=()=>{if(C().turnstileSiteKey&&!tok()){say(A.err.tsMissing);return true}};

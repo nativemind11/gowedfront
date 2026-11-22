@@ -6,12 +6,15 @@
               suspend / delete, data requests, activity log and CSV export.
    Every read and write uses the signed-in user's own token, so Row Level Security decides what each role can see and do
    (Partner and Director read through the read-only views of migration 007); this page only hides buttons that would be refused. People management that needs the service key (invite, suspend, delete) goes
-   through the API (/api/admin), which checks the role again on the server. All strings live in L.tm. */
+   through the API (/api/admin), which checks the role again on the server. All strings live in L.tm.
+   Phase 2 (Founder only): the conversation with each client (reply + optional price + "suggest a meeting"), confirming a call with a Teams link
+   pasted by hand, the public (visitor) briefs with an email-only reply. Every write goes through POST /api/reply with a fresh req_id per press.
+   Partner and Director never ask for, and never see, any message, price or link (those tables are not readable by them). */
 (()=>{
 const T=L.tm,A=L.auth,M=L.mt,$=s=>document.querySelector(s),G=()=>window.GW,C=()=>G().C,esc=s=>G().esc(s),fill=(s,o)=>G().fill(s,o),AU=()=>window.CulmeraAuth,enc=encodeURIComponent;
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,CAP=1000,WEEK=7*864e5;
 const BST=['submitted','in_review','scheduled','in_discussion','won','lost','archived'];
-const TABS={partner:['overview','clients','playbook'],director:['overview','clients','meetings','team','playbook'],founder:['overview','clients','meetings','team','requests','audit','playbook']};
+const TABS={partner:['overview','clients','playbook'],director:['overview','clients','meetings','team','playbook'],founder:['overview','clients','public','meetings','team','requests','audit','playbook']};
 const fresh=()=>({me:null,tab:'overview',open:null,ask:null,f:{q:'',st:'',p:'',ms:'active',tb:'',lk:'home'},lim:100,det:null,aud:null,audLim:200,state:'load',msg:'',ok:false});
 let S=fresh(),D=null;
 /* ---------- helpers ---------- */
@@ -23,15 +26,21 @@ const bpill=s=>pill(s,A.st[s]||s),mpill=s=>pill(s,M.mst[s]||s);
 const nm=p=>p?(p.full_name||p.email||'—'):T.unknown;
 const site=()=>C().siteUrl.replace(/\/$/,'');
 const adminUrl=()=>String(C().api||'').replace(/\/brief\/?$/,'/admin');
+const replyUrl=()=>String(C().api||'').replace(/\/brief\/?$/,'/reply');
+const uuid=()=>{try{if(crypto.randomUUID)return crypto.randomUUID();const b=crypto.getRandomValues(new Uint8Array(16));b[6]=b[6]&15|64;b[8]=b[8]&63|128;const h=[...b].map(x=>x.toString(16).padStart(2,'0')).join('');return h.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/,'$1-$2-$3-$4-$5')}catch(e){return null}};
+const HTTPS=/^https:\/\/[^\s]+$/;
 const say=(t,ok)=>{S.msg=t||'';S.ok=!!ok;const e=$('#tmmsg');if(e){e.textContent=S.msg;e.style.color=ok?'':'#f0a3a3'}};
 const role=()=>S.me&&S.me.role;
 const isF=()=>role()==='founder',isDir=()=>role()==='director',isP=()=>role()==='partner',canManage=()=>isF(),seesOwner=()=>isF()||isDir();
 /* ---------- data ---------- */
-async function admin(action,body){const s=await AU().session();if(!s)return{ok:false,data:{code:'auth'}};if(!adminUrl())return{ok:false,data:{code:'noApi'}};
+async function admin(action,body,url){const s=await AU().session();if(!s)return{ok:false,data:{code:'auth'}};const U=url||adminUrl();if(!U)return{ok:false,data:{code:'noApi'}};
 const ac=new AbortController(),t=setTimeout(()=>ac.abort(),20000);
-try{const r=await fetch(adminUrl(),{method:'POST',signal:ac.signal,headers:{'Content-Type':'application/json',Authorization:'Bearer '+s.access_token},body:JSON.stringify({action,...body})});let d={};try{d=await r.json()}catch(e){}return{ok:r.ok&&d.ok!==false,status:r.status,data:d}}
+try{const r=await fetch(U,{method:'POST',signal:ac.signal,headers:{'Content-Type':'application/json',Authorization:'Bearer '+s.access_token},body:JSON.stringify({action,...body})});let d={};try{d=await r.json()}catch(e){}return{ok:r.ok&&d.ok!==false,status:r.status,data:d}}
 catch(e){return{ok:false,data:{code:'offline'}}}finally{clearTimeout(t)}}
 const why=r=>T.err[(r.data&&r.data.code)||'']||T.err.generic;
+/* the reply API: Founder only, every press carries its own req_id (a double click can never send twice) */
+const rpl=(action,body)=>admin(action,body,replyUrl());
+const rwhy=r=>{const c=(r.data&&r.data.code)||'';return T.rp.err[c]||T.err[c]||T.err.generic};
 async function rd(path){const s=await AU().session();if(!s)return{ok:false,auth:true};const r=await AU().rest(path,s);return r.ok&&Array.isArray(r.data)?{ok:true,rows:r.data}:{ok:false,status:r.status}}
 /* write with the user's token; n = number of rows really changed (zero rows means Row Level Security refused it) */
 async function mut(path,body,method){const s=await AU().session();if(!s)return{ok:false,n:0};const r=await AU().restW(path,s,{method:method||'PATCH',body,prefer:'return=representation'});
@@ -44,12 +53,17 @@ if(!me){S.state='paused';paint();return}
 if(me.status!=='active'){await AU().signOut();location.hash='#/signin';location.reload();return}
 if(me.role==='client'){location.hash='#/account';return}
 const EMPTY={ok:true,rows:[]},pbq=()=>rd('playbook?select=key,sort,title,body&order=sort.asc'),named=(rows,r)=>rows.map(x=>({id:x.profile_id,full_name:x.full_name||'',email:'',role:r,status:'active',locale:'en',created_at:x.created_at}));
-let people=pr.rows,pa,cl,br,ms,iv,pb,rq,types=null;
+let people=pr.rows,pa,cl,br,ms,iv,pb,rq,types=null,ex=null;
 if(me.role==='founder'){
 [pa,cl,br,ms,iv,pb,rq]=await Promise.all([rd('partners?select=profile_id,code,director_id,active&limit='+CAP),rd('clients?select=profile_id,partner_id,code_used,company,country,phone,created_at&limit='+CAP),
 rd('client_briefs?select=id,ref,client_id,status,locale,selected_types,created_at,updated_at,submitted_at&order=updated_at.desc&limit='+CAP),rd('meetings?select=id,brief_id,client_id,starts_at,timezone,duration_min,status,note&order=starts_at.desc&limit='+CAP),
 rd('invitations?select=id,email,role,director_id,invited_by,expires_at,accepted_at,created_at&accepted_at=is.null&order=created_at.desc&limit=200'),
-pbq(),rd('data_requests?select=id,client_id,kind,status,created_at,handled_at&order=created_at.desc&limit=200')])}
+pbq(),rd('data_requests?select=id,client_id,kind,status,created_at,handled_at&order=created_at.desc&limit=200')]);
+const [xm,xv,xp,xt]=await Promise.all([rd('brief_messages?select=id,brief_id,client_id,sender,kind,body,price_text,proposes_meeting,meeting_id,email_status,email_at,created_at&order=created_at.asc&limit='+CAP),
+rd('visitor_replies?select=id,brief_ref,body,price_text,proposes_meeting,email_status,email_at,created_at&order=created_at.asc&limit='+CAP),
+rd('briefs?select=ref,created_at,name,email,company,country,timezone,items_count,payload,status&order=created_at.desc&limit=300'),
+rd('meetings?select=id,teams_url&teams_url=not.is.null&limit='+CAP)]);
+ex={msgs:xm.ok?xm.rows:null,vis:xv.ok?xv.rows:null,pub:xp.ok?xp.rows:null,tu:xt.ok?xt.rows:null}}
 else if(me.role==='director'){
 /* read-only views of migration 007: names only, no contact details, no notes */
 const [p1,tm,c1,b1,m1,pb1]=await Promise.all([rd('partners?select=profile_id,code,director_id,active&limit='+CAP),rd('director_team?select=profile_id,full_name,director_id,active,created_at&limit='+CAP),
@@ -68,16 +82,21 @@ people=[...pr.rows,...named(c1.rows,'client')];types=new Map(c1.rows.map(x=>[x.p
 pa=p1;cl={ok:true,rows:c1.rows.map(x=>({profile_id:x.profile_id,partner_id:me.id,code_used:null,company:'',country:'',phone:null,created_at:x.created_at}))};
 br=EMPTY;ms=EMPTY;iv=EMPTY;pb=pb1;rq=EMPTY}
 if(!$('#tm'))return;if(![pa,cl,br,ms,iv].every(x=>x.ok)){S.state='err';paint();return}
-S.me=me;D={profiles:people,pm:new Map(people.map(x=>[x.id,x])),partners:pa.rows,pa:new Map(pa.rows.map(x=>[x.profile_id,x])),clients:cl.rows,briefs:br.rows,meetings:ms.rows,inv:iv.rows,pb:pb.ok?pb.rows:null,req:rq.ok?rq.rows:[],types};
+S.me=me;D={profiles:people,pm:new Map(people.map(x=>[x.id,x])),partners:pa.rows,pa:new Map(pa.rows.map(x=>[x.profile_id,x])),clients:cl.rows,briefs:br.rows,meetings:ms.rows,inv:iv.rows,pb:pb.ok?pb.rows:null,req:rq.ok?rq.rows:[],types,ex};
 D.cap=[pr,pa,cl,br,ms].some(x=>x.rows.length>=CAP);index();S.state='ok';paint()}
 
 function index(){D.lb=new Map();D.bb=new Map();for(const b of D.briefs){if(!D.lb.has(b.client_id))D.lb.set(b.client_id,b);(D.bb.get(b.client_id)||D.bb.set(b.client_id,[]).get(b.client_id)).push(b)}
 D.mc=new Map();for(const m of D.meetings){(D.mc.get(m.client_id)||D.mc.set(m.client_id,[]).get(m.client_id)).push(m)}
-D.cm=new Map(D.clients.map(x=>[x.profile_id,x]))}
+D.cm=new Map(D.clients.map(x=>[x.profile_id,x]));
+D.mm=new Map();D.vm=new Map();D.tu=new Map();
+if(D.ex){for(const x of D.ex.msgs||[]){(D.mm.get(x.brief_id)||D.mm.set(x.brief_id,[]).get(x.brief_id)).push(x)}
+for(const x of D.ex.vis||[]){(D.vm.get(x.brief_ref)||D.vm.set(x.brief_ref,[]).get(x.brief_ref)).push(x)}
+for(const x of D.ex.tu||[])D.tu.set(x.id,x.teams_url)}}
 const callOf=cid=>{const a=D.mc.get(cid)||[];return a.filter(m=>m.status==='requested'||m.status==='confirmed').sort((x,y)=>String(x.starts_at).localeCompare(String(y.starts_at)))[0]||a.find(m=>m.status==='done')||null};
 const projOf=cid=>D.types?(D.types.get(cid)||[]):((D.lb.get(cid)||{}).selected_types||[]);
 const projText=a=>(a||[]).map(x=>{const t=G().S[x];return t?t.name:x}).join(', ');
 const ownerLabel=c=>{if(!c.partner_id)return T.direct;if(c.partner_id===S.me.id)return T.fYou;return nm(D.pm.get(c.partner_id))};
+const dirLabel=c=>{if(!c.partner_id)return T.direct;const o=D.pm.get(c.partner_id);if(o&&o.role==='director')return nm(o);const x=D.pa.get(c.partner_id);return x&&x.director_id?nm(D.pm.get(x.director_id)):T.direct};
 const myCode=()=>{const p=D.pa.get(S.me.id);return p&&p.code||''};
 const linkFor=()=>{const c=myCode(),b=site()+'/'+(c?'?ref='+enc(c):'');return S.f.lk==='signup'?b+'#/signup':b};
 /* ---------- shell ---------- */
@@ -88,14 +107,14 @@ if(S.state==='paused'){box.innerHTML=`<p role="alert">${esc(T.paused)}</p><p><bu
 if(S.state!=='ok')return;
 const tabs=TABS[role()];if(!tabs.includes(S.tab))S.tab='overview';
 box.innerHTML=`<p class="lead-p">${esc(fill(T.hi,{name:nm(S.me)}))} <span class="pill active">${esc(A.roles[role()]||role())}</span></p>${D.cap?`<p class="note">${esc(T.cap)}</p>`:''}
-<div class="tm-tabs" role="tablist" aria-label="${esc(T.title)}">${tabs.map(t=>`<button type="button" role="tab" id="tt-${t}" aria-selected="${S.tab===t}" aria-controls="tmbody" tabindex="${S.tab===t?0:-1}" data-tm="tab" data-v="${t}">${esc(T.tabs[t])}${t==='meetings'&&isF()&&calls().length?` <span class="pill requested" aria-label="${esc(T.stCalls)}">${calls().length}</span>`:''}</button>`).join('')}</div>
+<div class="tm-tabs" role="tablist" aria-label="${esc(T.title)}">${tabs.map(t=>`<button type="button" role="tab" id="tt-${t}" aria-selected="${S.tab===t}" aria-controls="tmbody" tabindex="${S.tab===t?0:-1}" data-tm="tab" data-v="${t}">${esc(t==='public'?T.rp.tabPublic:T.tabs[t])}${t==='meetings'&&isF()&&calls().length?` <span class="pill requested" aria-label="${esc(T.stCalls)}">${calls().length}</span>`:''}</button>`).join('')}</div>
 <p id="tmmsg" role="status" aria-live="polite" class="note"></p><div id="tmbody" role="tabpanel" aria-labelledby="tt-${S.tab}" tabindex="-1">${body()}</div>
 <p style="margin-block-start:2.5rem"><button class="btn" type="button" data-tm="signout">${esc(T.signOut)}</button></p>`;
 say(S.msg,S.ok);if(S.tab==='audit'&&!S.open&&!S.aud)loadAudit()}
 const paintBody=()=>{const b=$('#tmbody');if(b){b.innerHTML=body();}};
 const calls=()=>D.meetings.filter(m=>m.status==='requested');
-function body(){if(S.open&&S.open.k==='client')return clientView(S.open.id);if(S.open&&S.open.k==='user')return userView(S.open.id);
-return({overview,clients:clientsTab,meetings:meetingsTab,team:teamTab,requests:requestsTab,audit:auditTab,playbook:playbookTab}[S.tab]||overview)()}
+function body(){if(S.open&&S.open.k==='pub'&&isF())return pubView(S.open.id);if(S.open&&S.open.k==='client')return clientView(S.open.id);if(S.open&&S.open.k==='user')return userView(S.open.id);
+return({overview,clients:clientsTab,meetings:meetingsTab,team:teamTab,requests:requestsTab,audit:auditTab,playbook:playbookTab,public:publicTab}[S.tab]||overview)()}
 /* ---------- overview ---------- */
 function stat(n,l){return `<div><b class="tm-n">${esc(n)}</b><span class="note">${esc(l)}</span></div>`}
 function overview(){const cl=D.clients;let h='';
@@ -126,20 +145,21 @@ if(!rows.length)return `<p>${esc(T.noMatch)}</p>`;
 return `<p class="note">${esc(T.stClients)}: ${rows.length}</p><div class="tw"><table class="tm"><caption class="sr">${esc(T.tabs.clients)}</caption><thead><tr><th scope="col">${esc(T.colClient)}</th><th scope="col">${esc(T.ans.packs)}</th></tr></thead><tbody>${rows.slice(0,S.lim).map(c=>`<tr><th scope="row"><b>${esc(nmOf(c))}</b></th><td>${esc(projText(projOf(c.profile_id))||'—')}</td></tr>`).join('')}</tbody></table></div>${rows.length>S.lim?`<p><button class="btn" type="button" data-tm="more">${esc(T.more)} (${rows.length-S.lim})</button></p>`:''}`}
 function clientList(){if(isP())return partnerList();const rows=filtered();if(!rows.length)return `<p>${esc(T.noMatch)}</p>`;const shown=rows.slice(0,S.lim);
 return `<div class="tw"><table class="tm"><caption class="sr">${esc(T.tabs.clients)}</caption><thead><tr><th scope="col">${esc(T.colClient)}</th>${seesOwner()?`<th scope="col">${esc(T.colOwner)}</th>`:''}<th scope="col">${esc(T.colBrief)}</th>${isDir()?`<th scope="col">${esc(T.ans.packs)}</th>`:''}<th scope="col">${esc(T.colCall)}</th><th scope="col">${esc(T.colJoined)}</th><th scope="col"><span class="sr">${esc(T.colAction)}</span></th></tr></thead><tbody>${shown.map(c=>{const p=D.pm.get(c.profile_id),b=D.lb.get(c.profile_id),m=callOf(c.profile_id);
-return `<tr><th scope="row"><b>${esc(nm(p))}</b><br>${isF()?`<br><span class="note">${esc(c.company)}</span>`:''}</th>${seesOwner()?`<td>${esc(ownerLabel(c))}</td>`:''}<td>${b?`<span dir="ltr">${esc(b.ref)}</span><br>${bpill(b.status)}`:`<span class="note">${esc(T.fNoBrief)}</span>`}</td>${isDir()?`<td>${esc(projText(projOf(c.profile_id))||'—')}</td>`:''}<td>${m?`${mpill(m.status)}<br><span class="note">${esc(when(m.starts_at,tz(),true))}</span>`:'—'}</td><td>${esc(when(c.created_at,undefined,true))}</td>
+return `<tr><th scope="row"><b>${esc(nm(p))}</b><br>${isF()?`<br><span class="note">${esc(c.company)}</span>`:''}</th>${seesOwner()?`<td>${esc(ownerLabel(c))}${isF()?`<br><span class="note">${esc(T.rp.directorH)}: ${esc(dirLabel(c))}</span>`:''}</td>`:''}<td>${b?`<span dir="ltr">${esc(b.ref)}</span><br>${bpill(b.status)}`:`<span class="note">${esc(T.fNoBrief)}</span>`}</td>${isDir()?`<td>${esc(projText(projOf(c.profile_id))||'—')}</td>`:''}<td>${m?`${mpill(m.status)}<br><span class="note">${esc(when(m.starts_at,tz(),true))}</span>`:'—'}</td><td>${esc(when(c.created_at,undefined,true))}</td>
 <td><button class="btn" type="button" data-tm="openc" data-id="${esc(c.profile_id)}">${esc(T.open)}</button></td></tr>`}).join('')}</tbody></table></div>${rows.length>S.lim?`<p><button class="btn" type="button" data-tm="more">${esc(T.more)} (${rows.length-S.lim})</button></p>`:''}`}
-const paintList=()=>{const l=$('#tmlist');if(l)l.innerHTML=S.tab==='meetings'?meetList():clientList()};
+const paintList=()=>{const l=$('#tmlist');if(l)l.innerHTML=S.tab==='meetings'?meetList():S.tab==='public'?publicList():clientList()};
 /* ---------- client detail ---------- */
 function clientView(id){const c=D.cm.get(id),p=D.pm.get(id);if(!c)return `<p>${esc(T.none)}</p><p><button class="btn" type="button" data-tm="back">${esc(T.back)}</button></p>`;
 const bl=D.bb.get(id)||[],b=D.lb.get(id),ml=D.mc.get(id)||[],dt=S.det&&S.det.id===id?S.det:null;
 let h=`<p><button class="btn" type="button" data-tm="back">${esc(T.back)}</button></p><h2 class="h2s" id="tmh" tabindex="-1">${esc(nm(p))}</h2><div class="acct">
-<div><h2>${esc(T.infoH)}</h2><dl class="tm-dl">${isF()?`<dt>${esc(T.email)}</dt><dd dir="ltr">${p?`<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>`:'—'}</dd><dt>${esc(T.company)}</dt><dd>${esc(c.company||'—')}</dd><dt>${esc(T.country)}</dt><dd>${esc(c.country||'—')}</dd><dt>${esc(T.phone)}</dt><dd dir="ltr">${esc(c.phone||'—')}</dd>`:''}<dt>${esc(T.joined)}</dt><dd>${esc(when(c.created_at,undefined,true))}</dd>${isF()?`<dt>${esc(T.usedCode)}</dt><dd dir="ltr">${esc(c.code_used||'—')}</dd><dt>${esc(T.lang)}</dt><dd>${esc(p?p.locale:'—')}</dd>`:''}<dt>${esc(T.ownerH)}</dt><dd>${esc(ownerLabel(c))}</dd></dl>`;
+<div><h2>${esc(T.infoH)}</h2><dl class="tm-dl">${isF()?`<dt>${esc(T.email)}</dt><dd dir="ltr">${p?`<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>`:'—'}</dd><dt>${esc(T.company)}</dt><dd>${esc(c.company||'—')}</dd><dt>${esc(T.country)}</dt><dd>${esc(c.country||'—')}</dd><dt>${esc(T.phone)}</dt><dd dir="ltr">${esc(c.phone||'—')}</dd>`:''}<dt>${esc(T.joined)}</dt><dd>${esc(when(c.created_at,undefined,true))}</dd>${isF()?`<dt>${esc(T.usedCode)}</dt><dd dir="ltr">${esc(c.code_used||'—')}</dd><dt>${esc(T.lang)}</dt><dd>${esc(p?p.locale:'—')}</dd>`:''}<dt>${esc(T.ownerH)}</dt><dd>${esc(ownerLabel(c))}</dd>${isF()?`<dt>${esc(T.rp.directorH)}</dt><dd>${esc(dirLabel(c))}</dd>`:''}</dl>`;
 if(isF()){h+=`<form class="cform tmform" novalidate data-form="reassign" style="margin-block-start:1rem"><label>${esc(T.reassign)}<select id="ro">${ownerOpts(c.partner_id||'',false)}</select></label><p class="note">${esc(T.reassignHint)}</p><p><button class="btn" type="submit">${esc(T.reassign)}</button></p></form>`;
 h+=acctActions(id,p)}
 h+=`</div><div><h2>${esc(T.briefH)}</h2>`;
 if(!b)h+=`<p>${esc(T.briefNone)}</p>`;else{h+=`<p><span dir="ltr">${esc(b.ref)}</span> ${bpill(b.status)}</p>`+(bl.length>1?`<p class="note">${esc(String(bl.length))} ${esc(T.briefH)}</p>`:'');
 if(canManage()){h+=b.status==='draft'?`<p class="note">${esc(T.draftNote)}</p>`:`<form class="cform tmform" novalidate data-form="bstatus" data-id="${esc(b.id)}"><label>${esc(T.statusH)}<select id="bs">${BST.map(k=>`<option value="${k}"${b.status===k?' selected':''}>${esc(A.st[k])}</option>`).join('')}</select></label><p><button class="btn" type="submit">${esc(T.saveStatus)}</button></p></form>`}}
 h+=`</div><div><h2>${esc(T.callsH)}</h2>`+(ml.length?ml.map(m=>meetCard(m)).join(''):`<p>${esc(T.callNone)}</p>`)+`</div></div>`;
+if(isF()&&b&&b.status!=='draft')h+=convBlock(b);
 if(b)h+=`<h2 class="h2s">${esc(T.answersH)}</h2><div class="tm-box" id="tmans">${dt&&dt.answers!==undefined?answers(dt.answers,b):`<p class="note">${esc(T.answersLoad)}</p>`}</div>`;
 if(isF())h+=`<h2 class="h2s">${esc(T.notesH)}</h2><p class="note">${esc(T.notesHint)}</p><form class="cform tmform" novalidate data-form="note" data-id="${esc(id)}"><label>${esc(T.noteLabel)}<textarea id="nb" rows="3" maxlength="4000"></textarea></label><p><button class="btn p" type="submit">${esc(T.noteAdd)}</button></p></form><div id="tmnotes">${dt&&dt.notes?notes(dt.notes):''}</div>`;
 return h}
@@ -149,8 +169,45 @@ return h+`<p>${st==='suspended'?`<button class="btn" type="button" data-tm="rest
 function meetCard(m,full){const c=D.cm.get(m.client_id),b=D.briefs.find(x=>x.id===m.brief_id),act=m.status==='requested'||m.status==='confirmed';
 return `<div class="tm-meet"><p>${mpill(m.status)} ${esc(fill(T.min,{n:m.duration_min}))}${full?` · <b>${esc(nm(D.pm.get(m.client_id)))}</b>`:''}${b?` · <span dir="ltr">${esc(b.ref)}</span>`:''}</p>
 <div class="zn"><div><span class="note">${esc(T.yourTime)}</span><b>${esc(when(m.starts_at,tz()))}</b><span class="note" dir="ltr">${esc(tz())}</span></div><div><span class="note">${esc(T.studioTime)}</span><b>${esc(when(m.starts_at,studio()))}</b><span class="note" dir="ltr">${esc(studio())}</span></div></div>
-<p class="note">${esc(T.clientZone)}: <span dir="ltr">${esc(m.timezone)}</span> — ${esc(when(m.starts_at,m.timezone))}</p>${m.note?`<p class="tm-pre">${esc(m.note)}</p>`:''}
-${canManage()&&act?`<p>${m.status==='requested'?`<button class="btn p" type="button" data-tm="mset" data-id="${esc(m.id)}" data-v="confirmed">${esc(T.confirmCall)}</button> `:`<button class="btn p" type="button" data-tm="mset" data-id="${esc(m.id)}" data-v="done">${esc(T.doneCall)}</button> `}<button class="btn" type="button" data-tm="mset" data-id="${esc(m.id)}" data-v="cancelled">${esc(T.cancelCall)}</button>${full&&c?` <button class="btn" type="button" data-tm="openc" data-id="${esc(m.client_id)}">${esc(T.open)}</button>`:''}</p>`:(full&&c?`<p><button class="btn" type="button" data-tm="openc" data-id="${esc(m.client_id)}">${esc(T.open)}</button></p>`:'')}</div>`}
+<p class="note">${esc(T.clientZone)}: <span dir="ltr">${esc(m.timezone)}</span> — ${esc(when(m.starts_at,m.timezone))}</p>${m.note?`<p class="tm-pre">${esc(m.note)}</p>`:''}${isF()?teamsLine(D.tu.get(m.id)):''}
+${canManage()&&act?`<p>${m.status==='requested'?``:`<button class="btn p" type="button" data-tm="mset" data-id="${esc(m.id)}" data-v="done">${esc(T.doneCall)}</button> `}<button class="btn" type="button" data-tm="mset" data-id="${esc(m.id)}" data-v="cancelled">${esc(T.cancelCall)}</button>${full&&c?` <button class="btn" type="button" data-tm="openc" data-id="${esc(m.client_id)}">${esc(T.open)}</button>`:''}</p>`:(full&&c?`<p><button class="btn" type="button" data-tm="openc" data-id="${esc(m.client_id)}">${esc(T.open)}</button></p>`:'')}${canManage()&&act?confirmForm(m):''}</div>`}
+/* ---------- Phase 2: conversation with the client, confirming a call, public briefs (Founder only) ---------- */
+const teamsLine=u=>typeof u==='string'&&HTTPS.test(u)?`<p><b>${esc(T.rp.teamsLink)}:</b> <a href="${esc(u)}" target="_blank" rel="noopener noreferrer" dir="ltr">${esc(u)}</a></p>`:'';
+const mailPill=st=>st?pill(st==='sent'?'won':st==='failed'?'lost':'requested',T.rp.mail[st]||st):'';
+const canResend=m=>m.email_status==='failed'||m.email_status==='skipped'||(m.email_status==='sending'&&Date.now()-new Date(m.email_at).getTime()>5*60*1000);
+function msgLine(m,ref){const mine=m.sender==='founder',mt=m.meeting_id?D.meetings.find(x=>x.id===m.meeting_id):null;
+return `<div class="cvm${mine?' me':''}"><div class="cvh"><b>${esc(mine?T.rp.you:T.rp.client)}</b><span class="note">${esc(when(m.created_at,tz(),false))}</span></div>`
++(m.kind==='meeting_confirmed'?`<p>${pill('confirmed',T.rp.confirmedH)}${mt?` <span class="note">${esc(fill(T.rp.callAt,{t:when(mt.starts_at,tz())}))}</span>`:''}</p>`:(mt&&!mine?`<p class="note">${esc(fill(T.rp.suggested,{t:when(mt.starts_at,tz())}))}</p>`:''))
++(m.body?`<p class="cvb">${esc(m.body)}</p>`:'')+(m.price_text?`<p><b>${esc(T.rp.priceL)}:</b> ${esc(m.price_text)}</p>`:'')+(m.proposes_meeting?`<p>${pill('requested',T.rp.proposes)}</p>`:'')
++(mine?`<p class="note">${mailPill(m.email_status)}${canResend(m)?` <button class="btn" type="button" data-tm="resend" data-id="${esc(m.id)}" data-ref="${esc(ref)}">${esc(T.rp.resend)}</button>`:''}</p>`:'')+`</div>`}
+function replyForm(id,ref,k){const vis=k==='vreply';
+return `<form class="cform tmform" novalidate data-form="${k}" data-id="${esc(id)}" data-ref="${esc(ref)}"><h3>${esc(vis?T.rp.replyVisH:T.rp.replyH)}</h3>${vis?`<p class="note">${esc(T.rp.visNote)}</p>`:''}
+<label>${esc(T.rp.msgL)}<textarea name="rb" rows="5" maxlength="4000"></textarea></label>
+<label>${esc(T.rp.priceOpt)}<input name="rp" maxlength="120" autocomplete="off" placeholder="${esc(T.rp.pricePh)}"></label>
+<label style="display:flex;gap:.6rem;align-items:center"><input type="checkbox" name="rpm" style="inline-size:auto"> <span>${esc(T.rp.propose)}</span></label>
+<p><button class="btn p" type="submit">${esc(T.rp.send)}</button></p></form>`}
+function convBlock(b){const ok=D.ex&&D.ex.msgs,list=ok?(D.mm.get(b.id)||[]):[];
+let h=`<h2 class="h2s">${esc(T.rp.convH)}</h2><p class="note">${esc(T.rp.convLead)}</p>`;
+if(!ok)return h+`<p role="alert">${esc(T.rp.msgsErr)}</p>`;
+return h+`<div class="cvl" id="tmconv">${list.length?list.map(m=>msgLine(m,b.ref)).join(''):`<p class="note">${esc(T.rp.convNone)}</p>`}</div>`+replyForm(b.client_id,b.ref,'reply')}
+function confirmForm(m){const b=D.briefs.find(x=>x.id===m.brief_id);if(!b||!D.ex||!D.ex.msgs)return '';const cf=m.status==='confirmed';
+return `<details class="tm-cf"><summary>${esc(cf?T.rp.updateCall:T.rp.confirmCall)}</summary><form class="cform tmform" novalidate data-form="confirm" data-id="${esc(m.id)}" data-ref="${esc(b.ref)}">
+<label>${esc(T.rp.teamsL)}<input name="tl" type="url" dir="ltr" maxlength="500" autocomplete="off" placeholder="https://" value="${esc(D.tu.get(m.id)||'')}"></label>
+<label>${esc(T.rp.noteL)}<textarea name="nt" rows="3" maxlength="4000"></textarea></label>
+<label>${esc(T.rp.moveL)}<input name="st" type="datetime-local"></label><p class="note">${esc(T.rp.moveHint)}</p>
+<p><button class="btn p" type="submit">${esc(cf?T.rp.updateBtn:T.rp.confirmBtn)}</button></p></form></details>`}
+/* public (visitor) briefs: read with the Founder's own token, answered by email only */
+function publicList(){const P=(D.ex&&D.ex.pub)||[];if(!P.length)return `<p>${esc(T.rp.pubNone)}</p>`;
+return `<div class="tw"><table class="tm"><caption class="sr">${esc(T.rp.tabPublic)}</caption><thead><tr><th scope="col">${esc(T.rp.colRef)}</th><th scope="col">${esc(T.colName)}</th><th scope="col">${esc(T.rp.colCompany)}</th><th scope="col">${esc(T.rp.colReplies)}</th><th scope="col">${esc(T.colWhen)}</th><th scope="col"><span class="sr">${esc(T.colAction)}</span></th></tr></thead><tbody>${P.slice(0,S.lim).map(b=>`<tr><th scope="row" dir="ltr">${esc(b.ref)}</th><td>${esc(b.name)}</td><td>${esc(b.company)}</td><td>${(D.vm.get(b.ref)||[]).length}</td><td>${esc(when(b.created_at,undefined,true))}</td><td><button class="btn" type="button" data-tm="openp" data-id="${esc(b.ref)}">${esc(T.open)}</button></td></tr>`).join('')}</tbody></table></div>${P.length>S.lim?`<p><button class="btn" type="button" data-tm="more">${esc(T.more)} (${P.length-S.lim})</button></p>`:''}`}
+function publicTab(){if(!isF())return '';if(!D.ex||!D.ex.pub)return `<p role="alert">${esc(T.rp.pubErr)}</p>`;return `<p class="note">${esc(T.rp.pubLead)}</p><div id="tmlist">${publicList()}</div>`}
+function pubView(ref){const back=`<p><button class="btn" type="button" data-tm="back">${esc(T.back)}</button></p>`,b=((D.ex&&D.ex.pub)||[]).find(x=>x.ref===ref);if(!b)return `<p>${esc(T.none)}</p>`+back;
+const p=b.payload&&typeof b.payload==='object'?b.payload:{},pr=p.project&&typeof p.project==='object'?p.project:{};
+const kv=o=>Object.entries(o||{}).filter(([,v])=>v!==''&&v!=null).map(([k,v])=>`<dt>${esc(lab(k))}</dt><dd class="tm-pre">${esc(val(v))}</dd>`).join('');
+const items=(Array.isArray(p.items)?p.items:[]).filter(i=>i&&typeof i==='object').map(i=>{const t=G().S[i.slug],o={...i};delete o.slug;return `<div class="tm-item"><h3>${esc(t?t.name:String(i.slug||''))}</h3><dl class="tm-dl">${kv(o)}</dl></div>`}).join('');
+const rl=D.vm.get(b.ref)||[];
+return back+`<h2 class="h2s" id="tmh" tabindex="-1">${esc(b.name)} <span class="note" dir="ltr">${esc(b.ref)}</span></h2><div class="acct"><div><h2>${esc(T.infoH)}</h2><dl class="tm-dl"><dt>${esc(T.email)}</dt><dd dir="ltr"><a href="mailto:${esc(b.email)}">${esc(b.email)}</a></dd><dt>${esc(T.company)}</dt><dd>${esc(b.company||'—')}</dd><dt>${esc(T.country)}</dt><dd>${esc(b.country||'—')}</dd><dt>${esc(T.phone)}</dt><dd dir="ltr">${esc(p.phone||'—')}</dd><dt>${esc(T.rp.roleL)}</dt><dd>${esc(p.role||'—')}</dd><dt>${esc(T.rp.tzL)}</dt><dd dir="ltr">${esc(b.timezone||'—')}</dd><dt>${esc(T.lang)}</dt><dd>${esc(p.locale||'—')}</dd><dt>${esc(T.joined)}</dt><dd>${esc(when(b.created_at,undefined,true))}</dd></dl></div></div>`
++`<h2 class="h2s">${esc(T.answersH)}</h2><div class="tm-box"><dl class="tm-dl">${kv(pr)}</dl>${items?`<h3>${esc(T.ans.packs)}</h3>${items}`:''}</div>`
++`<h2 class="h2s">${esc(T.rp.repliesH)}</h2>`+(D.ex.vis?`<div class="cvl">${rl.length?rl.map(v=>msgLine({...v,sender:'founder',kind:'reply'},b.ref)).join(''):`<p class="note">${esc(T.rp.convNone)}</p>`}</div>`+replyForm(b.ref,b.ref,'vreply'):`<p role="alert">${esc(T.rp.msgsErr)}</p>`)}
 /* answers are untrusted text: everything is escaped, nothing is rendered as HTML */
 const lab=k=>T.ans[k]||k;
 function val(v){if(Array.isArray(v))return v.map(val).filter(Boolean).join(', ');if(v===true)return T.ans.yes;if(v&&typeof v==='object')return Object.entries(v).map(([k,x])=>(x===1||x===2?lab(k):lab(k)+': '+val(x))).join(', ');return String(v??'')}
@@ -227,6 +284,8 @@ if(a==='tab'){S.tab=v;S.open=null;S.ask=null;S.lim=100;say('');paint();const t=$
 else if(a==='signout'){await AU().signOut();location.hash='#/signin';location.reload()}
 else if(a==='openc'&&!isP())await openClient(id);
 else if(a==='openu'&&isF()){S.open={k:'user',id};S.ask=null;say('');paintBody();const h=$('#tmh');if(h)h.focus()}
+else if(a==='openp'&&isF()){S.open={k:'pub',id};S.ask=null;say('');paintBody();const h=$('#tmh');if(h)h.focus()}
+else if(a==='resend'&&isF())await lock(async()=>{const rid=uuid();if(!rid)return say(T.err.generic);const r=await rpl('resend',{ref:el.dataset.ref,id,req_id:rid});if(!r.ok)return say(rwhy(r));const sent=r.data&&r.data.email==='sent';say(sent?T.rp.resentOk:T.rp.resentFail,sent);await refresh()});
 else if(a==='back'){S.open=null;S.ask=null;say('');paintBody()}
 else if(a==='more'){S.lim+=100;paintList()}
 else if(a==='moreaud'){S.audLim=Math.min(CAP,S.audLim+200);S.aud=null;paintBody();loadAudit()}
@@ -247,6 +306,17 @@ const k=f.dataset.form,id=f.dataset.id,run=async fn=>{if(b)b.disabled=true;try{a
 if(k==='note')await run(async()=>{const t=(($('#nb')||{}).value||'').trim();if(!t)return say(T.err.noteEmpty);if(t.length>4000)return say(T.err.noteLong);
 const br=D.lb.get(id),r=await mut('notes',{client_id:id,...(br?{brief_id:br.id}:{}),body:t},'POST');if(!r.ok||!r.n)return say(r.ok?T.rowsNone:T.err.generic);
 S.det.notes=[r.rows[0],...(S.det.notes||[])];$('#nb').value='';say(T.saved,true);const n=$('#tmnotes');if(n)n.innerHTML=notes(S.det.notes)});
+else if((k==='reply'||k==='vreply')&&isF())await run(async()=>{const el=f.elements,body=el.rb.value.trim(),price=el.rp.value.trim(),vis=k==='vreply';
+if(!body||body.length>4000)return say(T.rp.err.body);if(price.length>120)return say(T.rp.err.price);const rid=uuid();if(!rid)return say(T.err.generic);
+const r=await rpl('reply',{ref:f.dataset.ref,body,...(price?{price}:{}),propose_meeting:!!el.rpm.checked,req_id:rid});if(!r.ok)return say(rwhy(r));
+const e=r.data&&r.data.email,txt=r.data&&r.data.already?T.rp.already:(vis?T.rp.vsent:T.rp.sent)[e]||T.rp.sent.failed;say(txt,!!(r.data&&r.data.already)||e==='sent');await refresh()});
+else if(k==='confirm'&&isF())await run(async()=>{const el=f.elements,link=el.tl.value.trim(),note=el.nt.value.trim(),st=el.st.value;
+let okl=HTTPS.test(link)&&link.length>=12&&link.length<=500;if(okl){try{okl=new URL(link).protocol==='https:'}catch(x){okl=false}}if(!okl)return say(T.rp.err.teams_url);
+let iso;if(st){const t=new Date(st).getTime();if(!Number.isFinite(t)||t<=Date.now())return say(T.rp.err.starts_at);iso=new Date(t).toISOString()}
+if(note.length>4000)return say(T.rp.err.body);const rid=uuid();if(!rid)return say(T.err.generic);
+const r=await rpl('confirm',{ref:f.dataset.ref,meeting_id:id,teams_url:link,...(note?{body:note}:{}),...(iso?{starts_at:iso}:{}),req_id:rid});
+if(!r.ok){say(rwhy(r));if(r.data&&r.data.code==='message_not_saved')await refresh();return}
+const e=r.data&&r.data.email;say(r.data&&r.data.already?T.rp.already:T.rp.cf[e]||T.rp.cf.failed,!!(r.data&&r.data.already)||e==='sent');await refresh()});
 else if(k==='bstatus'&&canManage())await run(async()=>{const v=($('#bs')||{}).value;if(!BST.includes(v))return;const r=await mut('client_briefs?id=eq.'+enc(id),{status:v});if(!r.ok)return say(T.err.generic);if(!r.n)return stale();const x=D.briefs.find(y=>y.id===id);if(x)x.status=v;index();say(T.saved,true);paintBody()});
 else if(k==='reassign'&&isF())await run(async()=>{const v=($('#ro')||{}).value||null;if(v&&!UUID.test(v))return;const cid=S.open.id,r=await mut('clients?profile_id=eq.'+enc(cid),{partner_id:v});if(!r.ok)return say(T.err.generic);if(!r.n)return stale();const c=D.cm.get(cid);if(c)c.partner_id=v;say(T.saved,true);paintBody()});
 else if(k==='invite'&&canManage())await run(async()=>{const em=(($('#ive')||{}).value||'').trim(),rl=isF()?($('#ivr')||{}).value:'partner',gr=isF()&&rl==='partner'?($('#ivg')||{}).value:'';if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em))return say(T.err.email);await invite(em,rl,gr)});

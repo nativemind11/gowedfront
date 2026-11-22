@@ -124,8 +124,6 @@ window.I18N_PACK={
     "niceTag": "(souhaitable)",
     "threeD": "3D et animation :",
     "notes": "Notes :",
-    "meeting": "Rendez-vous ({n} min, fuseau horaire du visiteur {tz}) :",
-    "callLang": "Langue de l’appel :",
     "subject": "Brief de projet {ref} : {company}",
     "unsaved": "(non enregistré en ligne)",
     "attach": "Veuillez joindre le PDF."
@@ -487,7 +485,7 @@ window.I18N_PACK={
    ],
    [
     "Quelles langues ?",
-    "Choisissez la langue de l’appel dans le brief."
+    "Indiquez-nous votre langue lorsque nous organisons un appel."
    ],
    [
     "Ce que je partage est-il confidentiel ?",
@@ -644,14 +642,12 @@ window.I18N_PACK={
     "Résultat",
     "Projet",
     "Vous",
-    "Rendez-vous",
     "Relecture"
    ],
    "why": [
     "Nous commençons par là pour partir du résultat que vous voulez, et non de la technologie.",
     "Cela nous aide à préparer les bonnes questions. Le calendrier est une préférence, pas un engagement.",
     "Pour savoir à qui répondre. Les champs obligatoires sont signalés, tout le reste est facultatif.",
-    "Un court échange permet de confirmer le périmètre. Proposez-nous un créneau qui vous convient et nous en confirmons un.",
     "Vérifiez ce que vous envoyez. Rien n’est envoyé tant que vous n’appuyez pas sur le bouton."
    ],
    "goalQ": "Que souhaitez-vous accomplir ?",
@@ -701,7 +697,7 @@ window.I18N_PACK={
     ]
    ],
    "unsureH": "Pas de problème. Commencez par un entretien de cadrage.",
-   "unsureP": "Vous n’avez rien de technique à choisir. Continuez pour indiquer votre nom, votre entreprise et un créneau qui vous convient : nous parlerons de votre situation et recommanderons une direction.",
+   "unsureP": "Vous n’avez rien de technique à choisir. Continuez pour indiquer votre nom, votre entreprise et quelques mots sur votre situation : nous en parlerons et recommanderons une direction.",
    "startH": "Points de départ suggérés",
    "startP": "Ajoutez-en un, ou choisissez des types précis ci-dessous. Vous pourrez tout affiner plus tard.",
    "pick": "Choisir des types précis (facultatif)",
@@ -790,24 +786,6 @@ window.I18N_PACK={
    "consent": "J’accepte la {privacy}.",
    "privacy": "politique de confidentialité",
    "required": "Les champs marqués d’un * sont obligatoires. Tout le reste est facultatif.",
-   "tz": "Votre fuseau horaire",
-   "studioTz": "Fuseau horaire du studio",
-   "hours": "Horaires du studio",
-   "dur": "Durée (minutes)",
-   "pref1": "Créneau souhaité",
-   "backup": "Créneau de secours",
-   "backupMore": "Ajouter des créneaux de secours (facultatif)",
-   "date": "Date",
-   "from": "De",
-   "to": "À",
-   "callLang": "Langue de l’appel (facultatif)",
-   "teams": "Nous confirmons un créneau et envoyons une invitation Microsoft Teams par e-mail.",
-   "outside": "hors des horaires du studio",
-   "past": "Choisissez un horaire dans le futur.",
-   "endBefore": "L’heure de fin doit être postérieure à l’heure de début.",
-   "tooShort": "La plage horaire doit être au moins aussi longue que le rendez-vous.",
-   "midnight": "Veuillez choisir une heure de début plus tôt dans la journée.",
-   "slotErr": "Choisissez une date et une plage horaire pour que nous puissions envoyer l’invitation.",
    "phoneBad": "Saisissez un numéro de téléphone valide ou laissez le champ vide.",
    "tsMissing": "Veuillez effectuer la vérification, puis envoyer.",
    "serverErr": "Le serveur n’a pas pu enregistrer votre brief pour le moment.",
@@ -819,8 +797,7 @@ window.I18N_PACK={
     "Une adresse e-mail professionnelle valide",
     "Entreprise",
     "Pays",
-    "Consentement",
-    "Un créneau de rendez-vous souhaité"
+    "Consentement"
    ],
    "ok": "Tout ce qui est obligatoire est rempli. Les détails facultatifs que vous avez passés restent vides.",
    "missing": "Quelques informations obligatoires manquent encore.",
@@ -847,16 +824,16 @@ window.I18N_PACK={
    "nextH": "Et ensuite",
    "nextSteps": [
     [
-     "Nous relisons votre brief",
-     "Nous lisons chaque détail avant de vous contacter."
+     "Nous examinons votre brief",
+     "Nous lisons chaque détail et établissons le prix."
     ],
     [
-     "Nous confirmons un créneau",
-     "Nous choisissons l’un de vos créneaux souhaités et le confirmons par e-mail."
+     "Nous répondons sous 24 heures",
+     "Vous recevez notre réponse par e-mail, avec le prix une fois les détails examinés."
     ],
     [
-     "Invitation Microsoft Teams",
-     "Vous recevez l’invitation, puis nous planifions ensemble la suite."
+     "Un appel, si cela aide",
+     "Si nécessaire, nous vous envoyons un lien de réunion avec l’un de nos partenaires."
     ]
    ],
    "contactH": "Vous préférez parler à quelqu’un ?",
@@ -896,20 +873,20 @@ window.I18N_PACK={
    "subDone": "Votre brief est envoyé. Les modifications que vous apportez sont enregistrées automatiquement.",
    "doneH": "Brief envoyé",
    "doneP": "Merci. Votre brief est enregistré dans votre compte et il est entre les mains de notre équipe.",
-   "doneNext": "Prochaine étape : choisissez un créneau pour votre premier appel gratuit. Sélectionnez un jour et une heure dans votre fuseau horaire.",
-   "bookCta": "Réserver votre appel gratuit",
+   "doneNext": "Notre équipe répondra sous 24 heures, ici dans votre compte et par e-mail. Si un appel peut aider, nous vous envoyons un lien de réunion.",
+   "bookCta": "Demander un appel (facultatif)",
    "nextSteps": [
     [
-     "Choisissez un créneau pour votre premier appel gratuit",
-     "Choisissez un jour et une heure qui vous conviennent, affichés dans votre fuseau horaire."
+     "Nous examinons votre brief",
+     "Nous lisons chaque détail et établissons le prix."
     ],
     [
-     "Nous relisons votre brief",
-     "Nous lisons chaque détail avant l’appel."
+     "Nous répondons sous 24 heures",
+     "Notre réponse apparaît dans votre compte et vous parvient par e-mail."
     ],
     [
-     "Vous recevez un périmètre et un devis écrits",
-     "Un devis écrit clair précède tout début de travaux."
+     "Un appel, si cela aide",
+     "Si nécessaire, nous vous envoyons un lien de réunion avec l’un de nos partenaires."
     ]
    ],
    "viewAcct": "Aller à votre compte",
@@ -919,6 +896,50 @@ window.I18N_PACK={
    "lockedP": "Son statut est « {status} ». Pour modifier quoi que ce soit maintenant, écrivez à {email} en indiquant la référence ci-dessous.",
    "staffH": "Les briefs sont réservés aux comptes clients",
    "staffP": "Vous êtes connecté en tant que {role}. Les briefs clients se gèrent dans votre tableau de bord d’équipe."
+  },
+  "cv": {
+   "h": "Conversation avec CULMERA",
+   "lead": "Nos réponses à votre brief apparaissent ici et vous parviennent aussi par e-mail. Vous pouvez répondre depuis cette page.",
+   "loading": "Chargement de la conversation…",
+   "loadErr": "Impossible de charger la conversation. Vérifiez votre connexion et réessayez.",
+   "empty": "Aucun message pour l’instant. Après examen de votre brief, nous répondons ici et par e-mail, en général sous 24 heures.",
+   "team": "CULMERA",
+   "you": "Vous",
+   "price": "Prix",
+   "propose": "Nous proposons un court appel avec l’un de nos partenaires. Proposez un créneau ci-dessous ou utilisez la page des appels.",
+   "confirmedH": "Appel confirmé",
+   "callAt": "Appel : {t}",
+   "studioAt": "Heure du studio : {t}",
+   "suggested": "Créneau que vous avez proposé : {t}",
+   "teamsBtn": "Ouvrir le lien Microsoft Teams",
+   "teamsWait": "Le lien de la réunion apparaîtra ici dès que notre équipe l’aura ajouté.",
+   "callLink": "Demander un appel",
+   "replyH": "Votre réponse",
+   "msgL": "Votre message",
+   "msgPh": "Écrivez votre réponse ou votre question",
+   "count": "{n}/4000",
+   "timeH": "Proposer un créneau pour un appel (facultatif)",
+   "timeP": "Choisissez un jour et une heure dans votre fuseau horaire. Notre équipe confirme un créneau et vous envoie le lien de la réunion. Une proposition n’est pas un appel confirmé.",
+   "day": "Jour",
+   "time": "Heure",
+   "len": "Durée",
+   "tzNote": "Votre fuseau horaire : {tz}",
+   "clearTime": "Effacer l’heure",
+   "send": "Envoyer la réponse",
+   "sending": "Envoi…",
+   "okSent": "Votre réponse a été envoyée à notre équipe.",
+   "okTime": "Votre réponse et le créneau proposé ont été envoyés. Notre équipe confirmera l’horaire.",
+   "errEmpty": "Écrivez d’abord un message.",
+   "errTimePair": "Choisissez un jour et une heure, ou effacez l’heure.",
+   "errSoon": "Choisissez un créneau situé au moins une heure dans le futur.",
+   "errFar": "Choisissez un créneau dans les 12 prochains mois.",
+   "errRate": "Vous avez envoyé beaucoup de réponses durant la dernière heure. Réessayez plus tard.",
+   "errGeneric": "Votre réponse n’a pas pu être envoyée. Veuillez réessayer.",
+   "errOffline": "Pas de connexion. Vérifiez votre accès à Internet et réessayez.",
+   "errAuth": "Votre session a expiré. Veuillez vous reconnecter.",
+   "errTimeSaved": "Votre créneau est enregistré, mais le message n’a pas été envoyé. Appuyez de nouveau sur envoyer.",
+   "errChanged": "Notre équipe a modifié cet appel : votre créneau n’a donc pas été changé. Veuillez réessayer.",
+   "closed": "Ce brief est clos. Pour continuer, écrivez à {email}."
   },
   "mt": {
    "title": "Réserver votre appel gratuit",
@@ -1394,6 +1415,90 @@ window.I18N_PACK={
    ]
   },
   "tm": {
+   "rp": {
+    "tabPublic": "Briefs publics",
+    "directorH": "Director",
+    "roleL": "Rôle",
+    "tzL": "Fuseau horaire",
+    "convH": "Conversation avec le client",
+    "convLead": "Vos réponses arrivent ensemble dans le compte du client et par e-mail. Seuls vous et le client voyez les messages, le prix et le lien de réunion.",
+    "convNone": "Aucun message pour l’instant. Écrivez la première réponse ci-dessous.",
+    "you": "Vous",
+    "client": "Client",
+    "priceL": "Prix",
+    "pricePh": "Prix et devise, comme vous voulez l’écrire",
+    "proposes": "A proposé un court appel",
+    "confirmedH": "Appel confirmé",
+    "callAt": "Appel : {t}",
+    "suggested": "Horaire proposé par le client : {t}",
+    "teamsLink": "Lien Teams",
+    "replyH": "Répondre au client",
+    "replyVisH": "Répondre au visiteur",
+    "visNote": "Ce visiteur n’a pas de compte : la réponse part par e-mail uniquement (Reply-To : votre adresse).",
+    "msgL": "Message",
+    "priceOpt": "Prix (facultatif)",
+    "propose": "Proposer une réunion",
+    "send": "Envoyer la réponse",
+    "mail": {
+     "sent": "E-mail envoyé",
+     "failed": "Échec de l’e-mail",
+     "skipped": "E-mail non envoyé",
+     "sending": "Envoi…"
+    },
+    "resend": "Renvoyer l’e-mail",
+    "confirmCall": "Confirmer l’appel…",
+    "updateCall": "Modifier le lien ou l’horaire…",
+    "teamsL": "Lien Microsoft Teams (https)",
+    "noteL": "Note pour le client (facultatif)",
+    "moveL": "Modifier l’horaire (facultatif)",
+    "moveHint": "Laissez vide pour garder l’horaire choisi par le client. Votre propre fuseau horaire est utilisé.",
+    "confirmBtn": "Confirmer et envoyer",
+    "updateBtn": "Mettre à jour et envoyer",
+    "sent": {
+     "sent": "Envoyé dans le compte du client et par e-mail.",
+     "failed": "Enregistré dans le compte du client, mais l’e-mail a échoué. Utilisez « Renvoyer l’e-mail ».",
+     "skipped": "Enregistré, mais aucun e-mail envoyé (pas d’adresse, ou e-mail non configuré)."
+    },
+    "vsent": {
+     "sent": "E-mail envoyé au visiteur.",
+     "failed": "L’e-mail a échoué. Utilisez « Renvoyer l’e-mail ».",
+     "skipped": "Non envoyé (pas d’adresse, ou e-mail non configuré)."
+    },
+    "cf": {
+     "sent": "Appel confirmé. Le client l’a reçu dans son compte et par e-mail.",
+     "failed": "Appel confirmé et enregistré, mais l’e-mail a échoué. Utilisez « Renvoyer l’e-mail ».",
+     "skipped": "Appel confirmé et enregistré, mais aucun e-mail envoyé."
+    },
+    "already": "Déjà envoyé (double clic).",
+    "resentOk": "E-mail envoyé.",
+    "resentFail": "L’e-mail a de nouveau échoué. Réessayez plus tard.",
+    "msgsErr": "Les messages n’ont pas pu être chargés. La migration 008 a-t-elle été exécutée sur Supabase ?",
+    "pubLead": "Briefs envoyés depuis le formulaire public (visiteurs sans compte). Les réponses partent par e-mail uniquement.",
+    "pubNone": "Aucun brief public pour l’instant.",
+    "pubErr": "Les briefs publics n’ont pas pu être chargés. La migration 008 a-t-elle été exécutée sur Supabase ?",
+    "colRef": "Référence",
+    "colCompany": "Entreprise",
+    "colReplies": "Réponses",
+    "repliesH": "Réponses envoyées",
+    "err": {
+     "body": "Écrivez un message de 1 à 4000 caractères.",
+     "price": "Le prix ne peut pas dépasser 120 caractères.",
+     "teams_url": "Collez un lien https valide (sans espaces).",
+     "starts_at": "Le nouvel horaire doit être dans le futur.",
+     "draft": "Ce brief n’a pas encore été envoyé.",
+     "state": "Cet appel a changé entre-temps. Rechargez et vérifiez.",
+     "not_resendable": "Cet e-mail a déjà été envoyé ou est en cours d’envoi.",
+     "missing": "Introuvable. Rechargez la page.",
+     "not_saved": "Enregistrement impossible. Réessayez.",
+     "message_not_saved": "L’appel est confirmé mais le message n’a pas été enregistré. Confirmez à nouveau.",
+     "rate_limited": "Trop de requêtes. Attendez quelques minutes.",
+     "auth": "Veuillez vous reconnecter.",
+     "forbidden": "Non autorisé.",
+     "offline": "Pas de connexion. Réessayez.",
+     "noApi": "L’adresse de l’API n’est pas définie dans js/config.js.",
+     "server": "Une erreur est survenue sur le serveur. Réessayez."
+    }
+   },
    "title": "Tableau de bord",
    "inviteH": "Bienvenue dans l’équipe CULMERA",
    "inviteP": "Indiquez votre nom et choisissez un mot de passe pour terminer la configuration de votre compte.",

@@ -401,3 +401,8 @@ header.cp .mnu{display:grid}
 header.cp{background:#05060Aeb;backdrop-filter:blur(14px)}
 @media(min-width:901px){header:not(.cp) .mm{display:none!important}}
 .mm a,.mm .chip{overflow-wrap:break-word}
+/* conversation on the brief (Phase 2.2) */
+.cvl{display:grid;gap:1rem;margin-block:1rem}.cvm{border:1px solid var(--line2);padding:1rem 1.2rem;background:var(--mid)}.cvm.me{border-color:#C9A96E55;margin-inline-start:clamp(0rem,6vw,3rem)}.cvm:not(.me){margin-inline-end:clamp(0rem,6vw,3rem)}
+.cvm p{margin:.3rem 0}.cvh{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:space-between}.cvb{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ivory)}
+/* Phase 2.3: Founder console (confirm-call form inside a call card) */
+.tm-cf{margin-block-start:.6rem}.tm-cf summary{cursor:pointer;font-weight:600;min-block-size:44px;display:flex;align-items:center}.tm-cf form{margin-block-start:.4rem}

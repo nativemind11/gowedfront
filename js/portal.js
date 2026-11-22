@@ -4,7 +4,7 @@
    3.4  account extras: status timeline, "how pricing works", and data export / deletion requests.
    A client never confirms a meeting: staff do. Nothing is deleted automatically. All strings live in L.mt and L.dr. */
 (()=>{
-const M=L.mt,R=L.dr,A=L.auth,$=s=>document.querySelector(s),G=()=>window.GW,C=()=>G().C,esc=s=>G().esc(s),fill=(s,o)=>G().fill(s,o),AU=()=>window.CulmeraAuth,enc=encodeURIComponent;
+const M=L.mt,R=L.dr,A=L.auth,CV=L.cv,$=s=>document.querySelector(s),G=()=>window.GW,C=()=>G().C,esc=s=>G().esc(s),fill=(s,o)=>G().fill(s,o),AU=()=>window.CulmeraAuth,enc=encodeURIComponent;
 /* ---------- time helpers ---------- */
 const tz=()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone||'UTC'}catch(e){return 'UTC'}};
 const studio=()=>C().ownerTimezone||'Africa/Cairo';
@@ -30,7 +30,7 @@ const bad=()=>{S.ctx={err:true};paint()};
 const pr=await AU().rest('profiles?select=role,status&id=eq.'+enc(s.user.id),s);if(!$('#mt'))return;if(!pr.ok||!pr.data[0])return bad();
 if(pr.data[0].status!=='active'){await AU().signOut();location.hash='#/signin';location.reload();return}
 if(pr.data[0].role!=='client'){S.ctx={staff:pr.data[0].role};paint();return}
-const [br,ms]=await Promise.all([AU().rest('client_briefs?select=id,ref,status,updated_at&order=updated_at.desc&limit=20',s),AU().rest('meetings?select=id,brief_id,starts_at,timezone,duration_min,status,note&order=starts_at.desc&limit=50',s)]);
+const [br,ms]=await Promise.all([AU().rest('client_briefs?select=id,ref,status,updated_at&order=updated_at.desc&limit=20',s),AU().rest('meetings?select=id,brief_id,starts_at,timezone,duration_min,status,note,teams_url&order=starts_at.desc&limit=50',s)]);
 if(!$('#mt'))return;if(!br.ok||!ms.ok||!Array.isArray(br.data)||!Array.isArray(ms.data))return bad();
 const active=ms.data.find(x=>x.status==='requested'||x.status==='confirmed')||null;
 /* the brief that has the active meeting, otherwise the latest brief the team can work on, otherwise the latest one */
@@ -63,7 +63,7 @@ ${S.edit&&c.active?`<p class="note">${esc(M.confirmedNote)}</p>`:''}<div class="
 <p><button type="button" class="btn p big" data-mt="send" id="mtbtn">${esc(S.edit?M.save:M.book)}</button>${S.edit?` <button type="button" class="btn" data-mt="stop">${esc(M.cancelNo)}</button>`:` <a class="btn" href="#/account">${esc(M.back)}</a>`}</p>`}
 function current(c){const m=c.active,d=new Date(m.starts_at),past=d.getTime()<Date.now();
 return `<h2 class="h2s" id="mth" tabindex="-1">${esc(M.yourH)} ${pill(m.status)}</h2>${zones(d)}<p class="note">${esc(M.dur)}: ${esc(fill(M.min,{n:m.duration_min}))} · ${esc(M.ref)}: <span dir="ltr">${esc(c.brief.ref)}</span></p>${m.note?`<p><span class="note">${esc(M.noteH)}</span><br>${esc(m.note)}</p>`:''}
-<p class="note">${esc(past?M.pastNote:m.status==='confirmed'?M.confirmedNote:M.requestedNote)}</p>
+<p class="note">${esc(past?M.pastNote:m.status==='confirmed'?M.confirmedNote:M.requestedNote)}</p>${teamsLink(m)}
 ${S.ask?`<div class="card cb" role="group" aria-label="${esc(M.cancelAsk)}"><p style="color:var(--ivory)">${esc(M.cancelAsk)}</p><button type="button" class="btn p" data-mt="cancel-yes" ${S.busy?'disabled':''}>${esc(M.cancelYes)}</button> <button type="button" class="btn" data-mt="cancel-no" id="mtkeep">${esc(M.cancelNo)}</button></div>`
 :`<p><button type="button" class="btn p" data-mt="edit">${esc(M.resched)}</button> <button type="button" class="btn" data-mt="cancel">${esc(M.cancel)}</button> <a class="btn" href="#/account">${esc(M.back)}</a></p>`}`}
 function main(c){const b=c.brief,em=C().email;
@@ -119,17 +119,81 @@ document.addEventListener('change',e=>{const t=e.target;if(!$('#mt'))return;if(t
 document.addEventListener('input',e=>{const t=e.target;if(t.id==='mtnote'){S.sel.note=t.value;const c=$('#mtcnt');c&&(c.textContent=fill(M.noteMax,{n:t.value.length}))}});
 /* ---------- the page ---------- */
 const meeting=()=>{S=fresh();setTimeout(load,0);return `<section class="wrap pad tight hdrline" style="max-inline-size:980px"><h1 class="h1s">${esc(M.title)}</h1><div id="mt" aria-live="polite"><p>${esc(M.loading)}</p></div></section>`};
+
+/* ---------- the conversation on the brief (Phase 2.2) ----------
+   The Founder's replies (and the price, if he wrote one) arrive here and by email. The client answers from this page: a message and,
+   if he wants, a time for a call. He never confirms a call: the Founder does, and pastes the Teams link by hand.
+   The client's message goes straight to public.brief_messages (Row Level Security: own open brief, only after the Founder wrote first,
+   10 per hour). Every text from a person is escaped with esc() before it is shown, and a link is used only if it is a safe https address. */
+const safeUrl=u=>{if(typeof u!=='string'||u.length>500||!/^https:\/\/[^\s]+$/.test(u))return '';try{const x=new URL(u);return x.protocol==='https:'&&!x.username&&!x.password?u:''}catch(e){return ''}};
+const teamsLink=m=>{if(!m||m.status!=='confirmed')return '';const u=safeUrl(m.teams_url);return u?`<p><a class="btn p" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(CV.teamsBtn)}</a></p>`:`<p class="note">${esc(CV.teamsWait)}</p>`};
+const uuid=()=>{try{if(crypto.randomUUID)return crypto.randomUUID();const b=crypto.getRandomValues(new Uint8Array(16));b[6]=b[6]&15|64;b[8]=b[8]&63|128;const h=[...b].map(x=>x.toString(16).padStart(2,'0')).join('');return h.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/,'$1-$2-$3-$4-$5')}catch(e){return null}};
+const when=(s,z)=>{try{return new Intl.DateTimeFormat(L.locale,{dateStyle:'medium',timeStyle:'short',timeZone:z}).format(new Date(s))}catch(e){return ''}};
+let CS={ctx:null,msgs:[],mts:[],busy:false,msg:'',ok:false,body:'',d:'',t:'',dur:45,rid:uuid()};
+const cvOpen=()=>!!CS.ctx&&!CS.ctx.err&&OPENB.includes(CS.ctx.brief.status)&&CS.msgs.some(x=>x.sender==='founder');
+function cvMsg(m){const mine=m.sender==='client',mt=m.meeting_id?CS.mts.find(x=>x.id===m.meeting_id):null;let h=`<article class="cvm ${mine?'me':''}"><p class="cvh"><b>${esc(mine?CV.you:CV.team)}</b> <span class="note">${esc(when(m.created_at,tz()))}</span></p>`;
+if(m.kind==='meeting_confirmed'){h+=`<p><b>${esc(CV.confirmedH)}</b></p>`;if(mt){const d=new Date(mt.starts_at);h+=`<p class="note">${esc(fill(CV.callAt,{t:fmt(d,tz())}))} (<span dir="ltr">${esc(tz())}</span>)</p><p class="note">${esc(fill(CV.studioAt,{t:fmt(d,studio())}))} (<span dir="ltr">${esc(studio())}</span>)</p>${teamsLink(mt)}`}}
+if(m.body)h+=`<p class="cvb" dir="auto">${esc(m.body)}</p>`;
+if(!mine&&m.price_text)h+=`<p><span class="note">${esc(CV.price)}</span> <b dir="auto">${esc(m.price_text)}</b></p>`;
+if(!mine&&m.proposes_meeting)h+=`<p class="note">${esc(CV.propose)}</p>`;
+if(mine&&mt)h+=`<p class="note">${esc(fill(CV.suggested,{t:fmt(new Date(mt.starts_at),tz())}))}</p>`;
+return h+'</article>'}
+function cvForm(){if(!CS.ctx||CS.ctx.err)return '';const b=CS.ctx.brief;
+if(CLOSED.includes(b.status))return `<p class="note">${esc(fill(CV.closed,{email:C().email}))}</p>`;
+if(!cvOpen())return '';
+const du=[...new Set([...DURS(),+CS.dur])].sort((a,c)=>a-c);
+return `<h3 class="wzq" style="font-size:1.3rem;margin-block-start:1.6rem">${esc(CV.replyH)}</h3><div class="cform"><label>${esc(CV.msgL)}<textarea id="cvbody" rows="5" maxlength="4000" placeholder="${esc(CV.msgPh)}">${esc(CS.body)}</textarea><span class="note" id="cvcnt">${esc(fill(CV.count,{n:CS.body.length}))}</span></label>
+<fieldset><legend>${esc(CV.timeH)}</legend><p class="note">${esc(CV.timeP)}</p><p class="note">${esc(fill(CV.tzNote,{tz:tz()}))}</p><div class="three"><label><span>${esc(CV.day)}</span><input id="cvd" type="date" dir="ltr" min="${key(new Date())}" max="${key(new Date(latest()))}" value="${esc(CS.d)}"></label><label><span>${esc(CV.time)}</span><input id="cvt" type="time" dir="ltr" value="${esc(CS.t)}"></label><label><span>${esc(CV.len)}</span><select id="cvl" dir="ltr">${du.map(v=>`<option value="${v}" ${+CS.dur===v?'selected':''}>${esc(fill(M.min,{n:v}))}</option>`).join('')}</select></label></div><p><button type="button" class="btn" data-cv="clear">${esc(CV.clearTime)}</button></p></fieldset>
+<p class="err" id="cverr" role="alert"></p><p><button type="button" class="btn p big" id="cvsend" data-cv="send" ${CS.busy?'disabled':''}>${esc(CS.busy?CV.sending:CV.send)}</button> <a class="btn" href="#/meeting">${esc(CV.callLink)}</a></p></div>`}
+function cvPaint(){const box=$('#cv');if(!box)return;const c=CS.ctx;
+if(!c){box.innerHTML=`<p>${esc(CV.loading)}</p>`;return}
+if(c.err){box.innerHTML=`<p role="alert">${esc(CV.loadErr)}</p><p><button type="button" class="btn p" data-cv="retry">${esc(M.tryAgain)}</button></p>`;return}
+box.innerHTML=`<p class="note">${esc(CV.lead)}</p>${CS.msg?`<p class="${CS.ok?'note okm':'err'}" role="${CS.ok?'status':'alert'}" id="cvmsg">${esc(CS.msg)}</p>`:''}${CS.msgs.length?`<div class="cvl">${CS.msgs.map(cvMsg).join('')}</div>`:`<p>${esc(CV.empty)}</p>`}${cvForm()}`}
+async function cvLoad(){const box=$('#cv');if(!box)return;CS.ctx=null;cvPaint();
+const s=await AU().session();if(!$('#cv')||!s)return;
+const br=await AU().rest('client_briefs?select=id,ref,status&order=updated_at.desc&limit=1',s);if(!$('#cv'))return;
+if(!br.ok||!Array.isArray(br.data)){CS.ctx={err:true};cvPaint();return}
+const b=br.data[0];if(!b||b.status==='draft'){box.innerHTML='';const h=box.previousElementSibling;if(h&&h.classList.contains('cvt'))h.hidden=true;return}
+const q=enc(b.id),[ms,mt]=await Promise.all([AU().rest('brief_messages?select=id,sender,kind,body,price_text,proposes_meeting,meeting_id,created_at&brief_id=eq.'+q+'&order=created_at.asc&limit=200',s),AU().rest('meetings?select=id,starts_at,timezone,duration_min,status,teams_url&brief_id=eq.'+q+'&order=starts_at.desc&limit=20',s)]);
+if(!$('#cv'))return;if(!ms.ok||!mt.ok||!Array.isArray(ms.data)||!Array.isArray(mt.data)){CS.ctx={err:true};cvPaint();return}
+CS.ctx={uid:s.user.id,brief:b};CS.msgs=ms.data;CS.mts=mt.data;cvPaint()}
+const cvStart=()=>{const [h,m]=CS.t.split(':').map(Number);return mk(CS.d,h,m)};
+function cvProblem(){if(!CS.body.trim())return CV.errEmpty;if(!!CS.d!==!!CS.t)return CV.errTimePair;
+if(CS.d&&CS.t){const at=cvStart().getTime();if(isNaN(at))return CV.errTimePair;if(at<earliest())return CV.errSoon;if(at>latest())return CV.errFar}return ''}
+const cvWhy=r=>{const m=String((r.data&&r.data.message)||'');if(r.offline||r.status===0)return CV.errOffline;if(r.status===401)return CV.errAuth;if(/too many/i.test(m))return CV.errRate;return CV.errGeneric};
+function cvFail(t){CS.busy=false;const b=$('#cvsend');if(b){b.disabled=false;b.textContent=CV.send}const e=$('#cverr');if(e){e.textContent=t;e.scrollIntoView({block:'center'})}}
+async function cvSend(){if(CS.busy||!CS.ctx||!cvOpen())return;const p=cvProblem();if(p){const e=$('#cverr');e&&(e.textContent=p);return}
+CS.busy=true;const btn=$('#cvsend');btn&&(btn.disabled=true,btn.textContent=CV.sending);const er=$('#cverr');er&&(er.textContent='');
+const s=await AU().session();if(!s)return cvFail(CV.errAuth);const c=CS.ctx;let mid=null;
+if(CS.d&&CS.t){const at=cvStart(),act=CS.mts.find(x=>x.status==='requested'||x.status==='confirmed'),mb={starts_at:at.toISOString(),timezone:tz(),duration_min:+CS.dur,status:'requested'};
+const r=act?await AU().restW('meetings?id=eq.'+enc(act.id),s,{method:'PATCH',prefer:'return=representation',body:mb}):await AU().restW('meetings',s,{prefer:'return=representation',body:{brief_id:c.brief.id,client_id:c.uid,...mb}});
+if(r.ok&&Array.isArray(r.data)&&r.data[0]){mid=r.data[0].id;try{AU().notify&&AU().notify('meeting',mid)}catch(e){}}
+else if(r.ok||(r.data&&r.data.code==='23505')){CS.busy=false;CS.msg=CV.errChanged;CS.ok=false;await cvLoad();return}
+else return cvFail(cvWhy(r))}
+const r2=await AU().restW('brief_messages',s,{prefer:'return=representation',body:{brief_id:c.brief.id,client_id:c.uid,sender:'client',kind:'reply',body:CS.body.trim(),meeting_id:mid,...(CS.rid?{req_id:CS.rid}:{})}});
+const dup=!r2.ok&&!!(r2.data&&r2.data.code==='23505')&&!!CS.rid;
+if((r2.ok&&Array.isArray(r2.data)&&r2.data[0])||dup){const row=r2.ok?r2.data[0]:null;if(row){try{AU().notify&&AU().notify('client_reply',row.id)}catch(e){}}
+const wasTime=!!mid;if(wasTime)await cardRefresh(s);CS.busy=false;CS.body='';CS.d='';CS.t='';CS.rid=uuid();CS.msg=wasTime?CV.okTime:CV.okSent;CS.ok=true;await cvLoad();return}
+if(mid){CS.busy=false;CS.msg=CV.errTimeSaved;CS.ok=false;await cvLoad();return}
+cvFail(cvWhy(r2))}
+document.addEventListener('click',e=>{const x=e.target.closest('button');if(!x||x.dataset.cv===undefined||!$('#cv'))return;const a=x.dataset.cv;
+if(a==='send')cvSend();else if(a==='retry')cvLoad();else if(a==='clear'){CS.d='';CS.t='';const d=$('#cvd'),t=$('#cvt');d&&(d.value='');t&&(t.value='')}});
+document.addEventListener('input',e=>{const t=e.target;if(!$('#cv'))return;if(t.id==='cvbody'){CS.body=t.value;const c=$('#cvcnt');c&&(c.textContent=fill(CV.count,{n:t.value.length}))}else if(t.id==='cvd')CS.d=t.value;else if(t.id==='cvt')CS.t=t.value});
+document.addEventListener('change',e=>{const t=e.target;if($('#cv')&&t.id==='cvl')CS.dur=+t.value});
+const convo=()=>{CS={...CS,ctx:null,msgs:[],mts:[],busy:false,msg:'',ok:false,body:'',d:'',t:'',rid:uuid()};return cvLoad()};
 /* ---------- account page pieces ---------- */
 function card(mt,br){let h=`<h2>${esc(A.meetH)}</h2>`;
-if(mt){const d=new Date(mt.starts_at);h+=`<p><b>${esc(fmt(d,tz()))}</b></p><p class="note">${esc(M.yourZone)}: <span dir="ltr">${esc(tz())}</span></p><p class="note">${esc(M.studioTime)}: ${esc(fmt(d,studio()))} (<span dir="ltr">${esc(studio())}</span>)</p><p>${pill(mt.status)} <span class="note">${esc(fill(M.min,{n:mt.duration_min}))}</span></p>${mt.status==='done'?'':`<p><a class="btn" href="#/meeting">${esc(M.acctManage)}</a></p>`}`}
+if(mt){const d=new Date(mt.starts_at);h+=`<p><b>${esc(fmt(d,tz()))}</b></p><p class="note">${esc(M.yourZone)}: <span dir="ltr">${esc(tz())}</span></p><p class="note">${esc(M.studioTime)}: ${esc(fmt(d,studio()))} (<span dir="ltr">${esc(studio())}</span>)</p><p>${pill(mt.status)} <span class="note">${esc(fill(M.min,{n:mt.duration_min}))}</span></p>${teamsLink(mt)}${mt.status==='done'?'':`<p><a class="btn" href="#/meeting">${esc(M.acctManage)}</a></p>`}`}
 else if(br&&br.status!=='draft'&&!CLOSED.includes(br.status))h+=`<p>${esc(A.meetNone)}</p><p><a class="btn p" href="#/meeting">${esc(M.acctBook)}</a></p>`;
 else h+=`<p>${esc(A.meetNone)}</p><p class="note">${esc(br?M.acctNeed:M.acctNeedStart)}</p>`;
-return `<div>${h}</div>`}
+return `<div id="mcard">${h}</div>`}
+/* after the client suggests a new time the call card on top of the page must not keep showing the old confirmed call and its link */
+async function cardRefresh(s){if(!$('#mcard'))return;const r=await AU().rest('meetings?select=id,starts_at,timezone,duration_min,status,teams_url&status=neq.cancelled&order=starts_at.desc&limit=1',s);const e=$('#mcard');if(!e||!r.ok||!Array.isArray(r.data))return;e.outerHTML=card(r.data[0]||null,CS.ctx&&CS.ctx.brief)}
 function timeline(br){if(!br)return '';const st=br.status,i=R.steps.findIndex(x=>x[0]===st);
 if(i<0)return `<h2 style="margin-block-start:2.5rem">${esc(R.statusH)}</h2><p><span dir="ltr">${esc(br.ref)}</span> · <span class="pill">${esc(A.st[st]||st)}</span></p><p class="note">${esc(fill(st==='lost'?R.closedNote:R.archivedNote,{email:C().email}))}</p>`;
 return `<h2 style="margin-block-start:2.5rem">${esc(R.statusH)}</h2><p class="note">${esc(R.statusLead)} <span dir="ltr">${esc(br.ref)}</span></p><ol class="tl">${R.steps.map((x,k)=>`<li class="${k<i?'dn':k===i?'nw':''}" ${k===i?'aria-current="step"':''}><span class="tk" aria-hidden="true">${k<i?'✓':k+1}</span><div><b>${esc(x[1])}</b> <span class="sr">(${esc(k<i?R.stepsDone:k===i?R.stepsNow:R.stepsNext)})</span><span class="note">${esc(x[2])}</span></div></li>`).join('')}</ol>`}
 const pricing=()=>`<h2 style="margin-block-start:2.5rem">${esc(R.priceH)}</h2><div class="pgrid">${R.price.map(p=>`<article class="pr"><h3>${esc(p[0])}</h3><p>${esc(p[1])}</p></article>`).join('')}</div><p class="note">${esc(R.priceNote)}</p>`;
-const extras=br=>timeline(br)+pricing()+`<h2 style="margin-block-start:2.5rem">${esc(R.dataH)}</h2><div id="dr"><p>${esc(R.dataP)}</p></div>`;
+const extras=br=>(br&&br.status!=='draft'?`<h2 class="cvt" style="margin-block-start:2.5rem">${esc(CV.h)}</h2><div id="cv" aria-live="polite"><p>${esc(CV.loading)}</p></div>`:'')+timeline(br)+pricing()+`<h2 style="margin-block-start:2.5rem">${esc(R.dataH)}</h2><div id="dr"><p>${esc(R.dataP)}</p></div>`;
 /* ---------- data export / deletion requests ---------- */
 let DR={list:[],ok:true,ask:false,msg:'',good:false,busy:false};
 const kindL=k=>k==='export'?R.kindExport:R.kindDeletion,pend=k=>DR.list.find(x=>x.kind===k&&(x.status==='open'||x.status==='in_progress'));
@@ -154,5 +218,5 @@ DR.good=false;if(r.data&&r.data.code==='23505'){DR.msg=R.dup;await pull()}else D
 if(!$('#dr'))return;drPaint()}
 /* ---------- registration ---------- */
 window.PAGES=window.PAGES||{};window.PAGES.meeting=meeting;window.PAGES.title=Object.assign(window.PAGES.title||{},{meeting:M.title});
-window.CulmeraPortal={card,extras,rights,fmt,tz};
+window.CulmeraPortal={card,extras,rights,convo,fmt,tz};
 })();

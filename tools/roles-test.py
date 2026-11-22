@@ -76,8 +76,8 @@ def sb(route, req):
     if t == 'notes': return j(200, NOTES)
     return j(200, [])
 def sess(uid): return {'access_token': 'at', 'refresh_token': 'rt', 'expires_at': 4102444800, 'user': {'id': uid, 'email': 'x@x.test'}}
-FORBIDDEN = {'partner': ['/clients?', '/client_briefs', '/meetings', '/notes', '/invitations', '/data_requests', '/audit_log', '/director_'],
-             'director': ['/clients?', '/client_briefs', '/meetings?', '/notes', '/invitations', '/data_requests', '/audit_log', '/partner_clients']}
+FORBIDDEN = {'partner': ['/clients?', '/client_briefs', '/meetings', '/notes', '/invitations', '/data_requests', '/audit_log', '/director_', '/brief_messages', '/visitor_replies', '/briefs?'],
+             'director': ['/clients?', '/client_briefs', '/meetings?', '/notes', '/invitations', '/data_requests', '/audit_log', '/partner_clients', '/brief_messages', '/visitor_replies', '/briefs?']}
 with sync_playwright() as p:
     b = p.chromium.launch(); ctx = b.new_context(viewport={'width': 1280, 'height': 900}, timezone_id='Europe/Berlin', locale='en-GB'); errs = []
     ctx.route(re.compile(r'https://[a-z0-9]+\.supabase\.co/.*'), sb)
@@ -92,6 +92,7 @@ with sync_playwright() as p:
     def tabs(): return [t.strip().split('\n')[0].strip() for t in pg.locator('.tm-tabs [role=tab]').all_inner_texts()]
     def reads(role): return [c for c in calls if c[0] == 'GET' and any(x in c[1] for x in FORBIDDEN[role])]
     def nowrites(): return [c for c in calls if c[0] != 'GET' and c[0] != 'OPTIONS']
+    NOPH2 = ['Public briefs', 'Teams link', 'Reply to the client', 'Send reply', 'Suggest a meeting', 'Confirm the call']
     NOPII = ['SECRETCO', 'SECRET', 'secret1@x.test', 'secret2@x.test', 'PRIVATE-NOTE', 'FOUNDER-INTERNAL-NOTE', 'p1@x.test', 'p2@x.test']
 
     # ---------------- PARTNER ----------------
@@ -108,6 +109,7 @@ with sync_playwright() as p:
     tab('Playbook'); ok('CULMERA in three sentences' in txt('#tmbody'), 'playbook is there')
     whole = pg.inner_text('body')
     ok(not any(x in whole for x in NOPII), 'no email, phone, company, answers, call note or internal note anywhere on the page')
+    ok(not any(x in pg.inner_text('body') for x in NOPH2) and pg.locator('[data-form=reply],[data-form=confirm],[data-form=vreply]').count() == 0, 'partner: no reply form, no price, no Teams link, no public briefs tab')
     ok(not reads('partner') and not nowrites(), 'partner page reads only profiles, partners, partner_clients, playbook; writes nothing: %s' % [c[1][:50] for c in reads('partner')])
 
     # ---------------- DIRECTOR ----------------
@@ -132,10 +134,11 @@ with sync_playwright() as p:
     ok(pg.locator('form').count() == 0 and pg.locator('[data-tm=toggle]').count() == 0 and pg.locator('[data-tm=openu]').count() == 0 and 'Invite' not in t, 'team: no invite form, no activate / deactivate, no person page')
     tab('Overview'); ok('Calls to confirm' not in txt('#tmbody') and 'Open invitations' not in txt('#tmbody') and 'Needs attention' not in txt('#tmbody'), 'overview has no to-do, no invitations, no calls to confirm')
     tab('Playbook'); ok('CULMERA in three sentences' in txt('#tmbody'), 'playbook is there')
+    ok(not any(x in pg.inner_text('body') for x in NOPH2) and pg.locator('[data-form=reply],[data-form=confirm],[data-form=vreply]').count() == 0, 'director: no reply form, no price, no Teams link, no public briefs tab')
     ok(not reads('director') and not nowrites(), 'director page reads only profiles, partners, director_* views, playbook; writes nothing: %s' % [c[1][:50] for c in reads('director')])
 
     # ---------------- FOUNDER (unchanged) ----------------
-    go(F); ok([x.rstrip(' 0123456789') for x in tabs()] == ['Overview', 'Clients', 'Calls', 'Team', 'Data requests', 'Activity log', 'Playbook'], 'founder tabs: %s' % tabs())
+    go(F); ok([x.rstrip(' 0123456789') for x in tabs()] == ['Overview', 'Clients', 'Public briefs', 'Calls', 'Team', 'Data requests', 'Activity log', 'Playbook'], 'founder tabs: %s' % tabs())
     tab('Clients'); t = txt('#tmbody'); ok('SECRETCO-1' in t and pg.locator('#tmlist tbody tr').count() == 5, 'founder sees every client with the company')
     pg.click('tr:has-text("Cleo") [data-tm=openc]'); pg.wait_for_selector('#tmans dl', timeout=3000); w(300); t = txt()
     ok('secret1@x.test' in t and '+49 111 SECRET' in t and 'SECRETCO-1' in t, 'founder sees email, phone, company')

@@ -49,7 +49,8 @@ with sync_playwright() as p:
     pg.goto(BASE + '#/brief'); w()
     t = pg.inner_text('#bp')
     ok('Save your brief automatically' in t and pg.locator('a[href="#/signup"]').count() >= 1, 'visitor sees the invitation to create an account')
-    ok(pg.locator('.st li').count() == 5 and pg.locator('[data-goal="sell"]').count() == 1, 'visitor still gets the 5-step public wizard')
+    ok(pg.locator('.st li').count() == 4 and pg.locator('[data-goal="sell"]').count() == 1, 'visitor gets the 4-step public wizard (no meeting step)')
+    ok(not re.search(r'\b(meeting|call)\b', pg.inner_text('#bp'), re.I), 'visitor wizard shows no meeting or call text on step 1')
     ok(not any('/client_briefs' in c[1] for c in calls), 'visitor never touches client_briefs')
     # 2 signed-in client without a brief
     sign_in(); pg.goto(BASE + '#/brief'); pg.wait_for_selector('[data-goal="sell"]', timeout=4000); w()
@@ -135,5 +136,22 @@ with sync_playwright() as p:
     reset_state(); sign_in(); pg.set_viewport_size({'width': 360, 'height': 740}); pg.goto(BASE + '#/brief'); pg.reload(); pg.wait_for_selector('.st', timeout=4000); w()
     ok(pg.evaluate('document.documentElement.scrollWidth') <= 360, 'brief has no horizontal scroll at 360px')
     pg.screenshot(path='/home/claude/shots/brief-acct-360.png'); pg.set_viewport_size({'width': 1280, 'height': 800}); w(); pg.screenshot(path='/home/claude/shots/brief-acct-1280.png')
+    # 17 visitor submit (Phase 2.2): no meeting step, the site language is sent, nothing about a meeting is sent
+    sent_bodies = []
+    def api_brief(route, req):
+        try: sent_bodies.append(req.post_data_json)
+        except Exception: sent_bodies.append(None)
+        route.fulfill(status=200, headers={**CORS, 'content-type': 'application/json'}, body=json.dumps({'ok': True, 'saved': True, 'ref': 'BR-ABC123', 'notifications': {'client': 'sent'}}))
+    ctx.route(re.compile(r'https://culmera-api\.vercel\.app/api/brief'), api_brief)
+    for lang in ('en', 'ar', 'de', 'fr'):
+        sent_bodies.clear(); reset_state(); pg.goto(BASE + '?lang=' + lang); pg.evaluate("localStorage.clear()")
+        pg.evaluate("d=>localStorage.setItem('culmera.brief',JSON.stringify(d))", {'items': {'online-store': {}}, 'project': {'intent': 'sell', 'goal': 'Rugs'}, 'you': {'name': 'Visitor', 'email': 'v@example.com', 'company': 'Acme', 'country': 'Egypt', 'consent': True}})
+        pg.goto(BASE + '?lang=%s#/brief' % lang); pg.reload(); pg.wait_for_selector('.st', timeout=5000); w(300)
+        ok(pg.locator('.st li').count() == 4, '%s: visitor wizard has 4 steps' % lang)
+        pg.click('[data-step="4"]'); w(300); pg.wait_for_selector('[data-send]', timeout=4000); pg.click('[data-send]'); w(1200)
+        bd = sent_bodies[0] if sent_bodies else None
+        ok(bd is not None and bd.get('type') == 'brief' and bd.get('locale') == lang, '%s: POST /api/brief carries locale=%s' % (lang, lang))
+        ok(bd is not None and not any(k in bd for k in ('meet', 'meeting', 'slots')) and 'meet' not in json.dumps(bd).lower(), '%s: no meeting field is sent' % lang)
+        ok('BR-ABC123' in pg.inner_text('#app'), '%s: the reference is shown after sending' % lang)
     b.close()
 print('\n%d failed' % len(fails)); sys.exit(1 if fails else 0)

@@ -124,8 +124,6 @@ window.I18N_PACK={
     "niceTag": "(wünschenswert)",
     "threeD": "3D & Motion:",
     "notes": "Notizen:",
-    "meeting": "Termin ({n} Min., Zeitzone des Besuchers {tz}):",
-    "callLang": "Gesprächssprache:",
     "subject": "Projektbriefing {ref}: {company}",
     "unsaved": "(nicht online gespeichert)",
     "attach": "Bitte hängen Sie das PDF an."
@@ -487,7 +485,7 @@ window.I18N_PACK={
    ],
    [
     "Welche Sprachen?",
-    "Wählen Sie im Briefing die Sprache für das Gespräch."
+    "Nennen Sie uns Ihre Sprache, wenn wir ein Gespräch vereinbaren."
    ],
    [
     "Sind meine Angaben vertraulich?",
@@ -644,14 +642,12 @@ window.I18N_PACK={
     "Ergebnis",
     "Projekt",
     "Sie",
-    "Termin",
     "Prüfung"
    ],
    "why": [
     "Wir fragen das zuerst, damit wir vom gewünschten Ergebnis ausgehen und nicht von der Technik.",
     "Das hilft uns, die richtigen Fragen vorzubereiten. Der Zeitplan ist eine Präferenz, keine Verpflichtung.",
     "Damit wir wissen, wem wir antworten. Pflichtfelder sind markiert, alles andere ist optional.",
-    "Ein kurzes Gespräch ist unser Weg, den Umfang zu bestätigen. Nennen Sie uns eine passende Zeit, und wir bestätigen einen Termin.",
     "Prüfen Sie, was Sie senden. Es wird nichts gesendet, bevor Sie den Button drücken."
    ],
    "goalQ": "Was möchten Sie erreichen?",
@@ -701,7 +697,7 @@ window.I18N_PACK={
     ]
    ],
    "unsureH": "Kein Problem. Beginnen Sie mit einem Erstgespräch.",
-   "unsureP": "Sie müssen nichts Technisches auswählen. Fahren Sie fort und nennen Sie Ihren Namen, Ihr Unternehmen und eine passende Zeit. Wir besprechen Ihre Situation und empfehlen eine Richtung.",
+   "unsureP": "Sie müssen nichts Technisches auswählen. Fahren Sie fort und nennen Sie Ihren Namen, Ihr Unternehmen und ein paar Worte zu Ihrer Situation. Wir besprechen sie und empfehlen eine Richtung.",
    "startH": "Vorgeschlagene Ausgangspunkte",
    "startP": "Fügen Sie einen hinzu oder wählen Sie unten bestimmte Typen. Alles lässt sich später verfeinern.",
    "pick": "Bestimmte Typen wählen (optional)",
@@ -790,24 +786,6 @@ window.I18N_PACK={
    "consent": "Ich stimme der {privacy} zu.",
    "privacy": "Datenschutzerklärung",
    "required": "Mit * markierte Felder sind Pflicht. Alles andere ist optional.",
-   "tz": "Ihre Zeitzone",
-   "studioTz": "Zeitzone des Studios",
-   "hours": "Öffnungszeiten des Studios",
-   "dur": "Dauer (Minuten)",
-   "pref1": "Wunschzeit",
-   "backup": "Ausweichzeit",
-   "backupMore": "Ausweichzeiten hinzufügen (optional)",
-   "date": "Datum",
-   "from": "Von",
-   "to": "Bis",
-   "callLang": "Sprache für das Gespräch (optional)",
-   "teams": "Wir bestätigen eine Zeit und senden per E-Mail eine Microsoft-Teams-Einladung.",
-   "outside": "außerhalb der Studiozeiten",
-   "past": "Wählen Sie eine Zeit in der Zukunft.",
-   "endBefore": "Die Endzeit muss nach der Startzeit liegen.",
-   "tooShort": "Der Zeitraum muss mindestens so lang sein wie der Termin.",
-   "midnight": "Bitte wählen Sie eine frühere Startzeit am Tag.",
-   "slotErr": "Wählen Sie ein Datum und einen Zeitraum, damit wir die Einladung senden können.",
    "phoneBad": "Geben Sie eine gültige Telefonnummer ein oder lassen Sie das Feld leer.",
    "tsMissing": "Bitte schließen Sie die Überprüfung ab und senden Sie dann.",
    "serverErr": "Der Server konnte Ihr Briefing gerade nicht speichern.",
@@ -819,8 +797,7 @@ window.I18N_PACK={
     "Eine gültige geschäftliche E-Mail",
     "Unternehmen",
     "Land",
-    "Einwilligung",
-    "Eine bevorzugte Terminzeit"
+    "Einwilligung"
    ],
    "ok": "Alle Pflichtangaben sind ausgefüllt. Übersprungene optionale Angaben bleiben leer.",
    "missing": "Einige Pflichtangaben fehlen noch.",
@@ -848,15 +825,15 @@ window.I18N_PACK={
    "nextSteps": [
     [
      "Wir prüfen Ihr Briefing",
-     "Wir lesen jedes Detail, bevor wir uns melden."
+     "Wir lesen jedes Detail und ermitteln den Preis."
     ],
     [
-     "Wir bestätigen eine Zeit",
-     "Wir wählen eine Ihrer Wunschzeiten aus und bestätigen sie per E-Mail."
+     "Wir antworten innerhalb von 24 Stunden",
+     "Sie erhalten unsere Antwort per E-Mail, mit dem Preis, sobald wir die Details geprüft haben."
     ],
     [
-     "Microsoft-Teams-Einladung",
-     "Sie erhalten die Einladung, danach planen wir gemeinsam den nächsten Schritt."
+     "Ein Gespräch, wenn es hilft",
+     "Falls nötig, senden wir Ihnen einen Meeting-Link mit einem unserer Partner."
     ]
    ],
    "contactH": "Lieber mit einer Person sprechen?",
@@ -896,20 +873,20 @@ window.I18N_PACK={
    "subDone": "Ihr Briefing ist abgesendet. Änderungen, die Sie vornehmen, werden automatisch gespeichert.",
    "doneH": "Briefing abgesendet",
    "doneP": "Vielen Dank. Ihr Briefing ist in Ihrem Konto gespeichert und liegt bei unserem Team.",
-   "doneNext": "Ihr nächster Schritt: Wählen Sie eine Zeit für Ihr kostenloses Erstgespräch. Wählen Sie Tag und Uhrzeit in Ihrer Zeitzone.",
-   "bookCta": "Kostenloses Gespräch buchen",
+   "doneNext": "Unser Team antwortet innerhalb von 24 Stunden, hier in Ihrem Konto und per E-Mail. Wenn ein Gespräch hilft, senden wir Ihnen einen Meeting-Link.",
+   "bookCta": "Gespräch anfragen (optional)",
    "nextSteps": [
     [
-     "Wählen Sie eine Zeit für Ihr kostenloses Erstgespräch",
-     "Wählen Sie einen Tag und eine Uhrzeit, die Ihnen passen, angezeigt in Ihrer Zeitzone."
-    ],
-    [
      "Wir prüfen Ihr Briefing",
-     "Wir lesen jedes Detail vor dem Gespräch."
+     "Wir lesen jedes Detail und ermitteln den Preis."
     ],
     [
-     "Sie erhalten einen schriftlichen Leistungsumfang und ein Angebot",
-     "Ein klares schriftliches Angebot kommt, bevor die Arbeit beginnt."
+     "Wir antworten innerhalb von 24 Stunden",
+     "Unsere Antwort erscheint in Ihrem Konto und erreicht Sie per E-Mail."
+    ],
+    [
+     "Ein Gespräch, wenn es hilft",
+     "Falls nötig, senden wir Ihnen einen Meeting-Link mit einem unserer Partner."
     ]
    ],
    "viewAcct": "Zu Ihrem Konto",
@@ -919,6 +896,50 @@ window.I18N_PACK={
    "lockedP": "Der Status ist „{status}“. Um jetzt etwas zu ändern, schreiben Sie an {email} und nennen Sie die Referenz unten.",
    "staffH": "Briefings sind für Kundenkonten",
    "staffP": "Sie sind als {role} angemeldet. Kundenbriefings werden in Ihrem Team-Dashboard verwaltet."
+  },
+  "cv": {
+   "h": "Unterhaltung mit CULMERA",
+   "lead": "Unsere Antworten auf Ihr Briefing erscheinen hier und erreichen Sie auch per E-Mail. Sie können auf dieser Seite antworten.",
+   "loading": "Unterhaltung wird geladen…",
+   "loadErr": "Die Unterhaltung konnte nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+   "empty": "Noch keine Nachrichten. Nach der Prüfung Ihres Briefings antworten wir hier und per E-Mail, in der Regel innerhalb von 24 Stunden.",
+   "team": "CULMERA",
+   "you": "Sie",
+   "price": "Preis",
+   "propose": "Wir schlagen ein kurzes Gespräch mit einem unserer Partner vor. Schlagen Sie unten eine Zeit vor oder nutzen Sie die Gesprächsseite.",
+   "confirmedH": "Gespräch bestätigt",
+   "callAt": "Gespräch: {t}",
+   "studioAt": "Zeit im Studio: {t}",
+   "suggested": "Von Ihnen vorgeschlagene Zeit: {t}",
+   "teamsBtn": "Microsoft-Teams-Link öffnen",
+   "teamsWait": "Der Meeting-Link erscheint hier, sobald unser Team ihn hinzufügt.",
+   "callLink": "Gespräch anfragen",
+   "replyH": "Ihre Antwort",
+   "msgL": "Ihre Nachricht",
+   "msgPh": "Schreiben Sie Ihre Antwort oder Frage",
+   "count": "{n}/4000",
+   "timeH": "Zeit für ein Gespräch vorschlagen (optional)",
+   "timeP": "Wählen Sie Tag und Uhrzeit in Ihrer Zeitzone. Unser Team bestätigt einen Termin und schickt Ihnen den Meeting-Link. Ein Vorschlag ist kein bestätigtes Gespräch.",
+   "day": "Tag",
+   "time": "Uhrzeit",
+   "len": "Dauer",
+   "tzNote": "Ihre Zeitzone: {tz}",
+   "clearTime": "Zeit löschen",
+   "send": "Antwort senden",
+   "sending": "Wird gesendet…",
+   "okSent": "Ihre Antwort wurde an unser Team gesendet.",
+   "okTime": "Ihre Antwort und Ihr Zeitvorschlag wurden gesendet. Unser Team bestätigt den Termin.",
+   "errEmpty": "Schreiben Sie zuerst eine Nachricht.",
+   "errTimePair": "Wählen Sie Tag und Uhrzeit oder löschen Sie die Zeit.",
+   "errSoon": "Wählen Sie eine Zeit, die mindestens eine Stunde in der Zukunft liegt.",
+   "errFar": "Wählen Sie eine Zeit innerhalb der nächsten 12 Monate.",
+   "errRate": "Sie haben in der letzten Stunde viele Antworten gesendet. Bitte versuchen Sie es später erneut.",
+   "errGeneric": "Ihre Antwort konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+   "errOffline": "Keine Verbindung. Prüfen Sie Ihr Internet und versuchen Sie es erneut.",
+   "errAuth": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
+   "errTimeSaved": "Ihre Zeit wurde gespeichert, die Nachricht aber nicht gesendet. Drücken Sie erneut auf Senden.",
+   "errChanged": "Unser Team hat dieses Gespräch geändert, daher wurde Ihre Zeit nicht geändert. Bitte versuchen Sie es erneut.",
+   "closed": "Dieses Briefing ist abgeschlossen. Schreiben Sie zum Fortfahren an {email}."
   },
   "mt": {
    "title": "Kostenloses Gespräch buchen",
@@ -1394,6 +1415,90 @@ window.I18N_PACK={
    ]
   },
   "tm": {
+   "rp": {
+    "tabPublic": "Öffentliche Briefings",
+    "directorH": "Director",
+    "roleL": "Rolle",
+    "tzL": "Zeitzone",
+    "convH": "Unterhaltung mit dem Kunden",
+    "convLead": "Ihre Antworten erreichen das Kundenkonto und die E-Mail gemeinsam. Nur Sie und der Kunde sehen Nachrichten, Preis und Meeting-Link.",
+    "convNone": "Noch keine Nachrichten. Schreiben Sie unten die erste Antwort.",
+    "you": "Sie",
+    "client": "Kunde",
+    "priceL": "Preis",
+    "pricePh": "Preis und Währung, wie Sie ihn schreiben möchten",
+    "proposes": "Kurzes Gespräch vorgeschlagen",
+    "confirmedH": "Gespräch bestätigt",
+    "callAt": "Gespräch: {t}",
+    "suggested": "Vom Kunden vorgeschlagene Zeit: {t}",
+    "teamsLink": "Teams-Link",
+    "replyH": "Dem Kunden antworten",
+    "replyVisH": "Dem Besucher antworten",
+    "visNote": "Dieser Besucher hat kein Konto, die Antwort geht nur per E-Mail (Reply-To ist Ihre Adresse).",
+    "msgL": "Nachricht",
+    "priceOpt": "Preis (optional)",
+    "propose": "Ein Meeting vorschlagen",
+    "send": "Antwort senden",
+    "mail": {
+     "sent": "E-Mail gesendet",
+     "failed": "E-Mail fehlgeschlagen",
+     "skipped": "E-Mail nicht gesendet",
+     "sending": "Wird gesendet…"
+    },
+    "resend": "E-Mail erneut senden",
+    "confirmCall": "Gespräch bestätigen…",
+    "updateCall": "Link oder Zeit ändern…",
+    "teamsL": "Microsoft-Teams-Link (https)",
+    "noteL": "Hinweis für den Kunden (optional)",
+    "moveL": "Zeit ändern (optional)",
+    "moveHint": "Leer lassen, um die vom Kunden gewählte Zeit zu behalten. Es gilt Ihre eigene Zeitzone.",
+    "confirmBtn": "Bestätigen und senden",
+    "updateBtn": "Aktualisieren und senden",
+    "sent": {
+     "sent": "An Kundenkonto und E-Mail gesendet.",
+     "failed": "Im Kundenkonto gespeichert, aber die E-Mail ist fehlgeschlagen. Nutzen Sie „E-Mail erneut senden“.",
+     "skipped": "Gespeichert, aber keine E-Mail gesendet (keine Adresse oder E-Mail nicht eingerichtet)."
+    },
+    "vsent": {
+     "sent": "E-Mail an den Besucher gesendet.",
+     "failed": "Die E-Mail ist fehlgeschlagen. Nutzen Sie „E-Mail erneut senden“.",
+     "skipped": "Nicht gesendet (keine Adresse oder E-Mail nicht eingerichtet)."
+    },
+    "cf": {
+     "sent": "Gespräch bestätigt. Der Kunde hat es im Konto und per E-Mail erhalten.",
+     "failed": "Gespräch bestätigt und gespeichert, aber die E-Mail ist fehlgeschlagen. Nutzen Sie „E-Mail erneut senden“.",
+     "skipped": "Gespräch bestätigt und gespeichert, aber keine E-Mail gesendet."
+    },
+    "already": "Das wurde bereits gesendet (Doppelklick).",
+    "resentOk": "E-Mail gesendet.",
+    "resentFail": "Die E-Mail ist erneut fehlgeschlagen. Versuchen Sie es später.",
+    "msgsErr": "Die Nachrichten konnten nicht geladen werden. Wurde Migration 008 in Supabase ausgeführt?",
+    "pubLead": "Briefings aus dem öffentlichen Formular (Besucher ohne Konto). Antworten gehen nur per E-Mail.",
+    "pubNone": "Noch keine öffentlichen Briefings.",
+    "pubErr": "Die öffentlichen Briefings konnten nicht geladen werden. Wurde Migration 008 in Supabase ausgeführt?",
+    "colRef": "Referenz",
+    "colCompany": "Unternehmen",
+    "colReplies": "Antworten",
+    "repliesH": "Gesendete Antworten",
+    "err": {
+     "body": "Schreiben Sie eine Nachricht mit 1 bis 4000 Zeichen.",
+     "price": "Der Preis darf höchstens 120 Zeichen lang sein.",
+     "teams_url": "Fügen Sie einen gültigen https-Link ein (ohne Leerzeichen).",
+     "starts_at": "Die neue Zeit muss in der Zukunft liegen.",
+     "draft": "Dieses Briefing wurde noch nicht gesendet.",
+     "state": "Dieses Gespräch hat sich inzwischen geändert. Neu laden und prüfen.",
+     "not_resendable": "Diese E-Mail wurde bereits gesendet oder wird gerade gesendet.",
+     "missing": "Nicht gefunden. Laden Sie die Seite neu.",
+     "not_saved": "Speichern nicht möglich. Bitte erneut versuchen.",
+     "message_not_saved": "Das Gespräch ist bestätigt, aber die Nachricht wurde nicht gespeichert. Bestätigen Sie erneut.",
+     "rate_limited": "Zu viele Anfragen. Warten Sie einige Minuten.",
+     "auth": "Bitte melden Sie sich erneut an.",
+     "forbidden": "Nicht erlaubt.",
+     "offline": "Keine Verbindung. Bitte erneut versuchen.",
+     "noApi": "Die API-Adresse ist in js/config.js nicht gesetzt.",
+     "server": "Auf dem Server ist etwas schiefgelaufen. Bitte erneut versuchen."
+    }
+   },
    "title": "Dashboard",
    "inviteH": "Willkommen im CULMERA-Team",
    "inviteP": "Nennen Sie uns Ihren Namen und wählen Sie ein Passwort, um die Einrichtung Ihres Kontos abzuschließen.",

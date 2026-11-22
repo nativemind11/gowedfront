@@ -1,3 +1,48 @@
+# Phase 2.3 (Founder console, js/team.js) - DONE and browser-tested with a mock Supabase / mock /api/reply
+- Client page in #/team (Founder only): Partner name AND Director name (or "Direct"); the conversation with the client; a reply form (message, optional price,
+  "suggest a meeting"); email state per message (sent / failed / skipped) with "Resend email" for failed or skipped ones.
+- A call the client asked for: "Confirm the call..." opens a form with the Teams link (https only, pasted by hand), an optional note and an optional new time.
+  The old one-click "confirm" (no link) is gone. The link is shown to the Founder as a plain https link.
+- New tab "Public briefs" (Founder only): the visitors' briefs, their details, the replies already sent, and an email-only reply form.
+- Every write goes through POST /api/reply with the Founder's token and a NEW req_id on every press (reply, confirm and resend).
+- Partner and Director: nothing new. They do not request brief_messages / visitor_replies / briefs, and no reply form, price or link is ever drawn for them
+  (tools/roles-test.py proves it). Strings: L.tm.rp in the four languages.
+- Files changed in the front: js/team.js, js/i18n/{en,ar,de,fr}.js, css/style.css (plus 2.2: js/brief.js, js/portal.js, js/auth.js).
+- Tests run (Chromium, mock Supabase): tools/replies-test.py (new), roles-test.py (updated), team-test.py: all passed. NOT run: the real Supabase, the real mail, npm run test:rls.
+- If migration 008 is NOT applied yet, the Founder console still opens; the conversation and Public briefs show a clear message instead of data.
+
+# Phase 2, step 2.2 (front: brief and client page): DONE (v4), NOT PUBLISHED
+
+Needs the back end of step 2.1 and `migration-008-replies.sql` first (order: 008, back end, front).
+
+## Done in code
+- `js/brief.js`: the meeting step is gone (visitor: 4 steps, signed-in client: 3). The public brief sends `locale`.
+- `js/i18n/{en,ar,de,fr}.js`: meeting texts removed; new namespace `cv` (conversation and reply form), same keys in the 4 files.
+- `js/portal.js`: conversation on `#/account` (Founder messages, price only inside his message, call proposal, confirmed call with an https-only Teams button, `rel="noopener noreferrer"`), reply form (message 1..4000 + OPTIONAL day/time/length in the client's time zone, at least one hour ahead, fresh `req_id` per message). The client cannot confirm.
+- `js/auth.js`, `css/style.css`.
+
+## Bugs found by the new browser test and fixed (v2/v3)
+- `js/portal.js`: after the client suggests a new time, the call card on top of `#/account` kept showing the old CONFIRMED call and its Teams link. Now `cardRefresh()` reloads it (`id="mcard"`).
+- `js/auth.js` notify queue: two events back to back (meeting, then client_reply) lost the second one until the next page load, because the running flush saved its old copy of the queue over the new item. Fixed with `nAgain` (run again right away) and "keep what was added while sending".
+
+## Tests: what was RUN (headless Chromium, mock Supabase)
+- `tools/convo-test.py` (NEW): 93/93 pass, last run after every code change (69 checks of the flow + section 10: the account page in ar, de, fr, en at 360 and 1280 px, no English left, no raw keys, nothing inside the page sticking out sideways). Details of the flow checks: 69/69 pass (conversation, form, optional time, req_id, one-hour and 12-month limits, 6 unsafe Teams links refused, HTML escaped, price only in the Founder's message, client cannot confirm, Partner/Director load nothing, 360 px). This run included the queue fix.
+- `tools/notify-test.py`: 0 failed. `tools/auth-test.py`: 0 failed. (after the queue fix)
+- `tools/brief-test.py`: 0 failed (60). Updated: visitor = 4 steps; NEW section 17: the visitor submit sends `locale` (en, ar, de, fr) and no meeting field.
+- `tools/portal-test.py`: 0 failed (78). Updated: the brief review is step 4 and shows the optional "Request a call" link (`#/meeting`).
+- `tools/i18n-test.py` (fr, de, ar): 179 pass, 34 fail. ALL 34 also fail on the ORIGINAL live front (fr 360 px sideways scroll 16 px on 14 pages, de 360 px 2 px on 14 pages, "8 languages" expected but 4 exist, for fr, de, ar; zh, ru, pt, nl are Batch 2). Not caused by Phase 2. Same counts per kind on the original (fr and de/ar compared).
+
+## Also run
+- `node tools/validate.js`: only the old known failure (`js/boot.js` lists 4 of the 8 languages; zh, ru, pt, nl are Batch 2). Nothing new.
+- Known, NOT from Phase 2: at 360 px the header menu button sticks out of the page in French (16 px) and German (2 px) on every page, also on the original live front. `convo-test.py` section 10 therefore judges only what is inside the account page. Fix later in the header CSS if wanted.
+
+## NOT done
+- The privacy text still lists "meeting preferences" and does not mention the conversation messages: needs a legal review.
+- Step 2.2 is finished. Steps 2.3 (Founder console, `js/team.js`) and 2.4 (final review and deployment steps) are not started.
+
+
+---
+
 # Phase 9, step 1 (roles): Partner, Director, Founder
 
 Needs the back end's `migration-007-roles.sql` (the page reads the new views). Deploy the back end and run the migration BEFORE publishing this page, or Partner and Director dashboards show a load error until the views exist. The Founder page is unaffected.
