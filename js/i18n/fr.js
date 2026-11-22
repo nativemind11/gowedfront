@@ -494,7 +494,7 @@ window.I18N_PACK={
   ],
   "about": {
    "h": "À propos de CULMERA",
-   "p": "CULMERA Solutions est un studio numérique basé en Égypte. Nous concevons et développons des sites web, des produits numériques et des systèmes métier adaptés à la façon dont les organisations travaillent réellement, pour des clients de différents pays.",
+   "p": "CULMERA Solutions est une grande entreprise qui conçoit et développe des sites web, des produits numériques et des systèmes métier adaptés à la façon dont les organisations travaillent réellement. Nous réalisons aussi des boutiques en ligne, des systèmes de réservation, des assistants IA et de l’automatisation, des tableaux de bord et des expériences 3D, le tout au meilleur prix, pour des clients de différents pays.",
    "big": "Travailler avec de grandes organisations",
    "bigP": "Nous commençons par une conversation, nous écoutons comment votre organisation fonctionne et nous façonnons le travail autour. Le périmètre, les responsabilités et les prochaines étapes sont consignés par écrit avant le début de la réalisation."
   },
