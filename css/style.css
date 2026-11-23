@@ -347,6 +347,9 @@ table.tm .btn{padding:.5rem 1rem;min-block-size:40px;font-size:.85rem}
 .pill.draft,.pill.lost,.pill.archived,.pill.suspended{color:var(--steel)}
 .pill.submitted,.pill.in_review,.pill.scheduled,.pill.in_discussion,.pill.active{border-color:var(--gold);color:var(--gold)}
 .pill.won{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+/* project status of a client (Founder sets it; Partner and Director see it) */
+.pill.p-pending{color:var(--steel)}.pill.p-building{border-color:var(--gold);color:var(--gold)}.pill.p-delivered{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+.tm-amt{color:var(--gold);font-size:1.05rem;white-space:nowrap}#pjw[hidden]{display:none}
 @media(max-width:600px){.tm-dl{grid-template-columns:1fr}.tm-tabs button{padding:.6rem .7rem}}
 /* Phase 6: "What we build" illustrations */
 .showgrid{grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr))}

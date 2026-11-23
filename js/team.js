@@ -13,6 +13,7 @@
 (()=>{
 const T=L.tm,A=L.auth,M=L.mt,$=s=>document.querySelector(s),G=()=>window.GW,C=()=>G().C,esc=s=>G().esc(s),fill=(s,o)=>G().fill(s,o),AU=()=>window.CulmeraAuth,enc=encodeURIComponent;
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,CAP=1000,WEEK=7*864e5;
+const PST=['pending','building','delivered'];
 const BST=['submitted','in_review','scheduled','in_discussion','won','lost','archived'];
 const TABS={partner:['overview','clients','playbook'],director:['overview','clients','meetings','team','playbook'],founder:['overview','clients','public','meetings','team','requests','audit','playbook']};
 const fresh=()=>({me:null,tab:'overview',open:null,ask:null,f:{q:'',st:'',p:'',ms:'active',tb:'',lk:'home'},lim:100,det:null,aud:null,audLim:200,state:'load',msg:'',ok:false});
@@ -23,6 +24,9 @@ const studio=()=>C().ownerTimezone||'Africa/Cairo';
 const when=(d,z,short)=>{try{return new Intl.DateTimeFormat(L.locale,{dateStyle:short?'medium':'full',timeStyle:short?undefined:'short',timeZone:z||undefined}).format(new Date(d))}catch(e){return ''}};
 const pill=(s,l)=>`<span class="pill ${esc(s)}">${esc(l)}</span>`;
 const bpill=s=>pill(s,A.st[s]||s),mpill=s=>pill(s,M.mst[s]||s);
+/* project status of a client (migration 009): pending / building / delivered, plus the amount in USD once delivered */
+const usd=n=>{try{return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n)}catch(e){return '$'+n}};
+const pstPill=s=>pill('p-'+s,(T.pst&&T.pst[s])||s);
 const nm=p=>p?(p.full_name||p.email||'—'):T.unknown;
 const site=()=>C().siteUrl.replace(/\/$/,'');
 const adminUrl=()=>String(C().api||'').replace(/\/brief\/?$/,'/admin');
@@ -43,8 +47,11 @@ const rpl=(action,body)=>admin(action,body,replyUrl());
 const rwhy=r=>{const c=(r.data&&r.data.code)||'';return T.rp.err[c]||T.err[c]||T.err.generic};
 async function rd(path){const s=await AU().session();if(!s)return{ok:false,auth:true};const r=await AU().rest(path,s);return r.ok&&Array.isArray(r.data)?{ok:true,rows:r.data}:{ok:false,status:r.status}}
 /* write with the user's token; n = number of rows really changed (zero rows means Row Level Security refused it) */
-async function mut(path,body,method){const s=await AU().session();if(!s)return{ok:false,n:0};const r=await AU().restW(path,s,{method:method||'PATCH',body,prefer:'return=representation'});
+async function mut(path,body,method,prefer){const s=await AU().session();if(!s)return{ok:false,n:0};const r=await AU().restW(path,s,{method:method||'PATCH',body,prefer:prefer||'return=representation'});
 return{ok:r.ok,n:r.ok&&Array.isArray(r.data)?r.data.length:0,status:r.status,rows:Array.isArray(r.data)?r.data:[]}}
+/* a view with the migration-009 columns; if migration 009 is not applied yet the old columns are read, so nothing breaks */
+async function rdv(view,base,extra){const r=await rd(view+'?select='+base+','+extra+'&limit='+CAP);return r.ok?r:rd(view+'?select='+base+'&limit='+CAP)}
+const stg=x=>PST.includes(x.project_stage)?x.project_stage:'pending',amtOf=x=>x.amount_usd==null||x.amount_usd===''?null:Number(x.amount_usd);
 async function load(){const s=await AU().session();if(!$('#tm'))return;if(!s){location.hash='#/signin';return}
 const pr=await rd('profiles?select=id,full_name,email,role,status,locale,created_at&order=created_at.desc&limit='+CAP);if(!$('#tm'))return;
 if(!pr.ok){S.state='err';paint();return}
@@ -59,27 +66,27 @@ if(me.role==='founder'){
 rd('client_briefs?select=id,ref,client_id,status,locale,selected_types,created_at,updated_at,submitted_at&order=updated_at.desc&limit='+CAP),rd('meetings?select=id,brief_id,client_id,starts_at,timezone,duration_min,status,note&order=starts_at.desc&limit='+CAP),
 rd('invitations?select=id,email,role,director_id,invited_by,expires_at,accepted_at,created_at&accepted_at=is.null&order=created_at.desc&limit=200'),
 pbq(),rd('data_requests?select=id,client_id,kind,status,created_at,handled_at&order=created_at.desc&limit=200')]);
-const [xm,xv,xp,xt]=await Promise.all([rd('brief_messages?select=id,brief_id,client_id,sender,kind,body,price_text,proposes_meeting,meeting_id,email_status,email_at,created_at&order=created_at.asc&limit='+CAP),
+const [xm,xv,xp,xt,xj]=await Promise.all([rd('brief_messages?select=id,brief_id,client_id,sender,kind,body,price_text,proposes_meeting,meeting_id,email_status,email_at,created_at&order=created_at.asc&limit='+CAP),
 rd('visitor_replies?select=id,brief_ref,body,price_text,proposes_meeting,email_status,email_at,created_at&order=created_at.asc&limit='+CAP),
 rd('briefs?select=ref,created_at,name,email,company,country,timezone,items_count,payload,status&order=created_at.desc&limit=300'),
-rd('meetings?select=id,teams_url&teams_url=not.is.null&limit='+CAP)]);
-ex={msgs:xm.ok?xm.rows:null,vis:xv.ok?xv.rows:null,pub:xp.ok?xp.rows:null,tu:xt.ok?xt.rows:null}}
+rd('meetings?select=id,teams_url&teams_url=not.is.null&limit='+CAP),rd('client_projects?select=profile_id,stage,amount_usd&limit='+CAP)]);
+ex={msgs:xm.ok?xm.rows:null,vis:xv.ok?xv.rows:null,pub:xp.ok?xp.rows:null,tu:xt.ok?xt.rows:null,proj:xj.ok?xj.rows:null}}
 else if(me.role==='director'){
 /* read-only views of migration 007: names only, no contact details, no notes */
 const [p1,tm,c1,b1,m1,pb1]=await Promise.all([rd('partners?select=profile_id,code,director_id,active&limit='+CAP),rd('director_team?select=profile_id,full_name,director_id,active,created_at&limit='+CAP),
-rd('director_clients?select=profile_id,partner_id,full_name,created_at&limit='+CAP),rd('director_briefs?select=id,ref,client_id,status,locale,selected_types,created_at,updated_at,submitted_at&order=updated_at.desc&limit='+CAP),
+rdv('director_clients','profile_id,partner_id,full_name,created_at','project_stage,amount_usd'),rd('director_briefs?select=id,ref,client_id,status,locale,selected_types,created_at,updated_at,submitted_at&order=updated_at.desc&limit='+CAP),
 rd('director_meetings?select=id,brief_id,client_id,starts_at,timezone,duration_min,status&order=starts_at.desc&limit='+CAP),pbq()]);
 if(![p1,tm,c1,b1,m1].every(x=>x.ok)){if(!$('#tm'))return;S.state='err';paint();return}
 people=[...pr.rows,...named(tm.rows,'partner'),...named(c1.rows,'client')];
 pa={ok:true,rows:[...p1.rows,...tm.rows.map(x=>({profile_id:x.profile_id,code:'',director_id:x.director_id,active:x.active}))]};
-cl={ok:true,rows:c1.rows.map(x=>({profile_id:x.profile_id,partner_id:x.partner_id,code_used:null,company:'',country:'',phone:null,created_at:x.created_at}))};
+cl={ok:true,rows:c1.rows.map(x=>({profile_id:x.profile_id,partner_id:x.partner_id,code_used:null,company:'',country:'',phone:null,created_at:x.created_at,stage:stg(x),amt:amtOf(x)}))};
 br=b1;ms=m1;iv=EMPTY;pb=pb1;rq=EMPTY}
 else{
 /* partner: only the names of his clients and the project each asked for */
-const [p1,c1,pb1]=await Promise.all([rd('partners?select=profile_id,code,director_id,active&limit='+CAP),rd('partner_clients?select=profile_id,full_name,selected_types,created_at&limit='+CAP),pbq()]);
+const [p1,c1,pb1]=await Promise.all([rd('partners?select=profile_id,code,director_id,active&limit='+CAP),rdv('partner_clients','profile_id,full_name,selected_types,created_at','project_stage,amount_usd'),pbq()]);
 if(![p1,c1].every(x=>x.ok)){if(!$('#tm'))return;S.state='err';paint();return}
 people=[...pr.rows,...named(c1.rows,'client')];types=new Map(c1.rows.map(x=>[x.profile_id,x.selected_types||[]]));
-pa=p1;cl={ok:true,rows:c1.rows.map(x=>({profile_id:x.profile_id,partner_id:me.id,code_used:null,company:'',country:'',phone:null,created_at:x.created_at}))};
+pa=p1;cl={ok:true,rows:c1.rows.map(x=>({profile_id:x.profile_id,partner_id:me.id,code_used:null,company:'',country:'',phone:null,created_at:x.created_at,stage:stg(x),amt:amtOf(x)}))};
 br=EMPTY;ms=EMPTY;iv=EMPTY;pb=pb1;rq=EMPTY}
 if(!$('#tm'))return;if(![pa,cl,br,ms,iv].every(x=>x.ok)){S.state='err';paint();return}
 S.me=me;D={profiles:people,pm:new Map(people.map(x=>[x.id,x])),partners:pa.rows,pa:new Map(pa.rows.map(x=>[x.profile_id,x])),clients:cl.rows,briefs:br.rows,meetings:ms.rows,inv:iv.rows,pb:pb.ok?pb.rows:null,req:rq.ok?rq.rows:[],types,ex};
@@ -88,11 +95,13 @@ D.cap=[pr,pa,cl,br,ms].some(x=>x.rows.length>=CAP);index();S.state='ok';paint()}
 function index(){D.lb=new Map();D.bb=new Map();for(const b of D.briefs){if(!D.lb.has(b.client_id))D.lb.set(b.client_id,b);(D.bb.get(b.client_id)||D.bb.set(b.client_id,[]).get(b.client_id)).push(b)}
 D.mc=new Map();for(const m of D.meetings){(D.mc.get(m.client_id)||D.mc.set(m.client_id,[]).get(m.client_id)).push(m)}
 D.cm=new Map(D.clients.map(x=>[x.profile_id,x]));
+if(D.ex){const pj=new Map((D.ex.proj||[]).map(x=>[x.profile_id,x]));for(const c of D.clients){const x=pj.get(c.profile_id);c.stage=x&&PST.includes(x.stage)?x.stage:'pending';c.amt=x&&x.amount_usd!=null?Number(x.amount_usd):null}}
 D.mm=new Map();D.vm=new Map();D.tu=new Map();
 if(D.ex){for(const x of D.ex.msgs||[]){(D.mm.get(x.brief_id)||D.mm.set(x.brief_id,[]).get(x.brief_id)).push(x)}
 for(const x of D.ex.vis||[]){(D.vm.get(x.brief_ref)||D.vm.set(x.brief_ref,[]).get(x.brief_ref)).push(x)}
 for(const x of D.ex.tu||[])D.tu.set(x.id,x.teams_url)}}
 const callOf=cid=>{const a=D.mc.get(cid)||[];return a.filter(m=>m.status==='requested'||m.status==='confirmed').sort((x,y)=>String(x.starts_at).localeCompare(String(y.starts_at)))[0]||a.find(m=>m.status==='done')||null};
+const amtCell=c=>c.stage==='delivered'&&c.amt!=null?`<b dir="ltr" class="tm-amt">${esc(usd(c.amt))}</b><br><span class="note">${esc(isDir()?T.amtToYou:T.amtToDir)}</span>`:'—';
 const projOf=cid=>D.types?(D.types.get(cid)||[]):((D.lb.get(cid)||{}).selected_types||[]);
 const projText=a=>(a||[]).map(x=>{const t=G().S[x];return t?t.name:x}).join(', ');
 const ownerLabel=c=>{if(!c.partner_id)return T.direct;if(c.partner_id===S.me.id)return T.fYou;return nm(D.pm.get(c.partner_id))};
@@ -142,10 +151,10 @@ ${isP()?'':`<label>${esc(T.fStatus)}<select data-f="st"><option value="">${esc(T
 ${seesOwner()?`<label>${esc(T.fPartner)}<select data-f="p">${ownerOpts(S.f.p,true)}</select></label>`:''}</div>${isF()?exportBar():''}<div id="tmlist">${clientList()}</div>`}
 function partnerList(){const q=S.f.q.trim().toLowerCase(),nmOf=c=>nm(D.pm.get(c.profile_id)),rows=D.clients.filter(c=>!q||nmOf(c).toLowerCase().includes(q)).sort((a,b)=>nmOf(a).localeCompare(nmOf(b)));
 if(!rows.length)return `<p>${esc(T.noMatch)}</p>`;
-return `<p class="note">${esc(T.stClients)}: ${rows.length}</p><div class="tw"><table class="tm"><caption class="sr">${esc(T.tabs.clients)}</caption><thead><tr><th scope="col">${esc(T.colClient)}</th><th scope="col">${esc(T.ans.packs)}</th></tr></thead><tbody>${rows.slice(0,S.lim).map(c=>`<tr><th scope="row"><b>${esc(nmOf(c))}</b></th><td>${esc(projText(projOf(c.profile_id))||'—')}</td></tr>`).join('')}</tbody></table></div>${rows.length>S.lim?`<p><button class="btn" type="button" data-tm="more">${esc(T.more)} (${rows.length-S.lim})</button></p>`:''}`}
+return `<p class="note">${esc(T.stClients)}: ${rows.length}</p><div class="tw"><table class="tm"><caption class="sr">${esc(T.tabs.clients)}</caption><thead><tr><th scope="col">${esc(T.colClient)}</th><th scope="col">${esc(T.colProj)}</th><th scope="col">${esc(T.colAmt)}</th><th scope="col">${esc(T.ans.packs)}</th></tr></thead><tbody>${rows.slice(0,S.lim).map(c=>`<tr><th scope="row"><b>${esc(nmOf(c))}</b></th><td>${pstPill(c.stage||'pending')}</td><td>${amtCell(c)}</td><td>${esc(projText(projOf(c.profile_id))||'—')}</td></tr>`).join('')}</tbody></table></div>${rows.length>S.lim?`<p><button class="btn" type="button" data-tm="more">${esc(T.more)} (${rows.length-S.lim})</button></p>`:''}`}
 function clientList(){if(isP())return partnerList();const rows=filtered();if(!rows.length)return `<p>${esc(T.noMatch)}</p>`;const shown=rows.slice(0,S.lim);
-return `<div class="tw"><table class="tm"><caption class="sr">${esc(T.tabs.clients)}</caption><thead><tr><th scope="col">${esc(T.colClient)}</th>${seesOwner()?`<th scope="col">${esc(T.colOwner)}</th>`:''}<th scope="col">${esc(T.colBrief)}</th>${isDir()?`<th scope="col">${esc(T.ans.packs)}</th>`:''}<th scope="col">${esc(T.colCall)}</th><th scope="col">${esc(T.colJoined)}</th><th scope="col"><span class="sr">${esc(T.colAction)}</span></th></tr></thead><tbody>${shown.map(c=>{const p=D.pm.get(c.profile_id),b=D.lb.get(c.profile_id),m=callOf(c.profile_id);
-return `<tr><th scope="row"><b>${esc(nm(p))}</b><br>${isF()?`<br><span class="note">${esc(c.company)}</span>`:''}</th>${seesOwner()?`<td>${esc(ownerLabel(c))}${isF()?`<br><span class="note">${esc(T.rp.directorH)}: ${esc(dirLabel(c))}</span>`:''}</td>`:''}<td>${b?`<span dir="ltr">${esc(b.ref)}</span><br>${bpill(b.status)}`:`<span class="note">${esc(T.fNoBrief)}</span>`}</td>${isDir()?`<td>${esc(projText(projOf(c.profile_id))||'—')}</td>`:''}<td>${m?`${mpill(m.status)}<br><span class="note">${esc(when(m.starts_at,tz(),true))}</span>`:'—'}</td><td>${esc(when(c.created_at,undefined,true))}</td>
+return `<div class="tw"><table class="tm"><caption class="sr">${esc(T.tabs.clients)}</caption><thead><tr><th scope="col">${esc(T.colClient)}</th><th scope="col">${esc(T.colProj)}</th>${isDir()?`<th scope="col">${esc(T.colAmt)}</th>`:''}${seesOwner()?`<th scope="col">${esc(T.colOwner)}</th>`:''}<th scope="col">${esc(T.colBrief)}</th>${isDir()?`<th scope="col">${esc(T.ans.packs)}</th>`:''}<th scope="col">${esc(T.colCall)}</th><th scope="col">${esc(T.colJoined)}</th><th scope="col"><span class="sr">${esc(T.colAction)}</span></th></tr></thead><tbody>${shown.map(c=>{const p=D.pm.get(c.profile_id),b=D.lb.get(c.profile_id),m=callOf(c.profile_id);
+return `<tr><th scope="row"><b>${esc(nm(p))}</b><br>${isF()?`<br><span class="note">${esc(c.company)}</span>`:''}</th><td>${pstPill(c.stage||'pending')}${isF()&&c.stage==='delivered'&&c.amt!=null?`<br><b dir="ltr" class="tm-amt">${esc(usd(c.amt))}</b>`:''}</td>${isDir()?`<td>${amtCell(c)}</td>`:''}${seesOwner()?`<td>${esc(ownerLabel(c))}${isF()?`<br><span class="note">${esc(T.rp.directorH)}: ${esc(dirLabel(c))}</span>`:''}</td>`:''}<td>${b?`<span dir="ltr">${esc(b.ref)}</span><br>${bpill(b.status)}`:`<span class="note">${esc(T.fNoBrief)}</span>`}</td>${isDir()?`<td>${esc(projText(projOf(c.profile_id))||'—')}</td>`:''}<td>${m?`${mpill(m.status)}<br><span class="note">${esc(when(m.starts_at,tz(),true))}</span>`:'—'}</td><td>${esc(when(c.created_at,undefined,true))}</td>
 <td><button class="btn" type="button" data-tm="openc" data-id="${esc(c.profile_id)}">${esc(T.open)}</button></td></tr>`}).join('')}</tbody></table></div>${rows.length>S.lim?`<p><button class="btn" type="button" data-tm="more">${esc(T.more)} (${rows.length-S.lim})</button></p>`:''}`}
 const paintList=()=>{const l=$('#tmlist');if(l)l.innerHTML=S.tab==='meetings'?meetList():S.tab==='public'?publicList():clientList()};
 /* ---------- client detail ---------- */
@@ -159,10 +168,14 @@ h+=`</div><div><h2>${esc(T.briefH)}</h2>`;
 if(!b)h+=`<p>${esc(T.briefNone)}</p>`;else{h+=`<p><span dir="ltr">${esc(b.ref)}</span> ${bpill(b.status)}</p>`+(bl.length>1?`<p class="note">${esc(String(bl.length))} ${esc(T.briefH)}</p>`:'');
 if(canManage()){h+=b.status==='draft'?`<p class="note">${esc(T.draftNote)}</p>`:`<form class="cform tmform" novalidate data-form="bstatus" data-id="${esc(b.id)}"><label>${esc(T.statusH)}<select id="bs">${BST.map(k=>`<option value="${k}"${b.status===k?' selected':''}>${esc(A.st[k])}</option>`).join('')}</select></label><p><button class="btn" type="submit">${esc(T.saveStatus)}</button></p></form>`}}
 h+=`</div><div><h2>${esc(T.callsH)}</h2>`+(ml.length?ml.map(m=>meetCard(m)).join(''):`<p>${esc(T.callNone)}</p>`)+`</div></div>`;
+if(isF())h+=projBlock(id,c);
 if(isF()&&b&&b.status!=='draft')h+=convBlock(b);
 if(b)h+=`<h2 class="h2s">${esc(T.answersH)}</h2><div class="tm-box" id="tmans">${dt&&dt.answers!==undefined?answers(dt.answers,b):`<p class="note">${esc(T.answersLoad)}</p>`}</div>`;
 if(isF())h+=`<h2 class="h2s">${esc(T.notesH)}</h2><p class="note">${esc(T.notesHint)}</p><form class="cform tmform" novalidate data-form="note" data-id="${esc(id)}"><label>${esc(T.noteLabel)}<textarea id="nb" rows="3" maxlength="4000"></textarea></label><p><button class="btn p" type="submit">${esc(T.noteAdd)}</button></p></form><div id="tmnotes">${dt&&dt.notes?notes(dt.notes):''}</div>`;
 return h}
+function projBlock(id,c){const st=c.stage||'pending';let h=`<h2 class="h2s">${esc(T.projH)}</h2><p class="note">${esc(T.projLead)}</p>`;
+if(!D.ex||!D.ex.proj)return h+`<p class="note">${esc(T.projNoTable)}</p>`;
+return h+`<form class="cform tmform" novalidate data-form="proj" data-id="${esc(id)}"><label>${esc(T.pstL)}<select id="pjs">${PST.map(k=>`<option value="${k}"${st===k?' selected':''}>${esc(T.pst[k])}</option>`).join('')}</select></label><div id="pjw"${st==='delivered'?'':' hidden'}><label>${esc(T.amtL)}<input id="pja" type="text" inputmode="decimal" dir="ltr" autocomplete="off" maxlength="14" value="${c.amt!=null?esc(String(c.amt)):''}"></label><p class="note">${esc(T.amtHint)}</p></div><p><button class="btn p" type="submit">${esc(T.saveProj)}</button></p></form>`}
 function acctActions(id,p){const st=p&&p.status;let h=`<h2 style="margin-block-start:1.4rem">${esc(T.accountH)}</h2>`;
 if(S.ask&&S.ask.id===id)return h+`<p role="alert">${esc(S.ask.act==='delete'?T.askDelete:T.askSuspend)}</p><p><button class="btn p" type="button" data-tm="confirm">${esc(T.confirm)}</button> <button class="btn" type="button" data-tm="noask">${esc(T.cancel)}</button></p>`;
 return h+`<p>${st==='suspended'?`<button class="btn" type="button" data-tm="restore" data-id="${esc(id)}">${esc(T.restore)}</button>`:`<button class="btn" type="button" data-tm="suspend" data-id="${esc(id)}">${esc(T.suspend)}</button>`} <button class="btn" type="button" data-tm="delete" data-id="${esc(id)}">${esc(T.delete)}</button></p>`}
@@ -317,6 +330,12 @@ if(note.length>4000)return say(T.rp.err.body);const rid=uuid();if(!rid)return sa
 const r=await rpl('confirm',{ref:f.dataset.ref,meeting_id:id,teams_url:link,...(note?{body:note}:{}),...(iso?{starts_at:iso}:{}),req_id:rid});
 if(!r.ok){say(rwhy(r));if(r.data&&r.data.code==='message_not_saved')await refresh();return}
 const e=r.data&&r.data.email;say(r.data&&r.data.already?T.rp.already:T.rp.cf[e]||T.rp.cf.failed,!!(r.data&&r.data.already)||e==='sent');await refresh()});
+else if(k==='proj'&&isF())await run(async()=>{const st=($('#pjs')||{}).value;if(!PST.includes(st))return;let amt=null;
+if(st==='delivered'){const raw=(($('#pja')||{}).value||'').trim().replace(/,/g,'');if(!/^\d{1,9}(\.\d{1,2})?$/.test(raw))return say(T.amtErr);amt=Number(raw)}
+const r=await mut('client_projects?on_conflict=profile_id',{profile_id:id,stage:st,amount_usd:amt},'POST','resolution=merge-duplicates,return=representation');
+if(!r.ok)return say(T.err.generic);if(!r.n)return stale();
+const c=D.cm.get(id);if(c){c.stage=st;c.amt=amt}if(D.ex){const a=D.ex.proj||(D.ex.proj=[]),x=a.find(y=>y.profile_id===id);if(x){x.stage=st;x.amount_usd=amt}else a.push({profile_id:id,stage:st,amount_usd:amt})}
+say(T.saved,true);paintBody()});
 else if(k==='bstatus'&&canManage())await run(async()=>{const v=($('#bs')||{}).value;if(!BST.includes(v))return;const r=await mut('client_briefs?id=eq.'+enc(id),{status:v});if(!r.ok)return say(T.err.generic);if(!r.n)return stale();const x=D.briefs.find(y=>y.id===id);if(x)x.status=v;index();say(T.saved,true);paintBody()});
 else if(k==='reassign'&&isF())await run(async()=>{const v=($('#ro')||{}).value||null;if(v&&!UUID.test(v))return;const cid=S.open.id,r=await mut('clients?profile_id=eq.'+enc(cid),{partner_id:v});if(!r.ok)return say(T.err.generic);if(!r.n)return stale();const c=D.cm.get(cid);if(c)c.partner_id=v;say(T.saved,true);paintBody()});
 else if(k==='invite'&&canManage())await run(async()=>{const em=(($('#ive')||{}).value||'').trim(),rl=isF()?($('#ivr')||{}).value:'partner',gr=isF()&&rl==='partner'?($('#ivg')||{}).value:'';if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em))return say(T.err.email);await invite(em,rl,gr)});
@@ -328,6 +347,7 @@ await refresh();say(T.saved,true)});
 else if(k==='group'&&isF())await run(async()=>{const v=($('#gr')||{}).value||null;if(v&&!UUID.test(v))return;const r=await mut('partners?profile_id=eq.'+enc(id),{director_id:v});if(!r.ok)return say(T.err.generic);if(!r.n)return stale();const x=D.pa.get(id);if(x)x.director_id=v;say(T.saved,true);paintBody()})});
 document.addEventListener('input',e=>{const f=e.target.closest('[data-f]');if(f&&f.tagName==='INPUT'&&$('#tm')){S.f[f.dataset.f]=f.value;S.lim=100;paintList()}});
 document.addEventListener('change',e=>{if(!$('#tm'))return;const f=e.target.closest('[data-f]');if(f&&f.tagName==='SELECT'){S.f[f.dataset.f]=f.value;S.lim=100;if(f.dataset.f==='tb')paintBody();else paintList();return}
+if(e.target.id==='pjs'){const w=$('#pjw');if(w)w.hidden=e.target.value!=='delivered';return}
 if(e.target.id==='lnkp'){S.f.lk=e.target.value;const i=$('#lnk');if(i)i.value=linkFor()}});
 /* roving keys for the tab list */
 document.addEventListener('keydown',e=>{const t=e.target.closest&&e.target.closest('[role=tab]');if(!t||!$('#tm'))return;const tabs=[...document.querySelectorAll('.tm-tabs [role=tab]')],i=tabs.indexOf(t),rtl=document.documentElement.dir==='rtl';

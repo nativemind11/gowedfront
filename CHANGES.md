@@ -1,3 +1,12 @@
+# Project status + amount, and faster images
+Needs the back end's `migration-009-project-status.sql` (run it BEFORE publishing this front end; without it the pages still work but everybody shows "Not started").
+- Founder (client page, js/team.js): new "Project status" form: Not started / Website in progress / Website delivered. For "delivered" the Founder enters the amount in USD.
+- Partner and Director: columns "Project status" and "Amount (USD)" right after the client name. The amount shows only when delivered, with the message
+  (Partner: "will be transferred to your Director"; Director: "will be transferred to you"). Strings in en, ar, de, fr (L.tm.pst, projH, amtToDir ...).
+- Images: every service picture now exists in 480, 960 and 1440 px (webp, quality 85, made from the original PNG) next to the 2816 px original; home pictures also have an 800 px copy.
+  js/app.js uses srcset/sizes, so each screen downloads only the size it needs. Same pictures, same look. The unused PNG sources (259 MB) are NOT in this delivery: keep them on your computer.
+- Tests: tools/project-test.py (new) plus roles, team, convo and portal tests pass (mock Supabase).
+
 # Phase 2.3 (Founder console, js/team.js) - DONE and browser-tested with a mock Supabase / mock /api/reply
 - Client page in #/team (Founder only): Partner name AND Director name (or "Direct"); the conversation with the client; a reply form (message, optional price,
   "suggest a meeting"); email state per message (sent / failed / skipped) with "Resend email" for failed or skipped ones.
