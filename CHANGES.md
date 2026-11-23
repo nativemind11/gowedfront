@@ -1,3 +1,9 @@
+# Announcements (needs back end migration-010-announcements.sql, run it BEFORE publishing this front end)
+- New tab "Announcements" (Founder only, #/team): title, message, number of days (1 to 365), Publish. Lists "Live now" and "Ended"; Delete asks first, then removes the notice for good.
+- js/announce.js (new, loaded in index.html): every visitor sees the live notices top right, same palette as the site; the x button closes one (kept in this browser). Text is shown as plain text. Refreshes every 5 minutes.
+- If migration 010 is not applied yet: the site works as before (no banner); the Founder tab says to run the migration.
+- Strings in en, ar, de, fr (L.tm.an, L.tm.tabs.announcements). Test: tools/announce-test.py (26 checks). roles-test and team-test updated for the new tab.
+
 # Project status + amount, and faster images
 Needs the back end's `migration-009-project-status.sql` (run it BEFORE publishing this front end; without it the pages still work but everybody shows "Not started").
 - Founder (client page, js/team.js): new "Project status" form: Not started / Website in progress / Website delivered. For "delivered" the Founder enters the amount in USD.

@@ -1509,7 +1509,9 @@ window.I18N_PACK={
    "paused": "Votre accès est suspendu. Veuillez contacter info@culmera-solutions.com.",
    "loadErr": "Nous n’avons pas pu charger votre tableau de bord. Veuillez actualiser la page.",
    "cap": "Affichage des 1000 premiers enregistrements. Affinez la liste avec les filtres.",
+   "an": {"title": "Annonces", "lead": "Publiez un court avis. Chaque visiteur le voit en haut à droite jusqu’à sa fin et peut le fermer avec ×. Vous pouvez le supprimer à tout moment.", "newH": "Nouvelle annonce", "fTitle": "Titre", "fBody": "Message", "fDays": "Durée d’affichage (jours)", "publish": "Publier", "liveH": "En ligne", "pastH": "Terminées", "none": "Aucune annonce.", "live": "En ligne", "ended": "Terminée", "until": "Jusqu’au {date}", "del": "Supprimer", "askDel": "Supprimer cette annonce ? Elle disparaît du site immédiatement.", "yesDel": "Oui, supprimer", "no": "Annuler", "saved": "Publiée. Les visiteurs la voient maintenant.", "gone": "Supprimée.", "errEmpty": "Saisissez un titre et un message.", "errLong": "Le titre peut avoir 120 caractères et le message 600.", "errDays": "Choisissez de 1 à 365 jours.", "noTable": "Les annonces ne sont pas encore prêtes. Exécutez d’abord migration-010-announcements.sql dans Supabase.", "close": "Fermer cette annonce", "region": "Annonces de l’entreprise"},
    "tabs": {
+    "announcements": "Annonces",
     "overview": "Vue d’ensemble",
     "clients": "Clients",
     "meetings": "Appels",

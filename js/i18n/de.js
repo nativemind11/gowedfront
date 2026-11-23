@@ -1509,7 +1509,9 @@ window.I18N_PACK={
    "paused": "Ihr Zugang ist pausiert. Bitte wenden Sie sich an info@culmera-solutions.com.",
    "loadErr": "Wir konnten Ihr Dashboard nicht laden. Bitte aktualisieren Sie die Seite.",
    "cap": "Die ersten 1000 Datensätze werden angezeigt. Grenzen Sie die Liste mit den Filtern ein.",
+   "an": {"title": "Mitteilungen", "lead": "Veröffentlichen Sie einen kurzen Hinweis. Jeder Besucher sieht ihn oben rechts, bis er endet, und kann ihn mit × schließen. Sie können ihn jederzeit löschen.", "newH": "Neue Mitteilung", "fTitle": "Titel", "fBody": "Text", "fDays": "Anzeigedauer (Tage)", "publish": "Veröffentlichen", "liveH": "Jetzt sichtbar", "pastH": "Beendet", "none": "Keine Mitteilungen.", "live": "Sichtbar", "ended": "Beendet", "until": "Bis {date}", "del": "Löschen", "askDel": "Diese Mitteilung löschen? Sie verschwindet sofort von der Website.", "yesDel": "Ja, löschen", "no": "Abbrechen", "saved": "Veröffentlicht. Besucher sehen sie jetzt.", "gone": "Gelöscht.", "errEmpty": "Bitte Titel und Text eingeben.", "errLong": "Der Titel darf 120 Zeichen haben, der Text 600.", "errDays": "Wählen Sie 1 bis 365 Tage.", "noTable": "Mitteilungen sind noch nicht bereit. Führen Sie zuerst migration-010-announcements.sql in Supabase aus.", "close": "Diese Mitteilung schließen", "region": "Mitteilungen des Unternehmens"},
    "tabs": {
+    "announcements": "Mitteilungen",
     "overview": "Übersicht",
     "clients": "Kunden",
     "meetings": "Gespräche",

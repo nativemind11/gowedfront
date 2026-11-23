@@ -125,7 +125,7 @@ with sync_playwright() as p:
 
     # 1 gates
     reset(); pg.goto(BASE); pg.evaluate("localStorage.clear()"); pg.goto(BASE + '#/team'); pg.reload(); w(900)
-    ok(pg.locator('#fin').count() == 1 and not any('/rest/v1/' in str(c[1]) for c in calls if c[0] != 'ADMIN'), 'visitor opening #/team is sent to sign in and reads nothing')
+    ok(pg.locator('#fin').count() == 1 and not any('/rest/v1/' in str(c[1]) and '/rest/v1/announcements' not in str(c[1]) for c in calls if c[0] != 'ADMIN'), 'visitor opening #/team is sent to sign in and reads nothing')
     go(C2, route='#/team', sel='#acct h2'); ok('#/account' in pg.url and pg.locator('#tm').count() == 0, 'a client opening #/team lands on their account')
     reset(me=P1); ST['prof'][3]['status'] = 'suspended'; pg.goto(BASE); pg.evaluate("s=>localStorage.setItem('culmera.session',JSON.stringify(s))", sess(P1)); pg.goto(BASE + '#/team'); pg.reload(); w(1200); ok(pg.locator('#fin').count() == 1, 'a suspended partner is signed out')
     go(P1, sel='#tm [role=alert]', hide_me=True); ok('access is paused' in txt() and pg.locator('[role=tab]').count() == 0, 'a deactivated partner (own profile hidden by the database) sees a paused message, no tabs')

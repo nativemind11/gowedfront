@@ -15,7 +15,7 @@ const T=L.tm,A=L.auth,M=L.mt,$=s=>document.querySelector(s),G=()=>window.GW,C=()
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,CAP=1000,WEEK=7*864e5;
 const PST=['pending','building','delivered'];
 const BST=['submitted','in_review','scheduled','in_discussion','won','lost','archived'];
-const TABS={partner:['overview','clients','playbook'],director:['overview','clients','meetings','team','playbook'],founder:['overview','clients','public','meetings','team','requests','audit','playbook']};
+const TABS={partner:['overview','clients','playbook'],director:['overview','clients','meetings','team','playbook'],founder:['overview','clients','public','meetings','team','requests','announcements','audit','playbook']};
 const fresh=()=>({me:null,tab:'overview',open:null,ask:null,f:{q:'',st:'',p:'',ms:'active',tb:'',lk:'home'},lim:100,det:null,aud:null,audLim:200,state:'load',msg:'',ok:false});
 let S=fresh(),D=null;
 /* ---------- helpers ---------- */
@@ -70,7 +70,8 @@ const [xm,xv,xp,xt,xj]=await Promise.all([rd('brief_messages?select=id,brief_id,
 rd('visitor_replies?select=id,brief_ref,body,price_text,proposes_meeting,email_status,email_at,created_at&order=created_at.asc&limit='+CAP),
 rd('briefs?select=ref,created_at,name,email,company,country,timezone,items_count,payload,status&order=created_at.desc&limit=300'),
 rd('meetings?select=id,teams_url&teams_url=not.is.null&limit='+CAP),rd('client_projects?select=profile_id,stage,amount_usd&limit='+CAP)]);
-ex={msgs:xm.ok?xm.rows:null,vis:xv.ok?xv.rows:null,pub:xp.ok?xp.rows:null,tu:xt.ok?xt.rows:null,proj:xj.ok?xj.rows:null}}
+const xa=await rd('announcements?select=id,title,body,starts_at,expires_at,created_at&order=created_at.desc&limit=200');
+ex={ann:xa.ok?xa.rows:null,msgs:xm.ok?xm.rows:null,vis:xv.ok?xv.rows:null,pub:xp.ok?xp.rows:null,tu:xt.ok?xt.rows:null,proj:xj.ok?xj.rows:null}}
 else if(me.role==='director'){
 /* read-only views of migration 007: names only, no contact details, no notes */
 const [p1,tm,c1,b1,m1,pb1]=await Promise.all([rd('partners?select=profile_id,code,director_id,active&limit='+CAP),rd('director_team?select=profile_id,full_name,director_id,active,created_at&limit='+CAP),
@@ -123,7 +124,7 @@ say(S.msg,S.ok);if(S.tab==='audit'&&!S.open&&!S.aud)loadAudit()}
 const paintBody=()=>{const b=$('#tmbody');if(b){b.innerHTML=body();}};
 const calls=()=>D.meetings.filter(m=>m.status==='requested');
 function body(){if(S.open&&S.open.k==='pub'&&isF())return pubView(S.open.id);if(S.open&&S.open.k==='client')return clientView(S.open.id);if(S.open&&S.open.k==='user')return userView(S.open.id);
-return({overview,clients:clientsTab,meetings:meetingsTab,team:teamTab,requests:requestsTab,audit:auditTab,playbook:playbookTab,public:publicTab}[S.tab]||overview)()}
+return({overview,clients:clientsTab,meetings:meetingsTab,team:teamTab,requests:requestsTab,announcements:annTab,audit:auditTab,playbook:playbookTab,public:publicTab}[S.tab]||overview)()}
 /* ---------- overview ---------- */
 function stat(n,l){return `<div><b class="tm-n">${esc(n)}</b><span class="note">${esc(l)}</span></div>`}
 function overview(){const cl=D.clients;let h='';
@@ -273,6 +274,28 @@ if(b.t==='h')return `<h3>${esc(x)}</h3>`;if(b.t==='p')return `<p>${esc(x)}</p>`;
 if(b.t==='ul')return `<ul class="tm-list">${(Array.isArray(b.items)?b.items:[]).filter(i=>typeof i==='string').map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`;
 if(b.t==='copy'){const t=sub(x);return `<blockquote class="tm-copy"><p class="tm-pre">${esc(t)}</p><button class="btn" type="button" data-tm="copy" data-v="${esc(t)}">${esc(T.copy)}</button></blockquote>`}return ''};
 return `<p class="note">${esc(T.pbNote)}</p>`+D.pb.map(s=>`<section class="tm-box"><h2>${esc(s.title)}</h2>${(Array.isArray(s.body)?s.body:[]).map(blk).join('')}</section>`).join('')}
+/* ---------- announcements (Founder): a notice shown to every visitor, top right (js/announce.js) ---------- */
+const AN=()=>T.an;
+function annTab(){const a=AN(),rows=D.ex&&D.ex.ann;
+if(!rows)return `<div class="tm-box"><h2>${esc(a.title)}</h2><p role="alert">${esc(a.noTable)}</p></div>`;
+const now=Date.now(),live=x=>new Date(x.starts_at).getTime()<=now&&new Date(x.expires_at).getTime()>now;
+const row=x=>`<article class="tm-box ann-row"><p>${live(x)?pill('active',a.live):pill('lost',a.ended)} <span class="note">${esc(fill(a.until,{date:when(x.expires_at,undefined,true)}))}</span></p><h3>${esc(x.title)}</h3><p class="tm-pre">${esc(x.body)}</p>`
++(S.ask&&S.ask.act==='ann'&&S.ask.id===x.id?`<p class="note">${esc(a.askDel)}</p><p><button class="btn p" type="button" data-tm="confirm" data-id="${esc(x.id)}">${esc(a.yesDel)}</button> <button class="btn" type="button" data-tm="noask">${esc(T.cancel||a.no)}</button></p>`
+:`<p><button class="btn" type="button" data-tm="anndel" data-id="${esc(x.id)}">${esc(a.del)}</button></p>`)+`</article>`;
+const on=rows.filter(live),off=rows.filter(x=>!live(x));
+return `<p class="note">${esc(a.lead)}</p>
+<form class="cform tmform" novalidate data-form="ann"><h2 class="h2s">${esc(a.newH)}</h2>
+<label>${esc(a.fTitle)}<input id="ant" type="text" maxlength="120" autocomplete="off"></label>
+<label>${esc(a.fBody)}<textarea id="anb" rows="4" maxlength="600"></textarea></label>
+<label>${esc(a.fDays)}<input id="and" type="number" min="1" max="365" step="1" value="7" inputmode="numeric" dir="ltr" style="max-inline-size:8rem"></label>
+<p><button class="btn p" type="submit">${esc(a.publish)}</button></p></form>
+<h2 class="h2s">${esc(a.liveH)} (${on.length})</h2>${on.length?on.map(row).join(''):`<p>${esc(a.none)}</p>`}
+${off.length?`<h2 class="h2s">${esc(a.pastH)} (${off.length})</h2>${off.map(row).join('')}`:''}`}
+async function annSave(t,b,d){const a=AN();if(!t||!b)return say(a.errEmpty);if(t.length>120||b.length>600)return say(a.errLong);
+if(!Number.isInteger(d)||d<1||d>365)return say(a.errDays);
+const now=Date.now(),r=await mut('announcements',{title:t,body:b,starts_at:new Date(now).toISOString(),expires_at:new Date(now+d*864e5).toISOString()},'POST');
+if(!r.ok||!r.n)return say(r.ok?T.rowsNone:T.err.generic);say(a.saved,true);await refresh()}
+async function annDel(id){const a=AN(),r=await mut('announcements?id=eq.'+enc(id),null,'DELETE');if(!r.ok)return say(T.err.generic);if(!r.n)return stale();S.ask=null;say(a.gone,true);await refresh()}
 /* ---------- CSV (Founder). Cells that could run as spreadsheet formulas are neutralised. ---------- */
 function exportBar(only){const b=k=>`<button class="btn" type="button" data-tm="csv" data-v="${k}">${esc(T['export'+k[0].toUpperCase()+k.slice(1)])}</button>`;
 return `<div class="tm-box"><p class="note">${esc(T.exportH)}: ${only?b(only):b('clients')+' '+b('briefs')+' '+b('meetings')}</p><p class="note">${esc(T.exportNote)}</p></div>`}
@@ -311,12 +334,15 @@ else if(a==='toggle'&&canManage())await lock(()=>toggleActive(id));
 else if(a==='suspend'||a==='delete'){if(isF()){S.ask={act:a,id};paintBody()}}
 else if(a==='restore'&&isF())await lock(()=>setStatus(id,'active'));
 else if(a==='noask'){S.ask=null;paintBody()}
+else if(a==='anndel'&&isF()){S.ask={act:'ann',id};paintBody()}
+else if(a==='confirm'&&isF()&&S.ask&&S.ask.act==='ann')await lock(()=>annDel(S.ask.id));
 else if(a==='confirm'&&isF()&&S.ask)await lock(()=>S.ask.act==='delete'?delUser(S.ask.id):setStatus(S.ask.id,'suspended'));
 else if(a==='revoke'&&canManage())await lock(async()=>{const r=await admin('revoke_invite',{id});if(!r.ok)return say(why(r));say(T.invRevoked,true);await refresh()});
 else if(a==='reinv'&&canManage())await lock(async()=>{const i=D.inv.find(x=>x.id===id);if(i)await invite(i.email,i.role,i.director_id)})});
 document.addEventListener('submit',async e=>{const f=e.target.closest('form.tmform');if(!f||!$('#tm'))return;e.preventDefault();const b=f.querySelector('button[type=submit]');if(b&&b.disabled)return;
 const k=f.dataset.form,id=f.dataset.id,run=async fn=>{if(b)b.disabled=true;try{await fn()}finally{if(b)b.disabled=false}};
-if(k==='note')await run(async()=>{const t=(($('#nb')||{}).value||'').trim();if(!t)return say(T.err.noteEmpty);if(t.length>4000)return say(T.err.noteLong);
+if(k==='ann'&&isF())await run(async()=>{await annSave((($('#ant')||{}).value||'').trim(),(($('#anb')||{}).value||'').trim(),Number(($('#and')||{}).value)||0)});
+else if(k==='note')await run(async()=>{const t=(($('#nb')||{}).value||'').trim();if(!t)return say(T.err.noteEmpty);if(t.length>4000)return say(T.err.noteLong);
 const br=D.lb.get(id),r=await mut('notes',{client_id:id,...(br?{brief_id:br.id}:{}),body:t},'POST');if(!r.ok||!r.n)return say(r.ok?T.rowsNone:T.err.generic);
 S.det.notes=[r.rows[0],...(S.det.notes||[])];$('#nb').value='';say(T.saved,true);const n=$('#tmnotes');if(n)n.innerHTML=notes(S.det.notes)});
 else if((k==='reply'||k==='vreply')&&isF())await run(async()=>{const el=f.elements,body=el.rb.value.trim(),price=el.rp.value.trim(),vis=k==='vreply';

@@ -138,7 +138,7 @@ with sync_playwright() as p:
     ok(not reads('director') and not nowrites(), 'director page reads only profiles, partners, director_* views, playbook; writes nothing: %s' % [c[1][:50] for c in reads('director')])
 
     # ---------------- FOUNDER (unchanged) ----------------
-    go(F); ok([x.rstrip(' 0123456789') for x in tabs()] == ['Overview', 'Clients', 'Public briefs', 'Calls', 'Team', 'Data requests', 'Activity log', 'Playbook'], 'founder tabs: %s' % tabs())
+    go(F); ok([x.rstrip(' 0123456789') for x in tabs()] == ['Overview', 'Clients', 'Public briefs', 'Calls', 'Team', 'Data requests', 'Announcements', 'Activity log', 'Playbook'], 'founder tabs: %s' % tabs())
     tab('Clients'); t = txt('#tmbody'); ok('SECRETCO-1' in t and pg.locator('#tmlist tbody tr').count() == 5, 'founder sees every client with the company')
     pg.click('tr:has-text("Cleo") [data-tm=openc]'); pg.wait_for_selector('#tmans dl', timeout=3000); w(300); t = txt()
     ok('secret1@x.test' in t and '+49 111 SECRET' in t and 'SECRETCO-1' in t, 'founder sees email, phone, company')
