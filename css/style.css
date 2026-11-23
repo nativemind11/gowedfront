@@ -132,7 +132,7 @@ a.chip:hover,button.chip:hover{border-color:var(--gold)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--gut)}
 .card{position:relative;background:var(--mid);border:1px solid var(--line);overflow:hidden;transition:border-color var(--d1) var(--ease),background var(--d1) var(--ease)}
 .card:hover{border-color:#C9A96E55}
-.cardart{display:block;position:relative;background:var(--gr)}.cardart svg{display:block;inline-size:100%;block-size:auto}
+.cardart{display:block;position:relative;background:var(--gr)}.cardart svg{display:block;inline-size:100%;block-size:auto}.cardart img{display:block;inline-size:100%;block-size:auto}
 .tag{position:absolute;inset-inline-start:.8rem;top:.8rem;font:400 .7rem var(--sans);letter-spacing:.04em;background:#05060Acc;padding:.2rem .6rem;color:var(--steel);border:1px solid var(--line)}
 .cb{padding:1.5rem}.cb h3{margin:.5rem 0 .4rem;font-size:1.55rem}.cb p{color:var(--steel);font-size:.93rem;margin:.3rem 0 1.4rem;line-height:1.6}
 .row{display:flex;justify-content:space-between;align-items:center;gap:var(--s1);flex-wrap:wrap}
@@ -406,3 +406,24 @@ header.cp{background:#05060Aeb;backdrop-filter:blur(14px)}
 .cvm p{margin:.3rem 0}.cvh{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:space-between}.cvb{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ivory)}
 /* Phase 2.3: Founder console (confirm-call form inside a call card) */
 .tm-cf{margin-block-start:.6rem}.tm-cf summary{cursor:pointer;font-weight:600;min-block-size:44px;display:flex;align-items:center}.tm-cf form{margin-block-start:.4rem}
+
+/* Private direct-entry page for partner and director sign-in. */
+body[data-route="staff-login"] #hd,body[data-route="staff-login"] #ft,body[data-route="staff-login"] #fab{display:none!important}
+.staff-login{display:block;max-inline-size:1160px;padding-block:clamp(3rem,8vw,6.5rem) 3rem}
+.staff-login-intro{max-inline-size:760px;margin-block-end:2.4rem}
+.staff-login-intro h1{font-size:clamp(2.6rem,6vw,5rem);margin-block-end:1rem}
+.staff-login-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;align-items:stretch}
+.staff-login-card{position:relative;min-inline-size:0;border:1px solid var(--line2);background:linear-gradient(145deg,#111622,var(--mid) 68%);padding:clamp(1.35rem,3vw,2.2rem);transition:border-color var(--d1) var(--ease),transform var(--d1) var(--ease)}
+.staff-login-card:hover{border-color:#C9A96E88;transform:translateY(-2px)}
+.staff-login-index{display:block;color:var(--gold);font:500 .76rem var(--sans);letter-spacing:.14em;margin-block-end:1.3rem}
+.staff-login-card h2{font-size:clamp(2rem,3.5vw,3.1rem);margin-block-end:.7rem}
+.staff-login-desc{color:var(--steel);min-block-size:3.2em;margin-block-end:1.5rem}
+.staff-login-card .aform{max-inline-size:none;gap:.9rem}
+.staff-login-card .aform .btn{inline-size:100%}
+.staff-login-card .staff-forgot{margin:0;text-align:center;font-size:.9rem}
+.staff-login-card .staff-forgot a{color:var(--steel)}
+.staff-login-card .staff-forgot a:hover{color:var(--ivory)}
+.staff-captcha{display:flex;justify-content:center;margin:1.5rem auto 0;max-inline-size:100%}
+.staff-login-message{min-block-size:1.7em;text-align:center;margin:1rem auto 0;color:#f0a3a3}
+.staff-login-foot{text-align:center;color:var(--steel);font-size:.88rem;margin:1.4rem auto 0}
+@media(max-width:700px){.staff-login{padding-block-start:2.5rem}.staff-login-grid{grid-template-columns:1fr}.staff-login-desc{min-block-size:0}}
