@@ -1,7 +1,7 @@
 /* CULMERA announcements (update 10). A small notice, top right, for every visitor.
    - Reads public.announcements with the public key only: access rules returns ONLY the notices that are live now.
    - The visitor can close a notice with the x button. The choice is kept in this browser (notice id only) until the notice ends.
-   - The Founder publishes and deletes notices in #/team > Announcements (js/team.js).
+   - The Project Manager publishes and deletes notices in #/team > Announcements (js/team.js).
    - Text is always inserted as plain text (textContent), never as HTML. */
 (()=>{
 const KEY='culmera.ann.hidden',EVERY=5*60*1000,MAX=3;

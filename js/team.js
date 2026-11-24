@@ -2,12 +2,12 @@
    Partner  : personal code and link, the NAMES of his clients, how many, the project each one asked for, Playbook. Nothing else.
    Director : READ ONLY. His partners, each partner's clients, the project each client asked for, each client's brief status and
               answers, the calls, Playbook. He changes nothing (no status, calls, partners, invitations).
-   Founder  : everything, plus status changes, call confirmation, partners on/off, invitations, reassigning clients, roles,
+   Project Manager  : everything, plus status changes, call confirmation, partners on/off, invitations, reassigning clients, roles,
               suspend / delete, data requests, activity log and CSV export.
    Every read and write uses the signed-in user's own token, so access rules decides what each role can see and do
    (Partner and Director read through the read-only views of update 07); this page only hides buttons that would be refused. People management that needs the service key (invite, suspend, delete) goes
    through the API (/api/admin), which checks the role again on the server. All strings live in L.tm.
-   Phase 2 (Founder only): the conversation with each client (reply + optional price + "suggest a meeting"), confirming a call with a Teams link
+   Phase 2 (Project Manager only): the conversation with each client (reply + optional price + "suggest a meeting"), confirming a call with a Teams link
    pasted by hand, the public (visitor) briefs with an email-only reply. Every write goes through POST /api/reply with a fresh req_id per press.
    Partner and Director never ask for, and never see, any message, price or link (those tables are not readable by them). */
 (()=>{
@@ -43,7 +43,7 @@ const ac=new AbortController(),t=setTimeout(()=>ac.abort(),20000);
 try{const r=await fetch(U,{method:'POST',signal:ac.signal,headers:{'Content-Type':'application/json',Authorization:'Bearer '+s.access_token},body:JSON.stringify({action,...body})});let d={};try{d=await r.json()}catch(e){}return{ok:r.ok&&d.ok!==false,status:r.status,data:d}}
 catch(e){return{ok:false,data:{code:'offline'}}}finally{clearTimeout(t)}}
 const why=r=>T.err[(r.data&&r.data.code)||'']||T.err.generic;
-/* the reply API: Founder only, every press carries its own req_id (a double click can never send twice) */
+/* the reply API: Project Manager only, every press carries its own req_id (a double click can never send twice) */
 const rpl=(action,body)=>admin(action,body,replyUrl());
 const rwhy=r=>{const c=(r.data&&r.data.code)||'';return T.rp.err[c]||T.err[c]||T.err.generic};
 async function rd(path){const s=await AU().session();if(!s)return{ok:false,auth:true};const r=await AU().rest(path,s);return r.ok&&Array.isArray(r.data)?{ok:true,rows:r.data}:{ok:false,status:r.status}}
@@ -186,7 +186,7 @@ return `<div class="tm-meet"><p>${mpill(m.status)} ${esc(fill(T.min,{n:m.duratio
 <div class="zn"><div><span class="note">${esc(T.yourTime)}</span><b>${esc(when(m.starts_at,tz()))}</b><span class="note" dir="ltr">${esc(tz())}</span></div><div><span class="note">${esc(T.studioTime)}</span><b>${esc(when(m.starts_at,studio()))}</b><span class="note" dir="ltr">${esc(zl(m.starts_at))}</span></div></div>
 <p class="note">${esc(T.clientZone)}: <span dir="ltr">${esc(m.timezone)}</span> — ${esc(when(m.starts_at,m.timezone))}</p>${m.note?`<p class="tm-pre">${esc(m.note)}</p>`:''}${isF()?teamsLine(D.tu.get(m.id)):''}
 ${canManage()&&act?`<p>${m.status==='requested'?``:`<button class="btn p" type="button" data-tm="mset" data-id="${esc(m.id)}" data-v="done">${esc(T.doneCall)}</button> `}<button class="btn" type="button" data-tm="mset" data-id="${esc(m.id)}" data-v="cancelled">${esc(T.cancelCall)}</button>${full&&c?` <button class="btn" type="button" data-tm="openc" data-id="${esc(m.client_id)}">${esc(T.open)}</button>`:''}</p>`:(full&&c?`<p><button class="btn" type="button" data-tm="openc" data-id="${esc(m.client_id)}">${esc(T.open)}</button></p>`:'')}${canManage()&&act?confirmForm(m):''}</div>`}
-/* ---------- Phase 2: conversation with the client, confirming a call, public briefs (Founder only) ---------- */
+/* ---------- Phase 2: conversation with the client, confirming a call, public briefs (Project Manager only) ---------- */
 const teamsLine=u=>typeof u==='string'&&HTTPS.test(u)?`<p><b>${esc(T.rp.teamsLink)}:</b> <a href="${esc(u)}" target="_blank" rel="noopener noreferrer" dir="ltr">${esc(u)}</a></p>`:'';
 const mailPill=st=>st?pill(st==='sent'?'won':st==='failed'?'lost':'requested',T.rp.mail[st]||st):'';
 const canResend=m=>m.email_status==='failed'||m.email_status==='skipped'||(m.email_status==='sending'&&Date.now()-new Date(m.email_at).getTime()>5*60*1000);
@@ -211,7 +211,7 @@ return `<details class="tm-cf"><summary>${esc(cf?T.rp.updateCall:T.rp.confirmCal
 <label>${esc(T.rp.noteL)}<textarea name="nt" rows="3" maxlength="4000"></textarea></label>
 <label>${esc(T.rp.moveL)}<input name="st" type="datetime-local"></label><p class="note">${esc(T.rp.moveHint)}</p>
 <p><button class="btn p" type="submit">${esc(cf?T.rp.updateBtn:T.rp.confirmBtn)}</button></p></form></details>`}
-/* public (visitor) briefs: read with the Founder's own token, answered by email only */
+/* public (visitor) briefs: read with the Project Manager's own token, answered by email only */
 function publicList(){const P=(D.ex&&D.ex.pub)||[];if(!P.length)return `<p>${esc(T.rp.pubNone)}</p>`;
 return `<div class="tw"><table class="tm"><caption class="sr">${esc(T.rp.tabPublic)}</caption><thead><tr><th scope="col">${esc(T.rp.colRef)}</th><th scope="col">${esc(T.colName)}</th><th scope="col">${esc(T.rp.colCompany)}</th><th scope="col">${esc(T.rp.colReplies)}</th><th scope="col">${esc(T.colWhen)}</th><th scope="col"><span class="sr">${esc(T.colAction)}</span></th></tr></thead><tbody>${P.slice(0,S.lim).map(b=>`<tr><th scope="row" dir="ltr">${esc(b.ref)}</th><td>${esc(b.name)}</td><td>${esc(b.company)}</td><td>${(D.vm.get(b.ref)||[]).length}</td><td>${esc(when(b.created_at,undefined,true))}</td><td><button class="btn" type="button" data-tm="openp" data-id="${esc(b.ref)}">${esc(T.open)}</button></td></tr>`).join('')}</tbody></table></div>${P.length>S.lim?`<p><button class="btn" type="button" data-tm="more">${esc(T.more)} (${P.length-S.lim})</button></p>`:''}`}
 function publicTab(){if(!isF())return '';if(!D.ex||!D.ex.pub)return `<p role="alert">${esc(T.rp.pubErr)}</p>`;return `<p class="note">${esc(T.rp.pubLead)}</p><div id="tmlist">${publicList()}</div>`}
@@ -261,10 +261,10 @@ let h=`<p><button class="btn" type="button" data-tm="back">${esc(T.back)}</butto
 <div><h2>${esc(x.active?T.deactivate:T.activate)}</h2><p class="note">${esc(T.deactHint)}</p><p><button class="btn ${x.active?'':'p'}" type="button" data-tm="toggle" data-id="${esc(id)}">${esc(x.active?T.deactivate:T.activate)}</button></p></div>`;
 if(isF()){h+=`<div><h2>${esc(T.roleH)}</h2><form class="cform tmform" novalidate data-form="role" data-id="${esc(id)}"><label>${esc(T.colRole)}<select id="rl"><option value="partner"${p.role==='partner'?' selected':''}>${esc(T.rolePartner)}</option><option value="director"${p.role==='director'?' selected':''}>${esc(T.roleDirector)}</option></select></label><p class="note">${esc(T.roleHint)}</p><p><button class="btn" type="submit">${esc(T.setRole)}</button></p></form>`+(p.role==='partner'?`<form class="cform tmform" novalidate data-form="group" data-id="${esc(id)}"><label>${esc(T.groupH)}<select id="gr"><option value="">${esc(T.invNoGroup)}</option>${dirs.map(d=>`<option value="${esc(d.id)}"${x.director_id===d.id?' selected':''}>${esc(nm(d))}</option>`).join('')}</select></label><p><button class="btn" type="submit">${esc(T.setGroup)}</button></p></form>`:'')+`</div><div><h2>${esc(T.accountH)}</h2>${acctActions(id,p).replace(/<h2[^>]*>.*?<\/h2>/,'')}</div>`}
 return h+`</div>`}
-/* ---------- data requests (Founder) ---------- */
+/* ---------- data requests (Project Manager) ---------- */
 function requestsTab(){const r=D.req;return `<p class="note">${esc(T.reqNote)}</p>`+(r.length?`<div class="tw"><table class="tm"><caption class="sr">${esc(T.reqH)}</caption><thead><tr><th scope="col">${esc(T.colClient)}</th><th scope="col">${esc(T.colKind)}</th><th scope="col">${esc(T.colStatus)}</th><th scope="col">${esc(T.colWhen)}</th><th scope="col"><span class="sr">${esc(T.colAction)}</span></th></tr></thead><tbody>${r.map(q=>{const c=q.client_id&&D.cm.get(q.client_id),open=q.status==='open'||q.status==='in_progress';
 return `<tr><th scope="row">${q.client_id?esc(nm(D.pm.get(q.client_id))):esc(T.deleted)}</th><td>${esc(q.kind==='export'?T.reqExport:T.reqDeletion)}</td><td>${pill(q.status==='done'?'won':q.status==='open'?'requested':'lost',T.reqSet[q.status]||q.status)}</td><td>${esc(when(q.created_at,undefined,true))}</td><td>${c?`<button class="btn" type="button" data-tm="openc" data-id="${esc(q.client_id)}">${esc(T.open)}</button> `:''}${open?`${q.status==='open'?`<button class="btn" type="button" data-tm="rset" data-id="${esc(q.id)}" data-v="in_progress">${esc(T.markProgress)}</button> `:''}<button class="btn p" type="button" data-tm="rset" data-id="${esc(q.id)}" data-v="done">${esc(T.markDone)}</button> <button class="btn" type="button" data-tm="rset" data-id="${esc(q.id)}" data-v="rejected">${esc(T.markRejected)}</button>`:''}</td></tr>`}).join('')}</tbody></table></div>`:`<p>${esc(T.reqNone)}</p>`)}
-/* ---------- activity log (Founder) ---------- */
+/* ---------- activity log (Project Manager) ---------- */
 async function loadAudit(){const r=await rd('audit_log?select=id,at,actor,action,table_name,row_id,changed&order=at.desc&limit='+S.audLim);if(S.tab!=='audit'||S.open)return;S.aud=r.ok?r.rows:[];if(!r.ok)say(T.err.generic);paintBody()}
 function auditTab(){if(!S.aud)return `<p>${esc(T.loading)}</p>`;const tbls=[...new Set(S.aud.map(a=>a.table_name))].sort(),rows=S.aud.filter(a=>!S.f.tb||a.table_name===S.f.tb);
 return `<p class="note">${esc(T.audNote)}</p><div class="tmf"><label>${esc(T.colTable)}<select data-f="tb"><option value="">${esc(T.audTable)}</option>${tbls.map(t=>`<option value="${esc(t)}"${S.f.tb===t?' selected':''}>${esc(t)}</option>`).join('')}</select></label></div>`+(rows.length?`<div class="tw"><table class="tm"><caption class="sr">${esc(T.audH)}</caption><thead><tr><th scope="col">${esc(T.colWhen)}</th><th scope="col">${esc(T.colWho)}</th><th scope="col">${esc(T.colAction)}</th><th scope="col">${esc(T.colTable)}</th><th scope="col">${esc(T.colChanged)}</th></tr></thead><tbody>${rows.map(a=>`<tr><td>${esc(when(a.at,undefined,false))}</td><td>${a.actor?esc(nm(D.pm.get(a.actor)||(a.actor===S.me.id?S.me:null))):esc(T.system)}</td><td>${esc(a.action)}</td><td>${esc(a.table_name)}<br><span class="note" dir="ltr">${esc(String(a.row_id||'').slice(0,8))}</span></td><td dir="ltr">${esc((a.changed||[]).join(', '))}</td></tr>`).join('')}</tbody></table></div>`:`<p>${esc(T.none)}</p>`)+(S.aud.length>=S.audLim&&S.audLim<CAP?`<p><button class="btn" type="button" data-tm="moreaud">${esc(T.more)}</button></p>`:'')}
@@ -275,7 +275,7 @@ if(b.t==='h')return `<h3>${esc(x)}</h3>`;if(b.t==='p')return `<p>${esc(x)}</p>`;
 if(b.t==='ul')return `<ul class="tm-list">${(Array.isArray(b.items)?b.items:[]).filter(i=>typeof i==='string').map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`;
 if(b.t==='copy'){const t=sub(x);return `<blockquote class="tm-copy"><p class="tm-pre">${esc(t)}</p><button class="btn" type="button" data-tm="copy" data-v="${esc(t)}">${esc(T.copy)}</button></blockquote>`}return ''};
 return `<p class="note">${esc(T.pbNote)}</p>`+D.pb.map(s=>`<section class="tm-box"><h2>${esc(s.title)}</h2>${(Array.isArray(s.body)?s.body:[]).map(blk).join('')}</section>`).join('')}
-/* ---------- announcements (Founder): a notice shown to every visitor, top right (js/announce.js) ---------- */
+/* ---------- announcements (Project Manager): a notice shown to every visitor, top right (js/announce.js) ---------- */
 const AN=()=>T.an;
 function annTab(){const a=AN(),rows=D.ex&&D.ex.ann;
 if(!rows)return `<div class="tm-box"><h2>${esc(a.title)}</h2><p role="alert">${esc(a.noTable)}</p></div>`;
@@ -297,7 +297,7 @@ if(!Number.isInteger(d)||d<1||d>365)return say(a.errDays);
 const now=Date.now(),r=await mut('announcements',{title:t,body:b,starts_at:new Date(now).toISOString(),expires_at:new Date(now+d*864e5).toISOString()},'POST');
 if(!r.ok||!r.n)return say(r.ok?T.rowsNone:T.err.generic);say(a.saved,true);await refresh()}
 async function annDel(id){const a=AN(),r=await mut('announcements?id=eq.'+enc(id),null,'DELETE');if(!r.ok)return say(T.err.generic);if(!r.n)return stale();S.ask=null;say(a.gone,true);await refresh()}
-/* ---------- CSV (Founder). Cells that could run as spreadsheet formulas are neutralised. ---------- */
+/* ---------- CSV (Project Manager). Cells that could run as spreadsheet formulas are neutralised. ---------- */
 function exportBar(only){const b=k=>`<button class="btn" type="button" data-tm="csv" data-v="${k}">${esc(T['export'+k[0].toUpperCase()+k.slice(1)])}</button>`;
 return `<div class="tm-box"><p class="note">${esc(T.exportH)}: ${only?b(only):b('clients')+' '+b('briefs')+' '+b('meetings')}</p><p class="note">${esc(T.exportNote)}</p></div>`}
 const cell=v=>{let s=v==null?'':Array.isArray(v)?v.join('; '):String(v);if(/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'};

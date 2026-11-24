@@ -122,9 +122,9 @@ document.addEventListener('input',e=>{const t=e.target;if(t.id==='mtnote'){S.sel
 const meeting=()=>{S=fresh();setTimeout(load,0);return `<section class="wrap pad tight hdrline" style="max-inline-size:980px"><h1 class="h1s">${esc(M.title)}</h1><div id="mt" aria-live="polite"><p>${esc(M.loading)}</p></div></section>`};
 
 /* ---------- the conversation on the brief (Phase 2.2) ----------
-   The Founder's replies (and the price, if he wrote one) arrive here and by email. The client answers from this page: a message and,
-   if he wants, a time for a call. He never confirms a call: the Founder does, and pastes the Teams link by hand.
-   The client's message goes straight to public.brief_messages (access rules: own open brief, only after the Founder wrote first,
+   The Project Manager's replies (and the price, if he wrote one) arrive here and by email. The client answers from this page: a message and,
+   if he wants, a time for a call. He never confirms a call: the Project Manager does, and pastes the Teams link by hand.
+   The client's message goes straight to public.brief_messages (access rules: own open brief, only after the Project Manager wrote first,
    10 per hour). Every text from a person is escaped with esc() before it is shown, and a link is used only if it is a safe https address. */
 const safeUrl=u=>{if(typeof u!=='string'||u.length>500||!/^https:\/\/[^\s]+$/.test(u))return '';try{const x=new URL(u);return x.protocol==='https:'&&!x.username&&!x.password?u:''}catch(e){return ''}};
 const teamsLink=m=>{if(!m||m.status!=='confirmed')return '';const u=safeUrl(m.teams_url);return u?`<p><a class="btn p" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(CV.teamsBtn)}</a></p>`:`<p class="note">${esc(CV.teamsWait)}</p>`};
