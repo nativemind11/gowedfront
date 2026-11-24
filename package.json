@@ -1,0 +1,20 @@
+{
+  "name": "culmera-back",
+  "version": "2.0.0",
+  "private": true,
+  "description": "CULMERA brief and contact endpoint",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "check": "node --check api/brief.js && node --check api/admin.js && node --check api/notify.js && node --check api/reply.js && node --check lib/shared.js && node --check lib/notify-core.js && node --check lib/mail-templates.js && node --check scripts/sync-from-front.js",
+    "test": "node --test",
+    "sync": "node scripts/sync-from-front.js",
+    "sync:check": "node scripts/sync-from-front.js --check",
+    "test:migrations": "node scripts/migration-check.mjs",
+    "test:rls": "node --test scripts/rls-tests.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.2.0"
+  }
+}
