@@ -1,13 +1,14 @@
 /* CULMERA client portal (Phase 3, steps 3.3 and 3.4). No library.
    3.3  #/meeting: calendar + time picker, any day and time, client and studio time zones side by side,
-        request / change / cancel through the user's own token (Row Level Security decides what is allowed).
+        request / change / cancel through the user's own token (access rules decides what is allowed).
    3.4  account extras: status timeline, "how pricing works", and data export / deletion requests.
    A client never confirms a meeting: staff do. Nothing is deleted automatically. All strings live in L.mt and L.dr. */
 (()=>{
 const M=L.mt,R=L.dr,A=L.auth,CV=L.cv,$=s=>document.querySelector(s),G=()=>window.GW,C=()=>G().C,esc=s=>G().esc(s),fill=(s,o)=>G().fill(s,o),AU=()=>window.CulmeraAuth,enc=encodeURIComponent;
 /* ---------- time helpers ---------- */
 const tz=()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone||'UTC'}catch(e){return 'UTC'}};
-const studio=()=>C().ownerTimezone||'Africa/Cairo';
+const studio=()=>C().ownerTimezone||'UTC';
+const zl=d=>{try{const p=new Intl.DateTimeFormat('en',{timeZone:studio(),timeZoneName:'shortOffset'}).formatToParts(d?new Date(d):new Date()).find(x=>x.type==='timeZoneName');return p?p.value:'UTC'}catch(e){return 'UTC'}};
 const fmt=(d,z)=>{try{return new Intl.DateTimeFormat(L.locale,{dateStyle:'full',timeStyle:'short',timeZone:z}).format(d)}catch(e){return ''}};
 const day=(d)=>{try{return new Intl.DateTimeFormat(L.locale,{dateStyle:'full'}).format(d)}catch(e){return ''}};
 const p2=n=>String(n).padStart(2,'0'),key=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
@@ -21,7 +22,7 @@ const rtl=()=>document.documentElement.dir==='rtl';
 /* ---------- state ---------- */
 const fresh=()=>({ctx:null,view:null,fd:'',sel:{d:'',h:'',m:'',dur:45,note:''},edit:false,ask:false,busy:false,msg:'',ok:false,focus:''});
 let S=fresh();
-const zones=d=>`<div class="zn"><div><span class="note">${esc(M.yourTime)}</span><b>${esc(fmt(d,tz()))}</b><span class="note">${esc(M.yourZone)}: <span dir="ltr">${esc(tz())}</span></span></div><div><span class="note">${esc(M.studioTime)}</span><b>${esc(fmt(d,studio()))}</b><span class="note">${esc(M.studioZone)}: <span dir="ltr">${esc(studio())}</span></span></div></div>`;
+const zones=d=>`<div class="zn"><div><span class="note">${esc(M.yourTime)}</span><b>${esc(fmt(d,tz()))}</b><span class="note">${esc(M.yourZone)}: <span dir="ltr">${esc(tz())}</span></span></div><div><span class="note">${esc(M.studioTime)}</span><b>${esc(fmt(d,studio()))}</b><span class="note">${esc(M.studioZone)}: <span dir="ltr">${esc(zl(d))}</span></span></div></div>`;
 const pill=s=>`<span class="pill ${esc(s)}">${esc(M.mst[s]||s)}</span>`;
 /* ---------- loading ---------- */
 async function load(keep){const box=$('#mt');if(!box)return;if(!keep){S.msg='';S.ok=false}
@@ -54,7 +55,7 @@ const ar=(a,b)=>rtl()?b:a;
 return `<div class="cal" role="group" aria-label="${esc(M.calLabel)}"><div class="cal-h"><button type="button" class="btn" data-mt="prev" aria-label="${esc(M.prev)}" ${canPrev?'':'disabled'}>${ar('‹','›')}</button><b id="calh" aria-live="polite">${esc(new Intl.DateTimeFormat(L.locale,{month:'long',year:'numeric'}).format(first))}</b><button type="button" class="btn" data-mt="next" aria-label="${esc(M.next)}" ${canNext?'':'disabled'}>${ar('›','‹')}</button></div><table role="grid" aria-labelledby="calh"><thead><tr>${wd}</tr></thead><tbody>${body}</tbody></table></div>`}
 function picker(c){const x=S.sel,hr=[...Array(24).keys()],mn=[...new Set([...MINS,...(x.m!==''&&!MINS.includes(+x.m)?[+x.m]:[])])].sort((a,b)=>a-b),du=[...new Set([...DURS(),...(DURS().includes(+x.dur)?[]:[+x.dur])])].sort((a,b)=>a-b);
 const hOpt=h=>`<option value="${h}" ${String(x.h)===String(h)?'selected':''} ${x.d&&!hourOK(x.d,h)?'disabled':''}>${p2(h)}</option>`;
-return `<p class="lead-p">${esc(M.lead)}</p><p class="note">${esc(M.yourZone)}: <b dir="ltr">${esc(tz())}</b> · ${esc(M.studioZone)}: <b dir="ltr">${esc(studio())}</b></p>
+return `<p class="lead-p">${esc(M.lead)}</p><p class="note">${esc(M.yourZone)}: <b dir="ltr">${esc(tz())}</b> · ${esc(M.studioZone)}: <b dir="ltr">${esc(zl())}</b></p>
 ${S.edit&&c.active?`<p class="note">${esc(M.confirmedNote)}</p>`:''}<div class="pk"><div><h2 class="h2s" id="mth" tabindex="-1">${esc(M.pickH)}</h2>${cal()}</div>
 <div><h2 class="h2s">${esc(M.timeH)}</h2><div class="two"><label><span>${esc(M.hour)}</span><select id="mth2" dir="ltr"><option value="">—</option>${hr.map(hOpt).join('')}</select></label><label><span>${esc(M.minute)}</span><select id="mtm" dir="ltr"><option value="">—</option>${mn.map(m=>`<option value="${m}" ${String(x.m)===String(m)?'selected':''}>${p2(m)}</option>`).join('')}</select></label></div>
 <h3 class="wzq" style="font-size:1.2rem;margin-block-start:1.4rem">${esc(M.lenH)}</h3><div class="chips" role="group" aria-label="${esc(M.lenH)}">${du.map(v=>`<button type="button" class="chip ${+x.dur===v?'on':''}" aria-pressed="${+x.dur===v}" data-dur="${v}">${esc(fill(M.min,{n:v}))}</button>`).join('')}</div>
@@ -123,7 +124,7 @@ const meeting=()=>{S=fresh();setTimeout(load,0);return `<section class="wrap pad
 /* ---------- the conversation on the brief (Phase 2.2) ----------
    The Founder's replies (and the price, if he wrote one) arrive here and by email. The client answers from this page: a message and,
    if he wants, a time for a call. He never confirms a call: the Founder does, and pastes the Teams link by hand.
-   The client's message goes straight to public.brief_messages (Row Level Security: own open brief, only after the Founder wrote first,
+   The client's message goes straight to public.brief_messages (access rules: own open brief, only after the Founder wrote first,
    10 per hour). Every text from a person is escaped with esc() before it is shown, and a link is used only if it is a safe https address. */
 const safeUrl=u=>{if(typeof u!=='string'||u.length>500||!/^https:\/\/[^\s]+$/.test(u))return '';try{const x=new URL(u);return x.protocol==='https:'&&!x.username&&!x.password?u:''}catch(e){return ''}};
 const teamsLink=m=>{if(!m||m.status!=='confirmed')return '';const u=safeUrl(m.teams_url);return u?`<p><a class="btn p" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(CV.teamsBtn)}</a></p>`:`<p class="note">${esc(CV.teamsWait)}</p>`};
@@ -132,7 +133,7 @@ const when=(s,z)=>{try{return new Intl.DateTimeFormat(L.locale,{dateStyle:'mediu
 let CS={ctx:null,msgs:[],mts:[],busy:false,msg:'',ok:false,body:'',d:'',t:'',dur:45,rid:uuid()};
 const cvOpen=()=>!!CS.ctx&&!CS.ctx.err&&OPENB.includes(CS.ctx.brief.status)&&CS.msgs.some(x=>x.sender==='founder');
 function cvMsg(m){const mine=m.sender==='client',mt=m.meeting_id?CS.mts.find(x=>x.id===m.meeting_id):null;let h=`<article class="cvm ${mine?'me':''}"><p class="cvh"><b>${esc(mine?CV.you:CV.team)}</b> <span class="note">${esc(when(m.created_at,tz()))}</span></p>`;
-if(m.kind==='meeting_confirmed'){h+=`<p><b>${esc(CV.confirmedH)}</b></p>`;if(mt){const d=new Date(mt.starts_at);h+=`<p class="note">${esc(fill(CV.callAt,{t:fmt(d,tz())}))} (<span dir="ltr">${esc(tz())}</span>)</p><p class="note">${esc(fill(CV.studioAt,{t:fmt(d,studio())}))} (<span dir="ltr">${esc(studio())}</span>)</p>${teamsLink(mt)}`}}
+if(m.kind==='meeting_confirmed'){h+=`<p><b>${esc(CV.confirmedH)}</b></p>`;if(mt){const d=new Date(mt.starts_at);h+=`<p class="note">${esc(fill(CV.callAt,{t:fmt(d,tz())}))} (<span dir="ltr">${esc(tz())}</span>)</p><p class="note">${esc(fill(CV.studioAt,{t:fmt(d,studio())}))} (<span dir="ltr">${esc(zl(d))}</span>)</p>${teamsLink(mt)}`}}
 if(m.body)h+=`<p class="cvb" dir="auto">${esc(m.body)}</p>`;
 if(!mine&&m.price_text)h+=`<p><span class="note">${esc(CV.price)}</span> <b dir="auto">${esc(m.price_text)}</b></p>`;
 if(!mine&&m.proposes_meeting)h+=`<p class="note">${esc(CV.propose)}</p>`;
@@ -183,7 +184,7 @@ document.addEventListener('change',e=>{const t=e.target;if($('#cv')&&t.id==='cvl
 const convo=()=>{CS={...CS,ctx:null,msgs:[],mts:[],busy:false,msg:'',ok:false,body:'',d:'',t:'',rid:uuid()};return cvLoad()};
 /* ---------- account page pieces ---------- */
 function card(mt,br){let h=`<h2>${esc(A.meetH)}</h2>`;
-if(mt){const d=new Date(mt.starts_at);h+=`<p><b>${esc(fmt(d,tz()))}</b></p><p class="note">${esc(M.yourZone)}: <span dir="ltr">${esc(tz())}</span></p><p class="note">${esc(M.studioTime)}: ${esc(fmt(d,studio()))} (<span dir="ltr">${esc(studio())}</span>)</p><p>${pill(mt.status)} <span class="note">${esc(fill(M.min,{n:mt.duration_min}))}</span></p>${teamsLink(mt)}${mt.status==='done'?'':`<p><a class="btn" href="#/meeting">${esc(M.acctManage)}</a></p>`}`}
+if(mt){const d=new Date(mt.starts_at);h+=`<p><b>${esc(fmt(d,tz()))}</b></p><p class="note">${esc(M.yourZone)}: <span dir="ltr">${esc(tz())}</span></p><p class="note">${esc(M.studioTime)}: ${esc(fmt(d,studio()))} (<span dir="ltr">${esc(zl(d))}</span>)</p><p>${pill(mt.status)} <span class="note">${esc(fill(M.min,{n:mt.duration_min}))}</span></p>${teamsLink(mt)}${mt.status==='done'?'':`<p><a class="btn" href="#/meeting">${esc(M.acctManage)}</a></p>`}`}
 else if(br&&br.status!=='draft'&&!CLOSED.includes(br.status))h+=`<p>${esc(A.meetNone)}</p><p><a class="btn p" href="#/meeting">${esc(M.acctBook)}</a></p>`;
 else h+=`<p>${esc(A.meetNone)}</p><p class="note">${esc(br?M.acctNeed:M.acctNeedStart)}</p>`;
 return `<div id="mcard">${h}</div>`}

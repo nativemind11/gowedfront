@@ -1,8 +1,8 @@
 /* 1) LANGUAGE. Runs before every other script. It decides the language (saved choice, then the browser language, then English),
    sets <html lang> and dir, and, for every language except English, loads that language's single file js/i18n/<code>.js
    (a blocking request on purpose, so the page is never painted in English first). The pack is applied in js/i18n/en.js.
-   TO ADD A LANGUAGE: put js/i18n/<code>.js next to the others and add ONE line to LANGS below (and its code to the SQL check).
-   Fields: n = native name, d = direction, l = locale for Intl (dates, numbers), h = value of <html lang>, og = Open Graph locale, ts = Cloudflare Turnstile language. */
+   TO ADD A LANGUAGE: put js/i18n/<code>.js next to the others and add ONE line to LANGS below (and its code to the language list in the database).
+   Fields: n = native name, d = direction, l = locale for Intl (dates, numbers), h = value of <html lang>, og = Open Graph locale, ts = spam check language. */
 (function(){
 var LANGS={
 en:{n:'English',d:'ltr',l:'en-GB',h:'en',og:'en_US',ts:'en'},

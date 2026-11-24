@@ -15,7 +15,7 @@ function load() {
   return { D: ctx.CATALOG, CFG: c.CFG, L: l.L };
 }
 function routes({ D, CFG, L }) {
-  const r = ['home', 'catalog', ...L.groups.map(g => 'catalog/' + g.slug), ...D.types.map(t => 'type/' + t.slug), 'how-we-work', 'about', 'contact', 'brief', 'signup', 'signin', 'privacy', 'terms'];
+  const r = ['home', 'catalog', ...L.groups.map(g => 'catalog/' + g.slug), ...D.types.map(t => 'type/' + t.slug), 'how-we-work', 'about', 'contact', 'brief', 'signup', 'signin'];
   const cases = ((CFG.proof || {}).caseStudies || []).filter(x => x && x.verified === true && x.permission === 'approved' && x.id && /^[a-z0-9-]+$/.test(x.id));
   if (cases.length) r.push('work', ...cases.map(x => 'work/' + x.id));
   return r;

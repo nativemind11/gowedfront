@@ -87,8 +87,6 @@ window.I18N_PACK={
    "pause": "Mettre la rotation en pause",
    "resume": "Reprendre la rotation",
    "verifiedCerts": "Certifications vérifiées",
-   "privacy": "Confidentialité",
-   "terms": "Conditions",
    "select": "Sélectionner…",
    "typeSearch": "Saisir pour rechercher",
    "accounts": "Comptes",
@@ -103,7 +101,7 @@ window.I18N_PACK={
     "email": "Veuillez saisir une adresse e-mail professionnelle valide.",
     "company": "Veuillez saisir le nom de votre entreprise.",
     "country": "Veuillez saisir votre pays.",
-    "consent": "Veuillez accepter la politique de confidentialité pour continuer.",
+    "consent": "Veuillez cocher la case pour continuer.",
     "step": "Veuillez compléter les informations signalées ci-dessous pour continuer."
    },
    "sum": {
@@ -489,12 +487,12 @@ window.I18N_PACK={
    ],
    [
     "Ce que je partage est-il confidentiel ?",
-    "Nous n’utilisons ce que vous partagez que pour préparer et suivre l’entretien. Consultez la page de confidentialité pour savoir ce que nous collectons et qui le traite."
+    "Nous n’utilisons ce que vous partagez que pour préparer et suivre l’entretien."
    ]
   ],
   "about": {
    "h": "À propos de CULMERA",
-   "p": "CULMERA Solutions est une grande entreprise qui conçoit et développe des sites web, des produits numériques et des systèmes métier adaptés à la façon dont les organisations travaillent réellement. Nous réalisons aussi des boutiques en ligne, des systèmes de réservation, des assistants IA et de l’automatisation, des tableaux de bord et des expériences 3D, le tout au meilleur prix, pour des clients de différents pays.",
+   "p": "CULMERA Solutions est une entreprise néerlandaise internationale, dont le siège est à Dubaï, aux Émirats arabes unis, avec des filiales dans 15 pays et plus de 5 000 collaborateurs dans le monde. Nous concevons et développons des sites web, des produits numériques et des systèmes métier adaptés à la façon dont les organisations travaillent réellement. Nous proposons nos services en ligne, avec plus de 1 500 projets menés pour des clients dans plus de 45 pays. Nous réalisons aussi des boutiques en ligne, des systèmes de réservation, des assistants IA et de l’automatisation, des tableaux de bord et des expériences 3D, le tout au meilleur prix.",
    "big": "Travailler avec de grandes organisations",
    "bigP": "Nous commençons par une conversation, nous écoutons comment votre organisation fonctionne et nous façonnons le travail autour. Le périmètre, les responsabilités et les prochaines étapes sont consignés par écrit avant le début de la réalisation."
   },
@@ -519,15 +517,12 @@ window.I18N_PACK={
   "footer": {
    "illustr": "Les illustrations de ce site sont des concepts, pas des réalisations passées.",
    "explore": "Explorer",
-   "legal": "Mentions légales",
    "social": "Suivre"
   },
   "auth": {
    "signIn": "Se connecter",
    "account": "Votre compte",
    "signOut": "Se déconnecter",
-   "privacy": "Avis de confidentialité",
-   "terms": "Conditions",
    "inLead": "Accédez à votre brief de projet, à votre rendez-vous et à leur état.",
    "email": "E-mail",
    "password": "Mot de passe",
@@ -543,7 +538,7 @@ window.I18N_PACK={
    "code": "Code partenaire (facultatif)",
    "codeHelp": "Saisissez le code uniquement si un partenaire CULMERA vous a présenté. Le code saisi ici est celui qui compte.",
    "pwHelp": "Au moins 10 caractères, avec des lettres et des chiffres.",
-   "consent": "J’ai lu {privacy} et {terms}.",
+   "consent": "J’accepte que CULMERA conserve les données de mon compte afin de fournir ce service.",
    "create": "Créer le compte",
    "creating": "Création du compte…",
    "checkH": "Vérifiez vos e-mails",
@@ -610,7 +605,7 @@ window.I18N_PACK={
     "pwShort": "Utilisez au moins 10 caractères, avec des lettres et des chiffres.",
     "mismatch": "Les deux mots de passe ne correspondent pas.",
     "codeBad": "Le code partenaire semble incorrect. Utilisez uniquement des lettres, des chiffres et des tirets, ou laissez le champ vide.",
-    "consent": "Veuillez confirmer que vous avez lu l’avis de confidentialité et les conditions.",
+    "consent": "Veuillez cocher la case pour continuer.",
     "tsMissing": "Veuillez effectuer la vérification de sécurité.",
     "invalid": "L’adresse e-mail ou le mot de passe est incorrect.",
     "unconfirmed": "Veuillez d’abord confirmer votre adresse e-mail. Le lien se trouve dans votre boîte de réception.",
@@ -783,8 +778,7 @@ window.I18N_PACK={
    "country": "Pays",
    "role": "Fonction (facultatif)",
    "phone": "Téléphone (facultatif)",
-   "consent": "J’accepte la {privacy}.",
-   "privacy": "politique de confidentialité",
+   "consent": "J’accepte que CULMERA utilise les informations saisies pour répondre à ma demande.",
    "required": "Les champs marqués d’un * sont obligatoires. Tout le reste est facultatif.",
    "phoneBad": "Saisissez un numéro de téléphone valide ou laissez le champ vide.",
    "tsMissing": "Veuillez effectuer la vérification, puis envoyer.",
@@ -1097,62 +1091,6 @@ window.I18N_PACK={
    "dup": "Vous avez déjà une demande ouverte de ce type.",
    "err": "Nous n’avons pas pu enregistrer votre demande. Veuillez réessayer ou écrire à {email}.",
    "loadErr": "Nous n’avons pas pu charger vos demandes pour le moment."
-  },
-  "privacy": {
-   "h": "Confidentialité",
-   "intro": "Cette page explique ce que {legal} ({country}) collecte via ce site, pourquoi, et qui le traite.",
-   "blocks": [
-    [
-     "Ce que nous collectons",
-     "Le brief de projet que vous envoyez (détails du projet, votre nom, e-mail professionnel, entreprise, fonction, pays, téléphone facultatif, préférences de rendez-vous) et le fuseau horaire de votre navigateur. Les messages envoyés via le formulaire de contact (nom, e-mail, message). Nous ne stockons pas votre adresse IP dans notre base de données."
-    ],
-    [
-     "Pourquoi",
-     "Pour comprendre votre projet, vous répondre et organiser un rendez-vous."
-    ],
-    [
-     "Qui le traite",
-     "Votre envoi est stocké dans une base de données hébergée par notre fournisseur de base de données (Supabase). Le site et son point d’accès de formulaire fonctionnent sur Vercel, qui traite des données techniques de requête pour fournir le service. Les e-mails de notification sont envoyés via Resend, et une notification de messagerie facultative peut être envoyée au propriétaire. Lorsque vous créez un compte, envoyez un brief ou réservez un appel, un court avis comportant votre nom, votre entreprise, votre pays et la référence du brief ou l’heure de l’appel est transmis à l’équipe CULMERA et, si un partenaire vous a présenté avec son code, à ce partenaire et à son directeur. Ces avis ne contiennent jamais votre adresse e-mail, votre numéro de téléphone, vos réponses ni vos notes. La protection contre le spam utilise Cloudflare Turnstile, qui reçoit de votre navigateur des données techniques, comme votre adresse IP, pour effectuer sa vérification. Nous ne vendons pas vos données."
-    ],
-    [
-     "Comptes",
-     "Si vous créez un compte, nous stockons vos identifiants de connexion, les informations que vous fournissez à l’inscription, ainsi que les briefs et les demandes de rendez-vous que vous enregistrez, dans notre base de données (Supabase). Les e-mails de connexion sont envoyés via Resend. Un brief enregistré est visible par l’équipe CULMERA et, si un partenaire vous a présenté avec son code, par ce partenaire et son directeur. Vous pouvez nous demander d’exporter ou de supprimer vos données à tout moment depuis la page de votre compte, ou en écrivant à {email}. Nous examinons chaque demande manuellement ; rien n’est supprimé automatiquement."
-    ],
-    [
-     "Votre appareil",
-     "Votre brouillon de brief est conservé dans votre navigateur, sur votre propre appareil, pour que vous puissiez le reprendre. Le bouton Réinitialiser l’efface. Ce site n’utilise ni traceurs publicitaires ni outils d’analyse."
-    ],
-    [
-     "Conservation et vos choix",
-     "Nous conservons un envoi aussi longtemps que nécessaire pour répondre et assurer le suivi de votre demande. Vous pouvez nous demander à tout moment d’accéder à ce que vous avez envoyé, de le corriger ou de le supprimer en écrivant à {email}."
-    ]
-   ]
-  },
-  "terms": {
-   "h": "Conditions",
-   "intro": "En utilisant ce site, vous acceptez ces conditions avec {legal} ({country}).",
-   "blocks": [
-    [
-     "Contenu",
-     "Le site présente les types de réalisations que nous proposons. Les illustrations sont des concepts et ne sont pas présentées comme des réalisations passées."
-    ],
-    [
-     "Votre brief",
-     "Un brief est une demande d’échange. Les préférences que vous saisissez, y compris le calendrier, sont les vôtres et ne constituent un engagement pour aucune des parties."
-    ],
-    [
-     "Utilisation du site",
-     "N’utilisez pas le site de manière abusive et n’essayez pas de le perturber. Le contenu du site appartient à {legal}."
-    ],
-    [
-     "Responsabilité",
-     "Le site est fourni tel quel, dans la mesure permise par la loi."
-    ],
-    [
-     "Contact",
-     "{email}"
-    ]
-   ]
   },
   "opts": {
    "intents": [
@@ -1472,10 +1410,10 @@ window.I18N_PACK={
     "already": "Déjà envoyé (double clic).",
     "resentOk": "E-mail envoyé.",
     "resentFail": "L’e-mail a de nouveau échoué. Réessayez plus tard.",
-    "msgsErr": "Les messages n’ont pas pu être chargés. La migration 008 a-t-elle été exécutée sur Supabase ?",
+    "msgsErr": "Les messages n’ont pas pu être chargés. Veuillez réessayer plus tard.",
     "pubLead": "Briefs envoyés depuis le formulaire public (visiteurs sans compte). Les réponses partent par e-mail uniquement.",
     "pubNone": "Aucun brief public pour l’instant.",
-    "pubErr": "Les briefs publics n’ont pas pu être chargés. La migration 008 a-t-elle été exécutée sur Supabase ?",
+    "pubErr": "Les briefs publics n’ont pas pu être chargés. Veuillez réessayer plus tard.",
     "colRef": "Référence",
     "colCompany": "Entreprise",
     "colReplies": "Réponses",
@@ -1495,7 +1433,7 @@ window.I18N_PACK={
      "auth": "Veuillez vous reconnecter.",
      "forbidden": "Non autorisé.",
      "offline": "Pas de connexion. Réessayez.",
-     "noApi": "L’adresse de l’API n’est pas définie dans js/config.js.",
+     "noApi": "L’adresse du service n’est pas définie.",
      "server": "Une erreur est survenue sur le serveur. Réessayez."
     }
    },
@@ -1509,7 +1447,7 @@ window.I18N_PACK={
    "paused": "Votre accès est suspendu. Veuillez contacter info@culmera-solutions.com.",
    "loadErr": "Nous n’avons pas pu charger votre tableau de bord. Veuillez actualiser la page.",
    "cap": "Affichage des 1000 premiers enregistrements. Affinez la liste avec les filtres.",
-   "an": {"title": "Annonces", "lead": "Publiez un court avis. Chaque visiteur le voit en haut à droite jusqu’à sa fin et peut le fermer avec ×. Vous pouvez le supprimer à tout moment.", "newH": "Nouvelle annonce", "fTitle": "Titre", "fBody": "Message", "fDays": "Durée d’affichage (jours)", "publish": "Publier", "liveH": "En ligne", "pastH": "Terminées", "none": "Aucune annonce.", "live": "En ligne", "ended": "Terminée", "until": "Jusqu’au {date}", "del": "Supprimer", "askDel": "Supprimer cette annonce ? Elle disparaît du site immédiatement.", "yesDel": "Oui, supprimer", "no": "Annuler", "saved": "Publiée. Les visiteurs la voient maintenant.", "gone": "Supprimée.", "errEmpty": "Saisissez un titre et un message.", "errLong": "Le titre peut avoir 120 caractères et le message 600.", "errDays": "Choisissez de 1 à 365 jours.", "noTable": "Les annonces ne sont pas encore prêtes. Exécutez d’abord migration-010-announcements.sql dans Supabase.", "close": "Fermer cette annonce", "region": "Annonces de l’entreprise"},
+   "an": {"title": "Annonces", "lead": "Publiez un court avis. Chaque visiteur le voit en haut à droite jusqu’à sa fin et peut le fermer avec ×. Vous pouvez le supprimer à tout moment.", "newH": "Nouvelle annonce", "fTitle": "Titre", "fBody": "Message", "fDays": "Durée d’affichage (jours)", "publish": "Publier", "liveH": "En ligne", "pastH": "Terminées", "none": "Aucune annonce.", "live": "En ligne", "ended": "Terminée", "until": "Jusqu’au {date}", "del": "Supprimer", "askDel": "Supprimer cette annonce ? Elle disparaît du site immédiatement.", "yesDel": "Oui, supprimer", "no": "Annuler", "saved": "Publiée. Les visiteurs la voient maintenant.", "gone": "Supprimée.", "errEmpty": "Saisissez un titre et un message.", "errLong": "Le titre peut avoir 120 caractères et le message 600.", "errDays": "Choisissez de 1 à 365 jours.", "noTable": "Les annonces ne sont pas encore disponibles.", "close": "Fermer cette annonce", "region": "Annonces de l’entreprise"},
    "tabs": {
     "announcements": "Annonces",
     "overview": "Vue d’ensemble",
@@ -1604,7 +1542,7 @@ window.I18N_PACK={
    "amtToDir": "Ce montant sera transféré à votre directeur, qui le recevra.",
    "amtToYou": "Ce montant vous sera transféré.",
    "amtErr": "Saisissez le montant sous forme de nombre, 0 ou plus (par exemple 450 ou 450.50).",
-   "projNoTable": "Le statut du projet n’est pas encore disponible. Exécutez d’abord la migration 009 dans Supabase.",
+   "projNoTable": "Le statut du projet n’est pas encore disponible.",
    "draftNote": "Le client rédige encore ce brief. Vous pourrez changer le statut une fois qu’il sera envoyé.",
    "answersH": "Réponses",
    "answersLoad": "Chargement des réponses…",
@@ -1730,7 +1668,7 @@ window.I18N_PACK={
    "audTable": "Tous les enregistrements",
    "pbH": "Guide des partenaires",
    "pbNote": "Réservé aux partenaires de CULMERA. Merci de ne pas le partager.",
-   "pbNone": "Le guide n’est pas encore disponible. Exécutez la migration 004 dans Supabase.",
+   "pbNone": "Le guide n’est pas encore disponible.",
    "saved": "Enregistré.",
    "rowsNone": "Rien n’a été modifié. Vous n’avez peut-être pas l’autorisation, ou quelqu’un d’autre l’a modifié avant vous. La liste a été actualisée.",
    "err": {

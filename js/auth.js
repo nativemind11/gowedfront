@@ -1,7 +1,7 @@
-/* CULMERA auth (Phase 3, step 1). No library: talks to Supabase Auth over HTTPS with the PUBLISHABLE key only.
+/* CULMERA auth (Phase 3, step 1). No library: talks to the sign-in service over HTTPS with the PUBLISHABLE key only.
    Flow: email + password, email confirmation, password reset, all with PKCE (hash routing would break the older
    hash-token links). Role is never sent from here: the database decides it (invitation, otherwise "client").
-   Redirect target is always CFG.siteUrl, which must be listed under Supabase > Auth > URL Configuration. */
+   Redirect target is always CFG.siteUrl, which must be listed under the authentication settings. */
 (()=>{
 const A=L.auth,$=s=>document.querySelector(s),G=()=>window.GW,C=()=>G().C,esc=s=>G().esc(s),fill=(s,o)=>G().fill(s,o);
 const SK='culmera.session',PK='culmera.pkce',RK='culmera.ref',IK='culmera.invite';
@@ -27,7 +27,7 @@ return({invalid_credentials:A.err.invalid,email_not_confirmed:A.err.unconfirmed,
 /* ---------- session (stored in this browser only; refreshed automatically) ---------- */
 const read=()=>{try{return JSON.parse(st.get(SK)||'null')}catch(e){return null}};
 const setS=d=>st.set(SK,JSON.stringify({access_token:d.access_token,refresh_token:d.refresh_token,expires_at:d.expires_at||Math.floor(Date.now()/1000)+(d.expires_in||3600),user:{id:d.user&&d.user.id,email:d.user&&d.user.email}}));
-/* invitation link (Phase 4): admin invitations cannot use PKCE, so Supabase returns the tokens in the URL fragment. Read them once,
+/* invitation link (Phase 4): admin invitations cannot use PKCE, so the database service returns the tokens in the URL fragment. Read them once,
    store the session, remove them from the address bar and send the invited person to choose a password. */
 if(/^#access_token=/.test(location.hash)){const h=new URLSearchParams(location.hash.slice(1));let to='#/signin';
 try{const at=h.get('access_token'),rt=h.get('refresh_token');if(h.get('type')==='invite'&&at&&rt){const j=JSON.parse(atob(at.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
@@ -65,7 +65,7 @@ const added=nRead().filter(y=>!q.some(x=>x.e===y.e&&x.u===y.u&&(x.id||'')===(y.i
 function notify(e,id){const s=read();if(!s||!s.user||!s.user.id||!nUrl())return Promise.resolve();
 if(e==='registered'&&st.get(regKey(s.user.id))==='1')return Promise.resolve();
 const q=nRead();if(!q.some(x=>x.e===e&&x.u===s.user.id&&(x.id||'')===(id||'')))q.push({e,id:id||'',u:s.user.id,t:Date.now(),n:0});nSave(q);return nFlush().catch(()=>{})}
-/* ---------- Cloudflare Turnstile (own widget; the API forwards the token to Supabase CAPTCHA) ---------- */
+/* ---------- spam check (own widget; the API forwards the token to the sign-in service) ---------- */
 let tsId=null;
 function ts(sel){if(!C().turnstileSiteKey||!$(sel))return;const go=()=>{const e=$(sel);if(!e||e.dataset.r||!window.turnstile)return;e.dataset.r=1;try{tsId=turnstile.render(sel,{sitekey:C().turnstileSiteKey,theme:'dark',language:((window.LANGS||{})[L.lang]||{}).ts||'en'})}catch(x){}};
 if(window.turnstile)return go();if(!window.__tsl){window.__tsl=1;const s=document.createElement('script');s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';s.async=true;s.onload=go;document.head.appendChild(s)}else{const t=setInterval(()=>{if(window.turnstile){clearInterval(t);go()}},200);setTimeout(()=>clearInterval(t),15000)}}
@@ -79,7 +79,7 @@ const lnk=(h,t)=>`<a href="${h}">${esc(t)}</a>`;
 const fld=(id,l,o={})=>`<label>${esc(l)}<input id="${id}" type="${o.t||'text'}" ${o.ltr?'dir="ltr"':''} autocomplete="${o.ac||'off'}" maxlength="${o.max||200}" ${o.v?`value="${esc(o.v)}"`:''}></label>${o.h?`<span class="help">${esc(o.h)}</span>`:''}`;
 const g=i=>(($('#'+i)||{}).value||'').trim();
 const signup=()=>{setTimeout(()=>ts('#ats'),0);let rv='';try{rv=sessionStorage.getItem(RK)||''}catch(e){}
-return page(A.upH,`<p class="lead-p">${esc(A.upLead)}</p><form class="cform aform" id="fup" novalidate>${fld('un',A.name,{ac:'name',max:120})}${fld('ue',A.email,{t:'email',ltr:1,ac:'email'})}${fld('up',A.password,{t:'password',ac:'new-password',max:72,h:A.pwHelp})}<div class="two">${fld('uc',A.company,{ac:'organization',max:160})}${fld('uk',A.country,{ac:'country-name',max:100})}</div><div class="two">${fld('uh',A.phone,{t:'tel',ltr:1,ac:'tel',max:40})}${fld('ur',A.code,{ltr:1,max:20,v:rv})}</div><span class="help">${esc(A.codeHelp)}</span><label class="chk"><input id="ux" type="checkbox"><span>${fill(esc(A.consent),{privacy:lnk('#/privacy',A.privacy),terms:lnk('#/terms',A.terms)})}</span></label>${C().turnstileSiteKey?'<div id="ats"></div>':''}${msg()}<p><button class="btn p" type="submit" id="ub">${esc(A.create)}</button></p></form><p>${esc(A.haveAcct)} ${lnk('#/signin',A.signIn)}</p>`)};
+return page(A.upH,`<p class="lead-p">${esc(A.upLead)}</p><form class="cform aform" id="fup" novalidate>${fld('un',A.name,{ac:'name',max:120})}${fld('ue',A.email,{t:'email',ltr:1,ac:'email'})}${fld('up',A.password,{t:'password',ac:'new-password',max:72,h:A.pwHelp})}<div class="two">${fld('uc',A.company,{ac:'organization',max:160})}${fld('uk',A.country,{ac:'country-name',max:100})}</div><div class="two">${fld('uh',A.phone,{t:'tel',ltr:1,ac:'tel',max:40})}${fld('ur',A.code,{ltr:1,max:20,v:rv})}</div><span class="help">${esc(A.codeHelp)}</span><label class="chk"><input id="ux" type="checkbox"><span>${esc(A.consent)}</span></label>${C().turnstileSiteKey?'<div id="ats"></div>':''}${msg()}<p><button class="btn p" type="submit" id="ub">${esc(A.create)}</button></p></form><p>${esc(A.haveAcct)} ${lnk('#/signin',A.signIn)}</p>`)};
 const signin=()=>{setTimeout(()=>ts('#ats'),0);const n=notice;notice='';
 return page(A.signIn,`<p class="lead-p">${esc(A.inLead)}</p><form class="cform aform" id="fin" novalidate>${fld('ie',A.email,{t:'email',ltr:1,ac:'email'})}${fld('ip',A.password,{t:'password',ac:'current-password',max:72})}${C().turnstileSiteKey?'<div id="ats"></div>':''}<p id="am" role="alert" aria-live="polite" class="note" style="color:#f0a3a3">${esc(n)}</p><p><button class="btn p" type="submit" id="ib">${esc(A.signIn)}</button></p></form><p>${lnk('#/reset',A.forgot)}</p><p>${esc(A.noAcct)} ${lnk('#/signup',A.upH)}</p>`)};
 const staffLogin=()=>{setTimeout(()=>ts('#sats'),0);const ar=L.lang==='ar',txt=(en,arText)=>ar?arText:en;

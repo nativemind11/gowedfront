@@ -87,8 +87,6 @@ window.I18N_PACK={
    "pause": "Rotation anhalten",
    "resume": "Rotation fortsetzen",
    "verifiedCerts": "Geprüfte Zertifizierungen",
-   "privacy": "Datenschutz",
-   "terms": "Bedingungen",
    "select": "Auswählen…",
    "typeSearch": "Zum Suchen tippen",
    "accounts": "Konten",
@@ -103,7 +101,7 @@ window.I18N_PACK={
     "email": "Bitte geben Sie eine gültige geschäftliche E-Mail-Adresse ein.",
     "company": "Bitte geben Sie Ihr Unternehmen ein.",
     "country": "Bitte geben Sie Ihr Land ein.",
-    "consent": "Bitte stimmen Sie der Datenschutzerklärung zu, um fortzufahren.",
+    "consent": "Bitte aktivieren Sie das Kontrollkästchen, um fortzufahren.",
     "step": "Bitte vervollständigen Sie die unten markierten Angaben, um fortzufahren."
    },
    "sum": {
@@ -489,12 +487,12 @@ window.I18N_PACK={
    ],
    [
     "Sind meine Angaben vertraulich?",
-    "Wir verwenden Ihre Angaben nur, um das Gespräch vorzubereiten und nachzubereiten. Auf der Datenschutzseite steht, was wir erheben und wer es verarbeitet."
+    "Wir verwenden Ihre Angaben nur, um das Gespräch vorzubereiten und nachzubereiten."
    ]
   ],
   "about": {
    "h": "Über CULMERA",
-   "p": "CULMERA Solutions ist ein großes Unternehmen, das Websites, digitale Produkte und Unternehmenssysteme entwirft und baut, die zur tatsächlichen Arbeitsweise von Organisationen passen. Außerdem entwickeln wir Online-Shops und Buchungssysteme, KI-Assistenten und Automatisierung, Dashboards und Berichte sowie 3D-Erlebnisse, alles zum besten Preis, für Kunden in verschiedenen Ländern.",
+   "p": "CULMERA Solutions ist ein internationales niederländisches Unternehmen mit Hauptsitz in Dubai, Vereinigte Arabische Emirate, Niederlassungen in 15 Ländern und mehr als 5.000 Mitarbeitenden weltweit. Wir entwerfen und bauen Websites, digitale Produkte und Unternehmenssysteme, die zur tatsächlichen Arbeitsweise von Organisationen passen. Wir erbringen unsere Leistungen online und haben mehr als 1.500 Projekte für Kunden in über 45 Ländern umgesetzt. Außerdem entwickeln wir Online-Shops und Buchungssysteme, KI-Assistenten und Automatisierung, Dashboards und Berichte sowie 3D-Erlebnisse, alles zum besten Preis.",
    "big": "Zusammenarbeit mit größeren Organisationen",
    "bigP": "Wir beginnen mit einem Gespräch, hören zu, wie Ihre Organisation arbeitet, und richten die Arbeit danach aus. Umfang, Zuständigkeiten und nächste Schritte werden vor Beginn der Umsetzung schriftlich festgehalten."
   },
@@ -519,15 +517,12 @@ window.I18N_PACK={
   "footer": {
    "illustr": "Die Illustrationen auf dieser Website sind Konzepte, keine früheren Arbeiten.",
    "explore": "Entdecken",
-   "legal": "Rechtliches",
    "social": "Folgen"
   },
   "auth": {
    "signIn": "Anmelden",
    "account": "Ihr Konto",
    "signOut": "Abmelden",
-   "privacy": "Datenschutzhinweis",
-   "terms": "Bedingungen",
    "inLead": "Rufen Sie Ihr Projekt-Briefing, Ihren Termin und deren Status auf.",
    "email": "E-Mail",
    "password": "Passwort",
@@ -543,7 +538,7 @@ window.I18N_PACK={
    "code": "Partnercode (optional)",
    "codeHelp": "Geben Sie den Code nur ein, wenn ein CULMERA-Partner Sie vorgestellt hat. Maßgeblich ist der Code, den Sie hier eingeben.",
    "pwHelp": "Mindestens 10 Zeichen, mit Buchstaben und Zahlen.",
-   "consent": "Ich habe {privacy} und {terms} gelesen.",
+   "consent": "Ich bin damit einverstanden, dass CULMERA meine Kontodaten speichert, um diesen Dienst bereitzustellen.",
    "create": "Konto erstellen",
    "creating": "Konto wird erstellt…",
    "checkH": "Prüfen Sie Ihre E-Mails",
@@ -610,7 +605,7 @@ window.I18N_PACK={
     "pwShort": "Verwenden Sie mindestens 10 Zeichen mit Buchstaben und Zahlen.",
     "mismatch": "Die beiden Passwörter stimmen nicht überein.",
     "codeBad": "Der Partnercode scheint falsch zu sein. Verwenden Sie nur Buchstaben, Zahlen und Bindestriche, oder lassen Sie das Feld leer.",
-    "consent": "Bitte bestätigen Sie, dass Sie den Datenschutzhinweis und die Bedingungen gelesen haben.",
+    "consent": "Bitte aktivieren Sie das Kontrollkästchen, um fortzufahren.",
     "tsMissing": "Bitte schließen Sie die Sicherheitsprüfung ab.",
     "invalid": "Die E-Mail-Adresse oder das Passwort ist nicht korrekt.",
     "unconfirmed": "Bitte bestätigen Sie zuerst Ihre E-Mail-Adresse. Den Link finden Sie in Ihrem Posteingang.",
@@ -783,8 +778,7 @@ window.I18N_PACK={
    "country": "Land",
    "role": "Rolle (optional)",
    "phone": "Telefon (optional)",
-   "consent": "Ich stimme der {privacy} zu.",
-   "privacy": "Datenschutzerklärung",
+   "consent": "Ich bin damit einverstanden, dass CULMERA meine Angaben verwendet, um auf meine Anfrage zu antworten.",
    "required": "Mit * markierte Felder sind Pflicht. Alles andere ist optional.",
    "phoneBad": "Geben Sie eine gültige Telefonnummer ein oder lassen Sie das Feld leer.",
    "tsMissing": "Bitte schließen Sie die Überprüfung ab und senden Sie dann.",
@@ -1097,62 +1091,6 @@ window.I18N_PACK={
    "dup": "Sie haben bereits eine offene Anfrage dieser Art.",
    "err": "Wir konnten Ihre Anfrage nicht erfassen. Bitte versuchen Sie es erneut oder schreiben Sie an {email}.",
    "loadErr": "Wir konnten Ihre Anfragen gerade nicht laden."
-  },
-  "privacy": {
-   "h": "Datenschutz",
-   "intro": "Diese Seite erklärt, was {legal} ({country}) über diese Website erhebt, warum und wer es verarbeitet.",
-   "blocks": [
-    [
-     "Was wir erheben",
-     "Das Projekt-Briefing, das Sie senden (Projektdetails, Ihr Name, geschäftliche E-Mail, Unternehmen, Rolle, Land, optionale Telefonnummer, Terminpräferenzen) und die Zeitzone Ihres Browsers. Nachrichten über das Kontaktformular (Name, E-Mail, Nachricht). Wir speichern Ihre IP-Adresse nicht in unserer Datenbank."
-    ],
-    [
-     "Warum",
-     "Um Ihr Projekt zu verstehen, Ihnen zu antworten und einen Termin zu vereinbaren."
-    ],
-    [
-     "Wer es verarbeitet",
-     "Ihre Eingabe wird in einer Datenbank gespeichert, die von unserem Datenbankanbieter (Supabase) gehostet wird. Die Website und ihr Formular-Endpunkt laufen auf Vercel, das technische Anfragedaten verarbeitet, um den Dienst bereitzustellen. Benachrichtigungs-E-Mails werden über Resend gesendet, und eine optionale Chat-Benachrichtigung kann an den Inhaber gehen. Wenn Sie ein Konto erstellen, ein Briefing absenden oder ein Gespräch buchen, geht eine kurze Mitteilung mit Ihrem Namen, Ihrem Unternehmen, Ihrem Land und der Briefing-Referenz oder Gesprächszeit an das CULMERA-Team und, falls ein Partner Sie mit seinem Code vorgestellt hat, an diesen Partner und dessen Direktor. Diese Mitteilungen enthalten nie Ihre E-Mail-Adresse, Ihre Telefonnummer, Ihre Antworten oder Ihre Notizen. Der Spamschutz nutzt Cloudflare Turnstile, das von Ihrem Browser technische Daten wie Ihre IP-Adresse erhält, um seine Prüfung durchzuführen. Wir verkaufen Ihre Daten nicht."
-    ],
-    [
-     "Konten",
-     "Wenn Sie ein Konto erstellen, speichern wir Ihre Anmeldedaten, die Angaben bei der Registrierung sowie die Briefings und Terminanfragen, die Sie speichern, in unserer Datenbank (Supabase). Anmelde-E-Mails werden über Resend gesendet. Ein gespeichertes Briefing ist für das CULMERA-Team sichtbar und, falls ein Partner Sie mit seinem Code vorgestellt hat, für diesen Partner und dessen Direktor. Sie können jederzeit über Ihre Kontoseite oder per E-Mail an {email} verlangen, dass wir Ihre Daten exportieren oder löschen. Wir prüfen jede Anfrage von Hand; nichts wird automatisch gelöscht."
-    ],
-    [
-     "Ihr Gerät",
-     "Ihr Briefing-Entwurf wird in Ihrem Browser auf Ihrem eigenen Gerät gespeichert, damit Sie ihn fortsetzen können. Die Schaltfläche „Zurücksetzen“ löscht ihn. Diese Website verwendet weder Werbe-Tracker noch Analysen."
-    ],
-    [
-     "Aufbewahrung und Ihre Wahlmöglichkeiten",
-     "Wir bewahren eine Eingabe so lange auf, wie wir sie brauchen, um zu antworten und Ihre Anfrage nachzuverfolgen. Sie können jederzeit Auskunft über das Gesendete, dessen Berichtigung oder Löschung verlangen, indem Sie an {email} schreiben."
-    ]
-   ]
-  },
-  "terms": {
-   "h": "Bedingungen",
-   "intro": "Durch die Nutzung dieser Website stimmen Sie diesen Bedingungen mit {legal} ({country}) zu.",
-   "blocks": [
-    [
-     "Inhalt",
-     "Die Website zeigt die Arten von Arbeiten, die wir ausführen. Illustrationen sind Konzepte und werden nicht als frühere Arbeiten dargestellt."
-    ],
-    [
-     "Ihr Briefing",
-     "Ein Briefing ist eine Gesprächsanfrage. Präferenzen, die Sie eingeben, einschließlich des Zeitplans, sind Ihre eigenen und stellen für keine Seite eine Verpflichtung dar."
-    ],
-    [
-     "Nutzung der Website",
-     "Missbrauchen Sie die Website nicht und versuchen Sie nicht, sie zu stören. Die Inhalte der Website gehören {legal}."
-    ],
-    [
-     "Haftung",
-     "Die Website wird im gegebenen Zustand bereitgestellt, soweit gesetzlich zulässig."
-    ],
-    [
-     "Kontakt",
-     "{email}"
-    ]
-   ]
   },
   "opts": {
    "intents": [
@@ -1472,10 +1410,10 @@ window.I18N_PACK={
     "already": "Das wurde bereits gesendet (Doppelklick).",
     "resentOk": "E-Mail gesendet.",
     "resentFail": "Die E-Mail ist erneut fehlgeschlagen. Versuchen Sie es später.",
-    "msgsErr": "Die Nachrichten konnten nicht geladen werden. Wurde Migration 008 in Supabase ausgeführt?",
+    "msgsErr": "Die Nachrichten konnten nicht geladen werden. Bitte versuchen Sie es später erneut.",
     "pubLead": "Briefings aus dem öffentlichen Formular (Besucher ohne Konto). Antworten gehen nur per E-Mail.",
     "pubNone": "Noch keine öffentlichen Briefings.",
-    "pubErr": "Die öffentlichen Briefings konnten nicht geladen werden. Wurde Migration 008 in Supabase ausgeführt?",
+    "pubErr": "Die öffentlichen Briefings konnten nicht geladen werden. Bitte versuchen Sie es später erneut.",
     "colRef": "Referenz",
     "colCompany": "Unternehmen",
     "colReplies": "Antworten",
@@ -1495,7 +1433,7 @@ window.I18N_PACK={
      "auth": "Bitte melden Sie sich erneut an.",
      "forbidden": "Nicht erlaubt.",
      "offline": "Keine Verbindung. Bitte erneut versuchen.",
-     "noApi": "Die API-Adresse ist in js/config.js nicht gesetzt.",
+     "noApi": "Die Dienstadresse ist nicht gesetzt.",
      "server": "Auf dem Server ist etwas schiefgelaufen. Bitte erneut versuchen."
     }
    },
@@ -1509,7 +1447,7 @@ window.I18N_PACK={
    "paused": "Ihr Zugang ist pausiert. Bitte wenden Sie sich an info@culmera-solutions.com.",
    "loadErr": "Wir konnten Ihr Dashboard nicht laden. Bitte aktualisieren Sie die Seite.",
    "cap": "Die ersten 1000 Datensätze werden angezeigt. Grenzen Sie die Liste mit den Filtern ein.",
-   "an": {"title": "Mitteilungen", "lead": "Veröffentlichen Sie einen kurzen Hinweis. Jeder Besucher sieht ihn oben rechts, bis er endet, und kann ihn mit × schließen. Sie können ihn jederzeit löschen.", "newH": "Neue Mitteilung", "fTitle": "Titel", "fBody": "Text", "fDays": "Anzeigedauer (Tage)", "publish": "Veröffentlichen", "liveH": "Jetzt sichtbar", "pastH": "Beendet", "none": "Keine Mitteilungen.", "live": "Sichtbar", "ended": "Beendet", "until": "Bis {date}", "del": "Löschen", "askDel": "Diese Mitteilung löschen? Sie verschwindet sofort von der Website.", "yesDel": "Ja, löschen", "no": "Abbrechen", "saved": "Veröffentlicht. Besucher sehen sie jetzt.", "gone": "Gelöscht.", "errEmpty": "Bitte Titel und Text eingeben.", "errLong": "Der Titel darf 120 Zeichen haben, der Text 600.", "errDays": "Wählen Sie 1 bis 365 Tage.", "noTable": "Mitteilungen sind noch nicht bereit. Führen Sie zuerst migration-010-announcements.sql in Supabase aus.", "close": "Diese Mitteilung schließen", "region": "Mitteilungen des Unternehmens"},
+   "an": {"title": "Mitteilungen", "lead": "Veröffentlichen Sie einen kurzen Hinweis. Jeder Besucher sieht ihn oben rechts, bis er endet, und kann ihn mit × schließen. Sie können ihn jederzeit löschen.", "newH": "Neue Mitteilung", "fTitle": "Titel", "fBody": "Text", "fDays": "Anzeigedauer (Tage)", "publish": "Veröffentlichen", "liveH": "Jetzt sichtbar", "pastH": "Beendet", "none": "Keine Mitteilungen.", "live": "Sichtbar", "ended": "Beendet", "until": "Bis {date}", "del": "Löschen", "askDel": "Diese Mitteilung löschen? Sie verschwindet sofort von der Website.", "yesDel": "Ja, löschen", "no": "Abbrechen", "saved": "Veröffentlicht. Besucher sehen sie jetzt.", "gone": "Gelöscht.", "errEmpty": "Bitte Titel und Text eingeben.", "errLong": "Der Titel darf 120 Zeichen haben, der Text 600.", "errDays": "Wählen Sie 1 bis 365 Tage.", "noTable": "Mitteilungen sind noch nicht verfügbar.", "close": "Diese Mitteilung schließen", "region": "Mitteilungen des Unternehmens"},
    "tabs": {
     "announcements": "Mitteilungen",
     "overview": "Übersicht",
@@ -1604,7 +1542,7 @@ window.I18N_PACK={
    "amtToDir": "Dieser Betrag wird an Ihren Direktor überwiesen, der ihn entgegennimmt.",
    "amtToYou": "Dieser Betrag wird an Sie überwiesen.",
    "amtErr": "Geben Sie den Betrag als Zahl ein, 0 oder mehr (zum Beispiel 450 oder 450.50).",
-   "projNoTable": "Der Projektstatus ist noch nicht verfügbar. Führen Sie zuerst Migration 009 in Supabase aus.",
+   "projNoTable": "Der Projektstatus ist noch nicht verfügbar.",
    "draftNote": "Der Kunde schreibt dieses Briefing noch. Sie können den Status ändern, sobald es abgesendet ist.",
    "answersH": "Antworten",
    "answersLoad": "Antworten werden geladen…",
@@ -1730,7 +1668,7 @@ window.I18N_PACK={
    "audTable": "Alle Datensätze",
    "pbH": "Partner-Playbook",
    "pbNote": "Nur für CULMERA-Partner. Bitte nicht weitergeben.",
-   "pbNone": "Das Playbook ist noch nicht verfügbar. Führen Sie Migration 004 in Supabase aus.",
+   "pbNone": "Das Playbook ist noch nicht verfügbar.",
    "saved": "Gespeichert.",
    "rowsNone": "Es wurde nichts geändert. Möglicherweise sind Sie dazu nicht berechtigt, oder jemand anderes hat es zuvor geändert. Die Liste wurde aktualisiert.",
    "err": {

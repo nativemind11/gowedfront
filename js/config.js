@@ -21,17 +21,17 @@
                         outcomes:[{label:"What changed", value:"Verified figure or statement", source:"Where it comes from"}],
                         verified:true, permission:"approved"}]                                                                  */
 const CFG={
-brand:"CULMERA",sub:"solutions",legalName:"CULMERA Solutions",country:"Egypt",
+brand:"CULMERA",sub:"solutions",legalName:"CULMERA Solutions",
 siteUrl:"https://culmera-solutions.com",
 api:"https://culmera-api.vercel.app/api/brief",
-/* Supabase (public values only). The publishable key is safe in the browser because every table is protected by Row Level Security. NEVER put the secret or service_role key here. */
+/* Database service (public values only). The publishable key is safe in the browser because every table is protected by access rules. NEVER put the secret or service_role key here. */
 supabase:{url:"https://xxwvkvgkitrjggptlljr.supabase.co",key:"sb_publishable_4fTLep42RDimKd6gFmdsHw_DBpErhNm"},
 email:"info@culmera-solutions.com",phone:"",bookingUrl:"",ownerTimezone:"Africa/Cairo",
 /* Studio hours shown and checked in the brief. Example: {days:[0,1,2,3,4],from:"10:00",to:"18:00"} (0 = Sunday). Must match the API's MEETING_* settings. */
 meetingHours:null,
 /* Real profile links only. Empty networks are hidden. */
 socials:{linkedin:"",x:"",youtube:"",instagram:"",facebook:""},
-/* Cloudflare Turnstile site key (public). Required for the API in production. */
+/* spam check site key (public). Required for the API in production. */
 turnstileSiteKey:"0x4AAAAAAGK-0Loh50KfHO_U",
 analytics:null,
 proof:{stats:[{v:"1500+",l:"Projects delivered",verified:true,source:"Confirmed by the owner"},{v:"45+",l:"Countries with delivered projects",verified:true,source:"Confirmed by the owner"}],clients:[],testimonials:[

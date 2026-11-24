@@ -4,8 +4,8 @@
               answers, the calls, Playbook. He changes nothing (no status, calls, partners, invitations).
    Founder  : everything, plus status changes, call confirmation, partners on/off, invitations, reassigning clients, roles,
               suspend / delete, data requests, activity log and CSV export.
-   Every read and write uses the signed-in user's own token, so Row Level Security decides what each role can see and do
-   (Partner and Director read through the read-only views of migration 007); this page only hides buttons that would be refused. People management that needs the service key (invite, suspend, delete) goes
+   Every read and write uses the signed-in user's own token, so access rules decides what each role can see and do
+   (Partner and Director read through the read-only views of update 07); this page only hides buttons that would be refused. People management that needs the service key (invite, suspend, delete) goes
    through the API (/api/admin), which checks the role again on the server. All strings live in L.tm.
    Phase 2 (Founder only): the conversation with each client (reply + optional price + "suggest a meeting"), confirming a call with a Teams link
    pasted by hand, the public (visitor) briefs with an email-only reply. Every write goes through POST /api/reply with a fresh req_id per press.
@@ -20,11 +20,12 @@ const fresh=()=>({me:null,tab:'overview',open:null,ask:null,f:{q:'',st:'',p:'',m
 let S=fresh(),D=null;
 /* ---------- helpers ---------- */
 const tz=()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone||'UTC'}catch(e){return 'UTC'}};
-const studio=()=>C().ownerTimezone||'Africa/Cairo';
+const studio=()=>C().ownerTimezone||'UTC';
+const zl=d=>{try{const p=new Intl.DateTimeFormat('en',{timeZone:studio(),timeZoneName:'shortOffset'}).formatToParts(d?new Date(d):new Date()).find(x=>x.type==='timeZoneName');return p?p.value:'UTC'}catch(e){return 'UTC'}};
 const when=(d,z,short)=>{try{return new Intl.DateTimeFormat(L.locale,{dateStyle:short?'medium':'full',timeStyle:short?undefined:'short',timeZone:z||undefined}).format(new Date(d))}catch(e){return ''}};
 const pill=(s,l)=>`<span class="pill ${esc(s)}">${esc(l)}</span>`;
 const bpill=s=>pill(s,A.st[s]||s),mpill=s=>pill(s,M.mst[s]||s);
-/* project status of a client (migration 009): pending / building / delivered, plus the amount in USD once delivered */
+/* project status of a client (update 09): pending / building / delivered, plus the amount in USD once delivered */
 const usd=n=>{try{return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n)}catch(e){return '$'+n}};
 const pstPill=s=>pill('p-'+s,(T.pst&&T.pst[s])||s);
 const nm=p=>p?(p.full_name||p.email||'—'):T.unknown;
@@ -46,10 +47,10 @@ const why=r=>T.err[(r.data&&r.data.code)||'']||T.err.generic;
 const rpl=(action,body)=>admin(action,body,replyUrl());
 const rwhy=r=>{const c=(r.data&&r.data.code)||'';return T.rp.err[c]||T.err[c]||T.err.generic};
 async function rd(path){const s=await AU().session();if(!s)return{ok:false,auth:true};const r=await AU().rest(path,s);return r.ok&&Array.isArray(r.data)?{ok:true,rows:r.data}:{ok:false,status:r.status}}
-/* write with the user's token; n = number of rows really changed (zero rows means Row Level Security refused it) */
+/* write with the user's token; n = number of rows really changed (zero rows means access rules refused it) */
 async function mut(path,body,method,prefer){const s=await AU().session();if(!s)return{ok:false,n:0};const r=await AU().restW(path,s,{method:method||'PATCH',body,prefer:prefer||'return=representation'});
 return{ok:r.ok,n:r.ok&&Array.isArray(r.data)?r.data.length:0,status:r.status,rows:Array.isArray(r.data)?r.data:[]}}
-/* a view with the migration-009 columns; if migration 009 is not applied yet the old columns are read, so nothing breaks */
+/* a view with the update 09 columns; if update 09 is not applied yet the old columns are read, so nothing breaks */
 async function rdv(view,base,extra){const r=await rd(view+'?select='+base+','+extra+'&limit='+CAP);return r.ok?r:rd(view+'?select='+base+'&limit='+CAP)}
 const stg=x=>PST.includes(x.project_stage)?x.project_stage:'pending',amtOf=x=>x.amount_usd==null||x.amount_usd===''?null:Number(x.amount_usd);
 async function load(){const s=await AU().session();if(!$('#tm'))return;if(!s){location.hash='#/signin';return}
@@ -73,7 +74,7 @@ rd('meetings?select=id,teams_url&teams_url=not.is.null&limit='+CAP),rd('client_p
 const xa=await rd('announcements?select=id,title,body,starts_at,expires_at,created_at&order=created_at.desc&limit=200');
 ex={ann:xa.ok?xa.rows:null,msgs:xm.ok?xm.rows:null,vis:xv.ok?xv.rows:null,pub:xp.ok?xp.rows:null,tu:xt.ok?xt.rows:null,proj:xj.ok?xj.rows:null}}
 else if(me.role==='director'){
-/* read-only views of migration 007: names only, no contact details, no notes */
+/* read-only views of update 07: names only, no contact details, no notes */
 const [p1,tm,c1,b1,m1,pb1]=await Promise.all([rd('partners?select=profile_id,code,director_id,active&limit='+CAP),rd('director_team?select=profile_id,full_name,director_id,active,created_at&limit='+CAP),
 rdv('director_clients','profile_id,partner_id,full_name,created_at','project_stage,amount_usd'),rd('director_briefs?select=id,ref,client_id,status,locale,selected_types,created_at,updated_at,submitted_at&order=updated_at.desc&limit='+CAP),
 rd('director_meetings?select=id,brief_id,client_id,starts_at,timezone,duration_min,status&order=starts_at.desc&limit='+CAP),pbq()]);
@@ -182,7 +183,7 @@ if(S.ask&&S.ask.id===id)return h+`<p role="alert">${esc(S.ask.act==='delete'?T.a
 return h+`<p>${st==='suspended'?`<button class="btn" type="button" data-tm="restore" data-id="${esc(id)}">${esc(T.restore)}</button>`:`<button class="btn" type="button" data-tm="suspend" data-id="${esc(id)}">${esc(T.suspend)}</button>`} <button class="btn" type="button" data-tm="delete" data-id="${esc(id)}">${esc(T.delete)}</button></p>`}
 function meetCard(m,full){const c=D.cm.get(m.client_id),b=D.briefs.find(x=>x.id===m.brief_id),act=m.status==='requested'||m.status==='confirmed';
 return `<div class="tm-meet"><p>${mpill(m.status)} ${esc(fill(T.min,{n:m.duration_min}))}${full?` · <b>${esc(nm(D.pm.get(m.client_id)))}</b>`:''}${b?` · <span dir="ltr">${esc(b.ref)}</span>`:''}</p>
-<div class="zn"><div><span class="note">${esc(T.yourTime)}</span><b>${esc(when(m.starts_at,tz()))}</b><span class="note" dir="ltr">${esc(tz())}</span></div><div><span class="note">${esc(T.studioTime)}</span><b>${esc(when(m.starts_at,studio()))}</b><span class="note" dir="ltr">${esc(studio())}</span></div></div>
+<div class="zn"><div><span class="note">${esc(T.yourTime)}</span><b>${esc(when(m.starts_at,tz()))}</b><span class="note" dir="ltr">${esc(tz())}</span></div><div><span class="note">${esc(T.studioTime)}</span><b>${esc(when(m.starts_at,studio()))}</b><span class="note" dir="ltr">${esc(zl(m.starts_at))}</span></div></div>
 <p class="note">${esc(T.clientZone)}: <span dir="ltr">${esc(m.timezone)}</span> — ${esc(when(m.starts_at,m.timezone))}</p>${m.note?`<p class="tm-pre">${esc(m.note)}</p>`:''}${isF()?teamsLine(D.tu.get(m.id)):''}
 ${canManage()&&act?`<p>${m.status==='requested'?``:`<button class="btn p" type="button" data-tm="mset" data-id="${esc(m.id)}" data-v="done">${esc(T.doneCall)}</button> `}<button class="btn" type="button" data-tm="mset" data-id="${esc(m.id)}" data-v="cancelled">${esc(T.cancelCall)}</button>${full&&c?` <button class="btn" type="button" data-tm="openc" data-id="${esc(m.client_id)}">${esc(T.open)}</button>`:''}</p>`:(full&&c?`<p><button class="btn" type="button" data-tm="openc" data-id="${esc(m.client_id)}">${esc(T.open)}</button></p>`:'')}${canManage()&&act?confirmForm(m):''}</div>`}
 /* ---------- Phase 2: conversation with the client, confirming a call, public briefs (Founder only) ---------- */
