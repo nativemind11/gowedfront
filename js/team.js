@@ -15,7 +15,7 @@ const T=L.tm,A=L.auth,M=L.mt,$=s=>document.querySelector(s),G=()=>window.GW,C=()
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,CAP=1000,WEEK=7*864e5;
 const PST=['pending','building','delivered'];
 const BST=['submitted','in_review','scheduled','in_discussion','won','lost','archived'];
-const TABS={partner:['overview','clients','playbook'],director:['overview','clients','meetings','team','playbook'],founder:['overview','clients','public','meetings','team','requests','announcements','audit','playbook']};
+const TABS={partner:['overview','clients','playbook'],director:['overview','clients','meetings','team','playbook'],founder:['overview','clients','public','meetings','team','announcements','audit','playbook']};
 const fresh=()=>({me:null,tab:'overview',open:null,ask:null,f:{q:'',st:'',p:'',ms:'active',tb:'',lk:'home'},lim:100,det:null,aud:null,audLim:200,state:'load',msg:'',ok:false});
 let S=fresh(),D=null;
 /* ---------- helpers ---------- */
@@ -66,7 +66,7 @@ if(me.role==='founder'){
 [pa,cl,br,ms,iv,pb,rq]=await Promise.all([rd('partners?select=profile_id,code,director_id,active&limit='+CAP),rd('clients?select=profile_id,partner_id,code_used,company,country,phone,created_at&limit='+CAP),
 rd('client_briefs?select=id,ref,client_id,status,locale,selected_types,created_at,updated_at,submitted_at&order=updated_at.desc&limit='+CAP),rd('meetings?select=id,brief_id,client_id,starts_at,timezone,duration_min,status,note&order=starts_at.desc&limit='+CAP),
 rd('invitations?select=id,email,role,director_id,invited_by,expires_at,accepted_at,created_at&accepted_at=is.null&order=created_at.desc&limit=200'),
-pbq(),rd('data_requests?select=id,client_id,kind,status,created_at,handled_at&order=created_at.desc&limit=200')]);
+pbq(),Promise.resolve(EMPTY)]);
 const [xm,xv,xp,xt,xj]=await Promise.all([rd('brief_messages?select=id,brief_id,client_id,sender,kind,body,price_text,proposes_meeting,meeting_id,email_status,email_at,created_at&order=created_at.asc&limit='+CAP),
 rd('visitor_replies?select=id,brief_ref,body,price_text,proposes_meeting,email_status,email_at,created_at&order=created_at.asc&limit='+CAP),
 rd('briefs?select=ref,created_at,name,email,company,country,timezone,items_count,payload,status&order=created_at.desc&limit=300'),
